@@ -18,7 +18,7 @@ make
 To include the micro-library in your project, you can pass the BUILD_DIR and BIN_DIR to the make like this. 
 ~~~
 make BUILD_DIR=mybuild BIN_DIR=mybin
-~~
+~~~
 If you redirect those two directories, you are responsible for implementing the `make clean` command. 
 
 # Demo
