@@ -31,7 +31,7 @@ If you redirect those two directories, you are responsible for implementing the 
 [standard.url]:   https://en.wikipedia.org/wiki/C89/
 [standard.badge]: https://img.shields.io/badge/standard-C89-blue.svg
 
-[license.url]:    https://github.com/tstih/libcpm3-z80/blob/main/LICENSE
+[license.url]:    https://github.com/tstih/idp-udev/blob/main/LICENSE
 [license.badge]:  https://img.shields.io/badge/license-MIT-blue.svg
 
-[status.badge]:  https://img.shields.io/badge/status-development-red.svg
+[status.badge]:  https://img.shields.io/badge/status-stable-green.svg
