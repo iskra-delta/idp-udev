@@ -4,7 +4,7 @@ $(error OS must be Linux!)
 endif
 
 # Check if all required tools are on the system.
-REQUIRED = sdcc sdar sdasz80 sdldz80 sdobjcopy sed cpmcp
+REQUIRED = sdcc sdar sdasz80 sdldz80 sdobjcopy
 K := $(foreach exec,$(REQUIRED),\
     $(if $(shell which $(exec)),,$(error "$(exec) not found. Please install or add to path.")))
 
