@@ -1,4 +1,4 @@
-		;; avdc.s
+		;; scn2674.s
         ;; 
         ;; scn2674 minimal code
 		;;
@@ -8,9 +8,9 @@
 		;; 05.05.2022    tstih
 		.module avdc
 
-		.globl	_avdc_cls
-        .globl  _avdc_hide_cursor
-        .globl  _avdc_show_cursor
+		.globl	avdc_cls
+        .globl  avdc_hide_cursor
+        .globl  avdc_show_cursor
 
         .include "avdc.inc"
 
@@ -51,7 +51,6 @@ avdc_hl2cursor:
         out     (#SCN2674_CUR_HI),a
         ret
 
-
         ;; write cursor to hl
 avdc_cursor2hl:
         call    avdc_wait_rdy
@@ -61,7 +60,6 @@ avdc_cursor2hl:
         in      a,(#SCN2674_CUR_HI)
         ld      h,a
         ret
-
 
         ;; write hl to pointer
         ;; affects: af
@@ -123,13 +121,10 @@ avdc_rowptr:
         ret  
 
 
-
-
         ;; ----- functions ----------------------------------------------------
 
-
         ;; clear screen
-_avdc_cls:
+avdc_cls:
         ld      b,#26                   ; 26 rows
         ld      hl,#0                   ; row #
 scls_loop:
@@ -163,14 +158,14 @@ scls_loop:
         ret
 
         ;; show cursor
-_avdc_show_cursor:
+avdc_show_cursor:
         call    avdc_wait_mem_acc
         ld      a, #SCN2674_CMD_CURS_ON
         out     (SCN2674_CMD), a
         ret
 
         ;; hide cursor
-_avdc_hide_cursor:
+avdc_hide_cursor:
         call    avdc_wait_mem_acc
         ld      a, #SCN2674_CMD_CURS_OFF
         out     (SCN2674_CMD), a

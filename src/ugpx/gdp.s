@@ -9,11 +9,11 @@
         ;; copyright (c) 2022 tomaz stih
         ;;
 		;; 22.03.2022    tstih
-		.module gdp
+		.module gdp       
 
-		.globl	_gdp_init
-        .globl  _gdp_cls
-        
+        .globl  gdp_set_xy
+        .globl  gdp_set_dxdy
+        .globl  gdp_exec_cmd
 
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
@@ -21,7 +21,6 @@
 
         ;; --- limits ---------------------------------------------------------
         .equ    GDP_WIDTH,          1024
-        .equ    GDP_HEIGHT,         256
         .equ    GDP_MAX_DELTA,      255
 
 
@@ -36,22 +35,20 @@ gdp_wait_ready:
         jr      z,gdp_wait_ready
         ret
 
-
         ;; execute command in a
         ;; input:	a=command
         ;; affects: -
-gdp_exec_cmd::
+gdp_exec_cmd:
         push    af
         call    gdp_wait_ready        ; wait gdp
         pop     af
         out     (#EF9367_CMD), a        ; exec. command
         ret
 
-
         ;; set deltas to dx, dy
         ;; inputs:  b=dy, c=dx
-        ;; affect:  a, bc
-gdp_set_dxdy::
+        ;; affect:  a
+gdp_set_dxdy:
         call    gdp_wait_ready
         ld      a,b
         out     (#EF9367_DY),a
@@ -59,18 +56,18 @@ gdp_set_dxdy::
         out     (#EF9367_DX),a
         ret
 
-
         ;; move the cursor to x,y
         ;; notes:   y is transformed (ef9367 has negative axis!
         ;; inputs:  hl=x, de=y
         ;; affect:  af
-gdp_set_xy::
+gdp_set_xy:
         ;; store hl and de regs
         push    de
         push    hl
         ;; reverse y coordinate
         push    hl                      ; store x
-        ld      hl,#(GDP_HEIGHT-1)      ; hl=max y
+        ld      hl,(gdata)              ; hl=height
+        dec     hl                      ; -1
         or      a                       ; clear carry
         sbc     hl,de                   ; hl=maxy-y
         pop     de                      ; de=x
@@ -93,7 +90,7 @@ gdp_set_xy::
         ;; draw horizontal line 
         ;; input: hl=len
         ;; affects: a
-gdp_hline::
+gdp_hline:
         ;; pen down
         ld      a,#0b00000010
         call    gdp_exec_cmd
@@ -141,34 +138,4 @@ gdphl_tail:
         ;; move 1 pixel to the right
         ld      a,#0b10100000
         call    gdp_exec_cmd
-        ret
-
-
-        ;; ---------------
-		;; void gdp_init()
-        ;; ---------------
-        ;; initializes the ef9367, sets the 1024x256 graphics mode
-        ;; no waiting for gdp bcs no command should be executing!
-        ;; affect:  a, bc, flags
-_gdp_init::
-        ;; pen down, set default drawing mode to pen
-        ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN) 
-        out     (EF9367_CR1),a          ; control reg 1 to default
-        xor     a                       ; a=0
-        out     (EF9367_CR2),a          ; control reg 2 to default
-        out     (EF9367_CH_SIZE),a      ; no scaling!
-        ;; this sets resolution to 1024x256
-        ;; and default page to 0
-		out     (PIO_GR_CMN),a
-        ret
-
-
-        ;; ------------------
-		;; void _gdp_cls()
-        ;; ------------------
-		;; clear graphic screen
-        ;; affect:  af
-_gdp_cls::
-		ld      a,#EF9367_CMD_CLS
-		call    gdp_exec_cmd
         ret

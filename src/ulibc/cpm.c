@@ -19,3 +19,7 @@ int putchar(int c) {
     } else bdos(C_WRITE,c);
     return c;
 }
+
+int kbhit(void) {
+    return bdos(C_RAWIO,0xff);
+}

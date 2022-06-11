@@ -27,4 +27,7 @@ extern int puts(const char *s);
 /* Print formatted string to stdout. */
 extern int printf(char *fmt, ...);
 
+/* Non standard extension. */
+extern int kbhit(void);
+
 #endif /* __STDIO_H__ */
