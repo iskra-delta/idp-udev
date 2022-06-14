@@ -9,10 +9,11 @@
 		.module gputglyph
 
         .globl  _gputglyph
+        .globl  gpg_raw
 
         .area	_CODE
         ;; ------------------------------------------------------
-		;; void gputglyph(g_t *g, void* sprite, coord x, coord y)
+		;; void gputglyph(g_t *g, void* glyph, coord x, coord y)
         ;; ------------------------------------------------------
         ;; draws glyph at x,y without clipping!
         ;; recognizes standard glyphs from libgpx
@@ -35,6 +36,7 @@ _gputglyph:
         push    hl
         push    de
         push    bc
+gpg_raw:
         ;; now get number of bytes into bc
         ld      a,(hl)                  ; get sprite signature
         inc     hl                      ; next byte...
@@ -157,9 +159,11 @@ gpgl_draw:
 
         ;; draw tiny glyph
 gpg_tiny:
-        ;; estract moves
+        call    gpgt_set_palette        ; get the pallete.
+gpgt_moves:
+        ;; extract no of moves
         inc     hl                      ; skip width
-        int     hl                      ; skip height
+        inc     hl                      ; skip height
         ld      a,(hl)                  ; number of moves
         or      a                       ; test for zero
         ret     z                       ; no moves...
@@ -188,62 +192,71 @@ gpg_tiny:
         ;; and loop hl (pointing to data!)
 gpgt_loop:
         ld      a,(hl)                  ; get move
+        call    gpgt_handle_pen
         inc     hl
         or      #0b10000001             ; set both bits to 1
         xor     #0b00000100             ; negate y sign (rev.axis)
         call    gdp_exec_cmd            ; and draw!
         djnz    gpgt_loop
-
         ret
-
+gpgt_set_palette:
+        ;; this sets the correct pallete for drawing
+        ;; palette is mapping from currently set ink to 
+        ;; ink inside tiny glyph
+        ;; affects: a, de
+        xor     a
+        ld      (gpgt_none_value),a
+        push    hl
+        ld      a,(gdata+3)             ; get current pen
+        ld      (gpgt_stored_pen),a     ; and write to cache as init value
+        ld      hl, #gpgt_palette       ; get gpgt_palette
+        ld      d,#0
+        add     a                       ; a=a*2
+        ld      e,a                     ; de=2*a
+        add     hl,de                   ; gl points to palette
+        ld      de,#gpgt_fore_value
+        ldi
+        ldi                             ; copy  palette
+        pop     hl
+        ret
+gpgt_palette:
+        .db     0, 0
+        .db     1, 2
+        .db     2, 1
+        .db     1, 2
         ;; handle pen and color
         ;; inputs: a is the tiny command
+        ;; affects: de
 gpgt_handle_pen:
-        ld      d,#0                    ; assume pen up
-        ;; now check pen...
+        push    af
+        ;; get the pen
         rlca                            ; get color to first 2 bits
         and     #0b00000011             ; get color
-        jr      z,gpgt_set_pen          ; CO_NONE=raise the pen
-        inc     d                       ; pen down to d
-gpgt_set_pen:
-        ;; compare d to (pen_down) cached value
+        ;; if same as current color, don't do anything expensive
+        ld      e,a
         ld      a,(gdata+3)
-        cp      d
-        jr      z,gpgt_set_color         ; if the same no change
-        ;; if we are here we need to change the pen status
-        ;; a has the inverse value!
-        or      a                       ; cached pen down?
-        jr      nz,gpgt_pen_up          ; pen up
-        ;; if we are here, pen down!
-        call    gdp_wait_ready
-        ld      a,#0b00000011           ; pen down
-        out     (#EF9367_CR1),a
-        and     #1                      ; a=1!
-        ld      (gdata+3),a             ; write to cache
-        jr      gpgt_set_color 
-gpgt_pen_up:
-        ;; if we are here, pen up!
-        call    gdp_wait_ready
-        ld      a,#0b00000010           ; pen up
-        out     (#EF9367_CR1),a
-        xor     a
-        ld      (pen_down),a            ; and set cached value
-        ret                             ; to tny_draw_move
-        ;; pen is down/up as it should be
-        ;; now set the eraser or ink
-gpgt_set_color:
-        pop     de                      ; return address
-        pop     af                      ; get command 
-        push    af                      ; and store back
-        push    de
-        rlca                            ; color to first two bits
-        and     #0b00000010             ; mask?
-        jr      nz,gpgt_eraser
-        ;; if we are here it's pen
-        ld      a,#EF9367_CMD_DMOD_SET
-        call    ef9367_cmd
+        cp      e
+        jr      z, gpgtp_end
+        ;; map to palette
+        push    hl                      ; store hl
+        ld      hl,#gpgt_none_value     ; hl=assume
+        ld      d,#0                    ; de=a (index)
+        add     hl,de                   ; point to color
+        ld      l,(hl)                  ; l=color
+        ;; prepare args for the call!
+        call    gsc_raw
+        ;; restore original hl
+        pop     hl
+gpgtp_end:
+        pop     af
         ret
-gpgt_eraser:
-        ld      a,#EF9367_CMD_DMOD_CLR
-        call    ef9367_cmd
-        ret
+
+        ;; place to store cached values
+gpgt_stored_pen:
+        .db     0
+gpgt_none_value:
+        .db     0
+gpgt_fore_value:
+        .db     1
+gpgt_back_value:
+        .db     2

@@ -27,4 +27,8 @@
 #define UINT_MAX    65535
 #define SSIZE_MAX   65535               /* Max bytes for file read */
 
+#ifndef RAND_MAX
+#define RAND_MAX    32767
+#endif /* RAND_MAX */
+
 #endif /* __LIMITS_H__ */

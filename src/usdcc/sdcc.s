@@ -13,7 +13,9 @@
         .globl  __divuint
         .globl  __divuchar
         .globl  __moduchar
+        .globl  __modschar
         .globl  __moduint
+        .globl  __modsint
         .globl  ___sdcc_call_hl
 
         .area   _CODE
@@ -108,6 +110,14 @@ __moduchar::
         call    __divu8
 	    ex	de,hl
         ret
+__modschar::
+        ld      hl,#2+1
+        add     hl,sp
+        ld      e,(hl)
+        dec     hl
+        ld      l,(hl)
+        call    __div8
+        jp	    __get_remainder
 __moduint::
         pop     af
         pop     hl
@@ -117,6 +127,73 @@ __moduint::
         push    af
         call    __divu16
         ex      de,hl
+        ret
+__modsint:
+        pop     af
+        pop     hl
+        pop     de
+        push    de
+        push    hl
+        push    af
+        call    __div16
+        jp	    __get_remainder
+__div8::
+        ld      a, l            
+        rlca
+        sbc     a,a
+        ld      h, a
+__div_signexte::
+        ld      a, e            
+        rlca
+        sbc     a,a
+        ld      d, a
+__div16::
+        ld      a, h            
+        xor     a, d            
+        rla                     
+        ld      a, h            
+        push    af              
+        rla
+        jr      nc, .chkde      
+        sub     a, a            
+        sub     a, l
+        ld      l, a
+        sbc     a, a            
+        sub     a, h
+        ld      h, a
+.chkde:
+        bit     7, d
+        jr      Z, .dodiv       
+        sub     a, a           
+        sub     a, e
+        ld      e, a
+        sbc     a, a          
+        sub     a, d
+        ld      d, a
+.dodiv:
+        call    __divu16
+.fix_quotient:
+        pop     af             
+        ret	    nc
+        ld      b, a
+        sub     a, a           
+        sub     a, l
+        ld      l, a
+        sbc     a, a           
+        sub     a, h
+        ld      h, a
+        ld      a, b
+	    ret
+__get_remainder::
+        rla
+        ex	    de, hl
+        ret     nc            
+        sub     a, a            
+        sub     a, l
+        ld      l, a
+        sbc     a, a             
+        sub     a, h
+        ld      h, a
         ret
 ___sdcc_call_hl:
 	    jp	(hl)

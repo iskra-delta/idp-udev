@@ -32,6 +32,9 @@ start:
         ;; initialize memory management
         call    __memory_init
 
+        ;; initialize random generator
+        call    __rand_init
+
         ;; call the main
 	    call    _main
 

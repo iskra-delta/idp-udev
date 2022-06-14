@@ -28,4 +28,11 @@ extern void *calloc (size_t num, size_t size);
 /* Free allocated memory block. */
 extern void free(void *ptr);
 
+/* random numbers */
+#ifndef RAND_MAX
+#define RAND_MAX    32767
+#endif /* RAND_MAX */
+extern int rand(void);
+extern void srand(unsigned int seed);
+
 #endif /* __STDLIB_H__ */

@@ -33,7 +33,7 @@ _ginit::
         push    de
         
         ;; pen down, set default drawing mode to pen
-        ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN) 
+        ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN)
         out     (EF9367_CR1),a          ; control reg 1 to default
         xor     a                       ; a=0
         out     (EF9367_CR2),a          ; control reg 2 to default
@@ -50,9 +50,12 @@ _ginit::
         ld      de,#512
 gi_lowres:
         ld      (gdata),de
+        ;; and cache pen
+        ld      a,#1                    ; cached color is C_FORE
+        ld      (gdata+3),a             ; write to cache
         ret
 
         ;; global space for graphics data.
 gdata:
         .dw     0                       ; screen height
-        .db     0                       ; pen status 0=up, 1=down
+        .db     0                       ; current color
