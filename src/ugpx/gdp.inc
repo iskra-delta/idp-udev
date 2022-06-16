@@ -7,6 +7,9 @@
         ;;
 		;; 22.03.2022    tstih
 
+        ;; --- limits ---------------------------------------------------------
+        .equ    GDP_WIDTH,          1024
+        .equ    GDP_MAX_DELTA,      255
 
         ;; --- 0x20 - W: command, R:the status register -----------------------     
         .equ	EF9367_CMD,             0x20    ; command register (W)

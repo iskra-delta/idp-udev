@@ -14,15 +14,10 @@
         .globl  gdp_set_xy
         .globl  gdp_set_dxdy
         .globl  gdp_exec_cmd
+        .globl  gdp_wait_ready
 
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
-
-
-        ;; --- limits ---------------------------------------------------------
-        .equ    GDP_WIDTH,          1024
-        .equ    GDP_MAX_DELTA,      255
-
 
         .area	_CODE
         ;; wait for the GDP to finish previous operation
@@ -85,57 +80,4 @@ gdp_set_xy:
         ;; restore de and hl
         pop     hl
         pop     de
-        ret
-
-        ;; draw horizontal line 
-        ;; input: hl=len
-        ;; affects: a
-gdp_hline:
-        ;; pen down
-        ld      a,#0b00000010
-        call    gdp_exec_cmd
-        ;; store hl and de
-        push    hl                      
-        push    de
-        ld      h,b                     ; hl=bc
-        ld      l,c
-        dec     hl                      ; last pix. correction
-        ;; make sure dy is 0
-        call    gdp_wait_ready
-        xor     a
-        out     (#EF9367_DY),a
-gdphl_loop:
-        ld      de, #GDP_MAX_DELTA
-        push    hl                      ; store hl
-        or      a                       ; clear carry
-        sbc     hl,de                   ; compare len to max
-        jr      c,gdphl_tail            ; len is smaller
-        ;; line is longer or equal to max delta...
-        ;; draw max delta line
-        pop     hl
-        call    gdp_wait_ready
-        ld      a,#GDP_MAX_DELTA
-        out     (#EF9367_DX),a
-        ld      a,#0b00010000           ; ignore dy
-        call    gdp_exec_cmd
-        or      a                       ; ccy
-        sbc     hl,de                   ; new len
-        jr      gdphl_loop
-        ;;      draw last line (length is in l)
-gdphl_tail:
-        pop     hl                      ; restore hl
-        call    gdp_wait_ready
-        ld      a,l
-        out     (#EF9367_DX),a
-        ld      a,#0b00010000           ; ignore dy
-        call    gdp_exec_cmd
-        ;; restore de and hl
-        pop     de
-        pop     hl
-        ;; pen up
-        ld      a,#0b00000011
-        call    gdp_exec_cmd
-        ;; move 1 pixel to the right
-        ld      a,#0b10100000
-        call    gdp_exec_cmd
         ret

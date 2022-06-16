@@ -18,6 +18,13 @@
 typedef int coord;
 typedef uint8_t color;
 
+typedef struct rect_s {                 /* the rectangle */
+	coord x0;
+	coord y0;
+	coord x1;
+	coord y1;
+} rect_t;
+
 /* basic graphics structure */
 typedef struct g_s {
     uint16_t height;                    /* 256 or 512 */
@@ -56,5 +63,11 @@ extern uint16_t gputtext(g_t *g, void *font, char *text, coord x, coord y);
 #define CO_FORE         0x01
 #define CO_BACK         0x02
 extern void gsetcolor(g_t *g, color c);
+
+/* draw line (optimized!) */
+extern int gdrawline(g_t *g, coord x0, coord y0, coord x1, coord y1);
+
+/* rectangles */
+
 
 #endif /* __UGPX_H__ */

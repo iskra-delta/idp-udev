@@ -35,4 +35,7 @@ extern void free(void *ptr);
 extern int rand(void);
 extern void srand(unsigned int seed);
 
+/* absolute value */
+extern int abs(int x);
+
 #endif /* __STDLIB_H__ */
