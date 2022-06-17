@@ -11,7 +11,7 @@
         .globl  _gputtext
 
         .include "gdp.inc"
-
+        
         .area	_CODE
         ;; ---------------------------------------------------------------
 		;; void gputtext(g_t *g, void *font, char *text, coord x, coord y)

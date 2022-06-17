@@ -9,6 +9,7 @@
 		.module gdrawline       
 
         .globl  _gdrawline
+        .globl  gdrawlineraw
 
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
@@ -27,6 +28,7 @@ _gdrawline:
         ;; pick parameters
         ld      iy,#4                   ; skip over g
         add     iy,sp
+gdrawlineraw:
         ;; first goto x,y
         ld      l,(iy)                  ; hl=x0
         ld      h,1(iy)         

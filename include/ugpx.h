@@ -65,9 +65,10 @@ extern uint16_t gputtext(g_t *g, void *font, char *text, coord x, coord y);
 extern void gsetcolor(g_t *g, color c);
 
 /* draw line (optimized!) */
-extern int gdrawline(g_t *g, coord x0, coord y0, coord x1, coord y1);
+extern void gdrawline(g_t *g, coord x0, coord y0, coord x1, coord y1);
 
 /* rectangles */
-
+extern void gdrawrect(g_t *g, rect_t *r);
+extern void gfillrect(g_t *g, rect_t *r);
 
 #endif /* __UGPX_H__ */
