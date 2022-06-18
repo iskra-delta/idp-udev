@@ -75,4 +75,9 @@ extern void gdrawdelta(g_t *g, uint8_t dx, uint8_t dy);
 extern void gdrawrect(g_t *g, rect_t *r);
 extern void gfillrect(g_t *g, rect_t *r);
 
+/* pages */
+#define PG_DISPLAY  1
+#define PG_WRITE    2
+extern void gsetpage(g_t *g, uint8_t op, uint8_t page);
+
 #endif /* __UGPX_H__ */

@@ -62,8 +62,8 @@
 
         ;; --- 0x2f - R:the status (NI) register and its bitmask --------------
         .equ    EF9367_STS_NI,          0x2f    ; status reg. (no interrupt reset)
+        .equ    EF9367_STS_NI_VBLANK,   0x02    ; high during vertical blanking.
         .equ    EF9367_STS_NI_READY,    0x04    ; low when executing command
-
 
         ;; --- 0x30 - R/W:PIO gr. common register -----------------------------
         .equ    PIO_GR_CMN,             0x30

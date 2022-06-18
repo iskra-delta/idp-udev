@@ -15,6 +15,7 @@
         .globl  gdp_set_dxdy
         .globl  gdp_exec_cmd
         .globl  gdp_wait_ready
+        .globl  gdp_wait_vbl
 
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
@@ -28,6 +29,14 @@ gdp_wait_ready:
         in      a,(EF9367_STS_NI)       ; read the status register
         and     #EF9367_STS_NI_READY    ; get ready flag, it's the same bit
         jr      z,gdp_wait_ready
+        ret
+
+        ;; wait for VBL
+        ;; affects: a
+gdp_wait_vbl:
+        in      a,(EF9367_STS_NI)
+        and     #EF9367_STS_NI_VBLANK
+        jr      z,gdp_wait_vbl
         ret
 
         ;; execute command in a

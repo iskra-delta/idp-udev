@@ -37,6 +37,7 @@ _ginit::
         out     (EF9367_CR1),a          ; control reg 1 to default
         xor     a                       ; a=0
         out     (EF9367_CR2),a          ; control reg 2 to default
+        ld      a,#0b00100001
         out     (EF9367_CH_SIZE),a      ; no scaling!
         ;; now set the resolution.
         ld      a,l                     ; resolution const.
