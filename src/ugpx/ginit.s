@@ -22,7 +22,7 @@
         ;; bcs no command should be executing at time of init!
         ;; affect:  a, hl, de, flags
 _ginit::
-        ;; exit text by hiding cursor and clearing the screen
+        ;; TODO: exit text by hiding cursor and clearing the screen
         call    avdc_hide_cursor
         call    avdc_cls
 

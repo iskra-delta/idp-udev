@@ -42,6 +42,9 @@ extern void gexit(g_t* g);
 /* clear current (display page) graphics screen */
 extern void gcls(g_t *g);
 
+/* manually move graphics cursor to x,y */
+extern void gxy(g_t *g, coord x, coord y);
+
 /* draw pixel */
 extern void gputpixel(g_t *g, coord x, coord y);
 
@@ -66,6 +69,7 @@ extern void gsetcolor(g_t *g, color c);
 
 /* draw line (optimized!) */
 extern void gdrawline(g_t *g, coord x0, coord y0, coord x1, coord y1);
+extern void gdrawdelta(g_t *g, uint8_t dx, uint8_t dy);
 
 /* rectangles */
 extern void gdrawrect(g_t *g, rect_t *r);

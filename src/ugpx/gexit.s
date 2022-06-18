@@ -14,8 +14,9 @@
         ;; ------------------
 		;; void gexit(g_t* g)
         ;; ------------------
-        ;; exit graphics mode, restores text cursor.
+        ;; exit graphics mode.
         ;; affect:  a, hl, de, flags
 _gexit::
-        call    avdc_show_cursor
+        ;; restoring AVDC cursor is not required.
+        ;; it is done by the CP/M warm reset..
         ret
