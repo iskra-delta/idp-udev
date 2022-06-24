@@ -14,9 +14,29 @@
 
         .area	_CODE
         ;; -----------------------------------------------
-		;; void gsetpage(g_t *g, uint8_t op, uint8_t page)
+		;; void gsetpage(g_t *g, uint8_t ops, uint8_t page)
         ;; -----------------------------------------------
-        ;; sets the current page
+        ;; sets the current page, ops are flags and can be
+        ;; combined (i.e.PG_WRITE|PG_DISPLAY), and the 
+        ;; page is 0 or 1
+        ;; 
+        ;; notes:
+        ;;  this function manipulate bits of destination
+        ;;  through the mask. the mask tells which bits 
+        ;;  from the source are copied to the destination
+        ;;
+        ;;  following example destination bits that have 
+        ;;  mask set to the source bits.
+        ;;
+        ;;  src       mask      dst      result 
+        ;;  10001101  00001111  XXXXXXXX XXXX1101   
+        ;;  
+        ;;  how does it work?
+        ;;  1. and src with mask     00001101 -> S&M
+        ;;  2. negate the mask       11110000 -> NM
+        ;;  3. and neg.mask with dst XXXX0000 -> NM & D
+        ;;  4. or with src and mask  XXXX1101 -> NM & D | S & M
+        ;; 
 _gsetpage:
         ;; pop arguments from the stack
         ld      iy,#4
