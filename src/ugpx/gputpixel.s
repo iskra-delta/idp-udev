@@ -13,19 +13,17 @@
         .include "gdp.inc"
 
         .area	_CODE
-        ;; ----------------------------------------
-		;; void gputpixel(g_t *g, coord x, coord y)
-        ;; ----------------------------------------
+        ;; --------------------------------
+		;; void gputpixel(coord x, coord y)
+        ;; --------------------------------
         ;; places pixel at x,y
 _gputpixel:
         pop     bc                      ; return address
-        pop     de                      ; throwaway g
         pop     hl                      ; hl=x
         pop     de                      ; de=y
         ;; restore stack
         push    de
         push    hl
-        push    de
         push    bc
         call    gdp_set_xy
         ;; and draw pixel

@@ -11,9 +11,9 @@
         .globl  _gexit
 
         .area	_CODE
-        ;; ------------------
-		;; void gexit(g_t* g)
-        ;; ------------------
+        ;; ------------
+		;; void gexit()
+        ;; ------------
         ;; exit graphics mode.
         ;; affect:  a, hl, de, flags
 _gexit::

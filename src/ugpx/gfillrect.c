@@ -11,11 +11,11 @@
  */
 #include <ugpx.h>
 
-void gfillrect(g_t *g, rect_t *r) {
+void gfillrect(rect_t *r) {
     if (r->y1 > r->y0)
         for (int y=r->y0; y<=r->y1; y++)
-            gdrawline(g, r->x0, y, r->x1, y);
+            gdrawline(r->x0, y, r->x1, y);
     else
         for (int y=r->y1; y<r->y0; y++)
-            gdrawline(g, r->x0, y, r->x1, y);
+            gdrawline(r->x0, y, r->x1, y);
 }

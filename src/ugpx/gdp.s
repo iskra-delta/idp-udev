@@ -16,6 +16,7 @@
         .globl  gdp_exec_cmd
         .globl  gdp_wait_ready
         .globl  gdp_wait_vbl
+        .globl  gdp_get_delta_cmd
 
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
@@ -90,3 +91,59 @@ gdp_set_xy:
         pop     hl
         pop     de
         ret
+
+        ;; given 16 bit signed
+        ;; dx and dy, this routine
+        ;; returns a command to draw
+        ;; NOTE:
+        ;;  dx and dy are not limited to 255
+        ;;  for this function, they must be
+        ;;  signed 16 bit numbers
+        ;; a delta line in a
+        ;; inputs:  hl=dx, de=dy
+        ;; output:  a=delta command
+        ;; affects: af, bc
+gdp_get_delta_cmd:
+        ;; first grab both sign bits
+        ld      a,h                     ; check if hl is neg.
+        and     #0b10000000             ; sign bit?
+        rlca                            ; rotate sign bit to...
+        rlca                            ; ...bit 1
+        ld      b,a                     ; store sign of x
+        ld      a,d                     ; the same for de...
+        and     #0b10000000
+        rlca                            
+        rlca
+        rlca
+        ld      c,a                     ; sotre sign of y
+        ;; now find out if dx=0 or dy=0
+        ld      a,h
+        or      l
+        jr      z,gdp_gd_ign_dx         ; ignore dx?
+        ld      a,d
+        or      e
+        jr      z,gdp_gd_ign_dy         ; ignore dy?
+        ;; if we are here there's no ignore so
+        ;; create command in a
+        ;; NOTE: because y is reverse axis, you need
+        ;;       to invert dy sign bit!
+        ld      a,#0b00010001           ; draw command
+        or      b                       ; add dx sign
+        or      c                       ; add dy sign
+        xor     #0b00000100             ; invert dy bit
+        ret
+        ;; ignore dx command...
+gdp_gd_ign_dx:
+        ld      a,c                     ; dy to a
+        rrca                            ; move into dx
+        or      c                       ; set dy again!
+        xor     #0b00000100             ; negate it (neg. axis)
+        or      #0b00010000             ; and set the command bit
+        ret
+gdp_gd_ign_dy:
+        ld      a,b                     ; dx to a
+        rlca                            ; move into dy
+        or      b                       ; set dx again!
+        or      #0b00010000             ; and set the command bit
+        ret
+

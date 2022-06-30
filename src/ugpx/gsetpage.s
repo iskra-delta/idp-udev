@@ -13,9 +13,9 @@
         .include "gdp.inc"
 
         .area	_CODE
-        ;; -----------------------------------------------
-		;; void gsetpage(g_t *g, uint8_t ops, uint8_t page)
-        ;; -----------------------------------------------
+        ;; ----------------------------------------
+		;; void gsetpage(uint8_t ops, uint8_t page)
+        ;; ----------------------------------------
         ;; sets the current page, ops are flags and can be
         ;; combined (i.e.PG_WRITE|PG_DISPLAY), and the 
         ;; page is 0 or 1
@@ -39,7 +39,7 @@
         ;; 
 _gsetpage:
         ;; pop arguments from the stack
-        ld      iy,#4
+        ld      iy,#2
         add     iy,sp                   ; spo points to op
         ;; extend page number to 2nd bit
         ld      a,1(iy)                 ; page to a

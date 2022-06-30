@@ -14,9 +14,9 @@
         .include "gdp.inc"
 
         .area	_CODE
-        ;; -------------------------------
-		;; g_t* _ginit(uint8_t resolution)
-        ;; -------------------------------        
+        ;; ------------------------------
+		;; void ginit(uint8_t resolution)
+        ;; ------------------------------        
         ;; initializes the ef9367, sets the resolution to desired
         ;; mode. disclaimer: this command does not waiting for gdp 
         ;; bcs no command should be executing at time of init!

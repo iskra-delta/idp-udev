@@ -11,17 +11,15 @@
         .globl  _gxy
 
         .area	_CODE
-        ;; ----------------------------------
-		;; void gxy(g_t *g, coord x, coord y)
-        ;; ----------------------------------
+        ;; --------------------------
+		;; void gxy(coord x, coord y)
+        ;; --------------------------
 _gxy:
         pop     bc                      ; ret addr
-        pop     hl                      ; g (ignore)
         pop     hl                      ; hl=x
         pop     de                      ; de=y
         ;; restore stack
         push    de
-        push    hl
         push    hl
         push    bc
         call    gdp_set_xy

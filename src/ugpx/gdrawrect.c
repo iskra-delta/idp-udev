@@ -11,9 +11,9 @@
  */
 #include <ugpx.h>
 
-void gdrawrect(g_t *g, rect_t *r) {
-    gdrawline(g, r->x0, r->y0, r->x1, r->y0);
-    gdrawline(g, r->x0, r->y0, r->x0, r->y1);
-    gdrawline(g, r->x1, r->y0, r->x1, r->y1);
-    gdrawline(g, r->x0, r->y1, r->x1, r->y1); 
+void gdrawrect(rect_t *r) {
+    gdrawline(r->x0, r->y0, r->x1, r->y0);
+    gdrawline(r->x0, r->y0, r->x0, r->y1);
+    gdrawline(r->x1, r->y0, r->x1, r->y1);
+    gdrawline(r->x0, r->y1, r->x1, r->y1); 
 }

@@ -12,9 +12,9 @@
         .globl  gpg_raw
 
         .area	_CODE
-        ;; ------------------------------------------------------
-		;; void gputglyph(g_t *g, void* glyph, coord x, coord y)
-        ;; ------------------------------------------------------
+        ;; ---------------------------------------------
+		;; void gputglyph(void* glyph, coord x, coord y)
+        ;; ---------------------------------------------
         ;; draws glyph at x,y without clipping!
         ;; recognizes standard glyphs from libgpx
 _gputglyph:
@@ -24,7 +24,6 @@ _gputglyph:
         ;;  hl'=x
         ;;  de'=y
         pop     bc                      ; return address
-        pop     de                      ; g
         pop     hl                      ; glyph address
         exx
         pop     hl                      ; hl'=x
@@ -34,7 +33,6 @@ _gputglyph:
         push    hl
         exx
         push    hl
-        push    de
         push    bc
 gpg_raw:
         ;; now get number of bytes into bc

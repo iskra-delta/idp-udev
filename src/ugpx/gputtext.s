@@ -14,14 +14,13 @@
         
         .area	_CODE
         ;; ---------------------------------------------------------------
-		;; void gputtext(g_t *g, void *font, char *text, coord x, coord y)
+		;; void gputtext(void *font, char *text, coord x, coord y)
         ;; ---------------------------------------------------------------
         ;; write string to display at x,y
         ;; affect:  a, 
 _gputtext:
         ;; get args from stack
         pop     bc                      ; return address
-        pop     de                      ; g (ignored, disposed)
         pop     hl                      ; font
         pop     iy                      ; string
         exx
@@ -34,7 +33,6 @@ _gputtext:
         exx
         push    iy
         push    hl
-        push    de
         push    bc
         ;; obtain first ascii to b, and hor spacing to c
         ;; point hl to glyph offset table

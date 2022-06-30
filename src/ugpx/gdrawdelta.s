@@ -11,16 +11,14 @@
         .globl  _gdrawdelta
 
         .area	_CODE
-        ;; -----------------------------------------------
-		;; void gdrawdelta(g_t *g, uint8_t dx, uint8_t dy)
-        ;; -----------------------------------------------
+        ;; ---------------------------------------
+		;; void gdrawdelta(uint8_t dx, uint8_t dy)
+        ;; ---------------------------------------
         ;; idealised quick draw delta line 
 _gdrawdelta:
         pop     de                      ; ret addr
-        pop     hl                      ; g(ignore)
         pop     bc                      ; c=dx, b=dy
         push    bc
-        push    hl
         push    de
         ;; check the sign of dy
         xor     a                       ; a=0

@@ -18,7 +18,6 @@
 
         ;; ---------------------
         ;; void gdrawline(
-        ;;     g_t *g,
         ;;     unsigned int  x0, 
         ;;     unsigned int  y0, 
         ;;     unsigned int  x1,
@@ -26,20 +25,22 @@
         ;; ---------------------  
 _gdrawline:
         ;; pick parameters
-        ld      iy,#4                   ; skip over g
+        ld      iy,#2                   ; skip over g
         add     iy,sp
+        ;; to support HW patterns we'll draw line
+        ;; from back to front!
 gdrawlineraw:
-        ;; first goto x,y
-        ld      l,(iy)                  ; hl=x0
-        ld      h,1(iy)         
-        ld      e,2(iy)                 ; hl=y0
-        ld      d,3(iy)
+        ;; first goto x1,y1
+        ld      l,4(iy)                 ; hl=x1
+        ld      h,5(iy)         
+        ld      e,6(iy)                 ; de=y1
+        ld      d,7(iy)
         call    gdp_set_xy
         ;; are x coordinates the same?
         xor     a                       ; clear carry
         ;; hl is already x0
-        ld      e,4(iy)                 ; de=x1
-        ld      d,5(iy)
+        ld      e,(iy)                  ; de=x0
+        ld      d,1(iy)
         sbc     hl,de                   ; x0==x1?
         push    hl                      ; dx on stack
         push    af                      ; flags on stack
@@ -57,10 +58,10 @@ gdl_diff_x:
         jr      z,gdl_hline             ; horizontal line
         jp      gdl_line
 gdl_test_yeq:
-        ld      l,2(iy)                 ; hl=y0
-        ld      h,3(iy)
-        ld      e,6(iy)                 ; de=y1
-        ld      d,7(iy)
+        ld      l,6(iy)                 ; hl=y1
+        ld      h,7(iy)
+        ld      e,2(iy)                 ; de=y0
+        ld      d,3(iy)
         or      a                       ; clear carry flag...
         sbc     hl,de                   ; x0==x1?
         ret
@@ -160,6 +161,68 @@ gdl_abs_hl:
         sub     h 
         ld      h,a
         ret
-        ;; TODO: finish the line.
 gdl_line:
+        ;; restore stack
+        pop     af                      ; ignore flags
+        pop     hl                      ; hl=dy 
+        call    gdl_abs_hl              ; hl=abs(dy)
+        ex      de,hl                   ; de=abs(dy)
+        pop     af                      ; get flags
+        pop     hl                      ; hl=dx
+        call    gdl_abs_hl              ; hl=abs(dx)
+        ;; which is larger? dx or dy?
+        xor     a                       ; clear carry, a=0
+        sbc     hl,de                   ; dx=dx-dy
+        jr      c,gdll_dy_larger        ; dy is larger
+        ;; dx is larger
+        inc     a                       ; a=1 means dx is larger
+        add     hl,de                   ; restore hl
+        jr      gdll_recurse
+gdll_dy_larger:
+        add     hl,de                   ; restore hl
+        ex      de,hl                   ; hl=abs(dy)...longer
+        ;; hl=longer coord., de=shorter coord...
+gdll_recurse:
+        push    de
+        ld      de,#(2*GDP_MAX_DELTA)   ; 255*2=510
+        sbc     hl,de                   ; compare to hl
+        jr      nc,gdll_split4          ; split to 4 lines!
+        add     hl,de                   ; restore hl
+        ld      de,#GDP_MAX_DELTA       ; 255
+        sbc     hl,de                   ; compare to hl
+        jr      nc,gdll_split2          ; split to 2 lines
+
+
+
+
+gdll_nosplit:
+        ;; else only one delta line.
+        pop     de                      ; restore de
+        cp      #1                      ; dx fine
+        jr      z,gdllns_xfine
+        ld      c,e                     ; c=dx
+        ld      b,l                     ; b=dy
+        jr      gdllns_dxdy             ; and draw line
+gdllns_xfine:
+        ;; set dx and dy first
+        ld      b,e
+        ld      c,l
+gdllns_dxdy:
+        call    gdp_set_dxdy            ; set dx and dy
+        ;; and finally, draw!
+gdllns_draw:
+        pop     af                      ; get command!
+        jp      gdp_exec_cmd            ; and execute
         ret
+
+
+
+gdll_split2:
+gdll_split4:
+        pop     de                      ; restore de
+        ret
+
+
+gdll_lines:
+        .db     0x00
+        .ds     10                      ; 10 bytes

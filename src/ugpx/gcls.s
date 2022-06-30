@@ -13,9 +13,9 @@
         .include "gdp.inc"
 
         .area	_CODE
-        ;; -----------------
-		;; void gcls(g_t *g)
-        ;; -----------------
+        ;; -----------
+		;; void gcls()
+        ;; -----------
 		;; clear graphic screen
         ;; affect:  af
 _gcls:
