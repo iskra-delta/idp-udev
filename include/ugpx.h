@@ -69,7 +69,7 @@ extern void gsetcolor(color c);
 
 /* draw line (optimized!) */
 extern void gdrawline(coord x0, coord y0, coord x1, coord y1);
-extern void gdrawdelta(uint8_t dx, uint8_t dy);
+extern void gdrawdelta(coord dx, coord dy);
 
 /* rectangles */
 extern void gdrawrect(rect_t *r);
