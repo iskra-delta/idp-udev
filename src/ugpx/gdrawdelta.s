@@ -26,11 +26,12 @@ _gdrawdelta:
         ;; command into a
         call    gdp_get_delta_cmd
         push    af                      ; sotre command
-        call    abs_hl                  ; hl=abs(dx)
+        call    abs_hl                  ; hl=abs(dx)       
         ex      de,hl                   ; de=abs(dx)
         call    abs_hl                  ; hl=abs(dy)
         ld      b,l                     ; b=y
         ld      c,e                     ; c=x
+        call    gdp_set_dxdy            ; set dx,dy
         pop     af                      ; a=command
         call    gdp_exec_cmd            ; draw!
         ret

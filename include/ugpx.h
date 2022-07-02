@@ -55,7 +55,7 @@ extern void gputglyph(void* glyph, coord x, coord y);
 extern void gmeasureglyph(void *glyph, coord *x, coord *y);
 
 /* print string */
-extern uint16_t gputtext(void *font, char *text, coord x, coord y);
+extern void gputtext(void *font, char *text, coord x, coord y);
 
 /* set color, sets drawing color 
    NOTES: 
@@ -72,6 +72,7 @@ extern void gdrawline(coord x0, coord y0, coord x1, coord y1);
 extern void gdrawdelta(coord dx, coord dy);
 
 /* rectangles */
+extern rect_t *gnormrect(rect_t *r);
 extern void gdrawrect(rect_t *r);
 extern void gfillrect(rect_t *r);
 

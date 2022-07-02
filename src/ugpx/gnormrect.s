@@ -18,17 +18,14 @@
 
         ;; ---------------------
         ;; rect_t *gnormrect(
-        ;;     g_t *g,
         ;;     rect_t *r)
         ;; ---------------------  
 _gnormrect:
         ;; get args
         pop     bc                      ; ret address
-        pop     de                      ; g
         pop     iy                      ; rect address
         ;; restore stack
         push    iy
-        push    de
         push    bc
         ;; iy=pointer to rect...
 gnormrectraw:
