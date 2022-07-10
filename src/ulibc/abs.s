@@ -9,6 +9,7 @@
         .module abs
 
         .globl  _abs
+        .globl  absraw
 
         .area   _CODE
         ;; -------------- 
@@ -21,6 +22,7 @@ _abs:
         ;; restore regs!
         push    hl
         push    de
+absraw:
         ;; abs hl
         bit     7,h
         ret     z
