@@ -16,6 +16,7 @@
         .globl  __modschar
         .globl  __moduint
         .globl  __modsint
+        .globl  __divsint
         .globl  ___sdcc_call_hl
 
         .area   _CODE
@@ -195,5 +196,13 @@ __get_remainder::
         sub     a, h
         ld      h, a
         ret
+__divsint::
+        pop     af
+        pop     hl
+        pop     de
+        push    de
+        push    hl
+        push    af
+        jp      __div16
 ___sdcc_call_hl:
 	    jp	(hl)
