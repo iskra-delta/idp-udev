@@ -52,10 +52,13 @@ extern void gputpixel(coord x, coord y);
 extern void gputglyph(void* glyph, coord x, coord y);
 
 /* return LINE or TINY glyph dimensions */
-extern void gmeasureglyph(void *glyph, coord *x, coord *y);
+extern void gmeglyph(void *glyph, coord *w, coord *h);
 
 /* print string */
 extern void gputtext(void *font, char *text, coord x, coord y);
+
+/* get text size */
+extern void gmetext(void *font, char *text, coord *w, coord *h);
 
 /* set color, sets drawing color 
    NOTES: 
