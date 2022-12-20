@@ -1,12 +1,12 @@
-		;; ginit.s
+        ;; ginit.s
         ;; 
         ;; initialize gpx
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 06.06.2022    tstih
-		.module ginit
+        ;; 06.06.2022    tstih
+        .module ginit
 
         .globl  _ginit
         .globl  gdata
@@ -15,7 +15,7 @@
 
         .area	_CODE
         ;; ------------------------------
-		;; void ginit(uint8_t resolution)
+        ;; void ginit(uint8_t resolution)
         ;; ------------------------------        
         ;; initializes the ef9367, sets the resolution to desired
         ;; mode. disclaimer: this command does not waiting for gdp 
