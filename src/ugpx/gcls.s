@@ -1,12 +1,12 @@
-		;; gcls.s
+        ;; gcls.s
         ;; 
         ;; clear current (graphics) page
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 06.06.2022    tstih
-		.module gcls
+        ;; 06.06.2022    tstih
+        .module gcls
 
         .globl  _gcls
 
@@ -14,9 +14,9 @@
 
         .area	_CODE
         ;; -----------
-		;; void gcls()
+        ;; void gcls()
         ;; -----------
-		;; clear graphic screen
+        ;; clear graphic screen
         ;; affect:  af
 _gcls:
 		ld      a,#EF9367_CMD_CLS

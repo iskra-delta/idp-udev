@@ -1,12 +1,12 @@
-		;; gsetpage.s
+        ;; gsetpage.s
         ;; 
         ;; set write and/or display page
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 18.06.2022    tstih
-		.module gsetpage
+        ;; 18.06.2022    tstih
+        .module gsetpage
 
         .globl  _gsetpage
 
@@ -14,7 +14,7 @@
 
         .area	_CODE
         ;; ----------------------------------------
-		;; void gsetpage(uint8_t ops, uint8_t page)
+        ;; void gsetpage(uint8_t ops, uint8_t page)
         ;; ----------------------------------------
         ;; sets the current page, ops are flags and can be
         ;; combined (i.e.PG_WRITE|PG_DISPLAY), and the 

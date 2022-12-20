@@ -1,18 +1,18 @@
-		;; gexit.s
+        ;; gexit.s
         ;; 
         ;; exit gpx.
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 06.06.2022    tstih
-		.module gexit
+        ;; 06.06.2022    tstih
+        .module gexit
 
         .globl  _gexit
 
         .area	_CODE
         ;; ------------
-		;; void gexit()
+        ;; void gexit()
         ;; ------------
         ;; exit graphics mode.
 _gexit::

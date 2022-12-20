@@ -46,14 +46,60 @@ To set the display/write page, call the [gsetpage()](gsetpage.s) function.
 extern void gsetpage(uint8_t op, uint8_t page);
 ~~~
 Use the `PG_DISPLAY` for the `op` argument to set the page 
-shown to you, and the `PG_WRITE` to select the page your commands draw on. You can also set both at the same time,
-like this:
+shown to you, and the `PG_WRITE` to select the page your commands draw on. The Iskra Delta Partner has two pages.
+Use 0 or 1 for the page argument. 
+You can set both pages at the same time, like this:
 ~~~cpp
 gsetpage(PG_DISPLAY|PG_WRITE,0);
 ~~~
+By quickly switching between two pages, you can implement the *double buffering* technique in games.
 
-> The Iskra Delta Partner has two pages: 0 and 1. By drawing on both and quickly switching you can implement *double buffering* in games.
+## Clearing the screen
 
+Use the [gcls()](gcls.s) function to clear the display page. When initializing graphics, the pages are in an inconsistent state. We recommend clearing both pages:
+
+~~~cpp
+gsetpage(PG_WRITE|PG_DISPLAY,1);
+gcls();
+gsetpage(PG_WRITE|PG_DISPLAY,0);
+gcls();
+~~~
+
+## Setting the ink color
+
+You can set the color to foreground, background, and none by calling the [gsetcolor()](gsetcolor.s) function. The foreground color is white, the background color is black, and none means no drawing, just the location change of the graphics cursor.
+
+~~~cpp
+/* set color, sets drawing color 
+   NOTES: 
+    when drawing glyph this color
+    is used to draw lines and its
+    inverse is used to draw empty space */
+#define CO_NONE         0x00
+#define CO_FORE         0x01
+#define CO_BACK         0x02
+extern void gsetcolor(color c);
+~~~
+
+## Moving to a position
+
+Some drawing functions are relative, and some are absolute. Relative coordinates need a point of origin. We call this
+point the graphics cursor. After clearing the screen, the cursor
+location is (0,0). You can move the graphics cursor to a new
+location using the [gxy()](gxy.s) function.
+~~~cpp
+/* manually move graphics cursor to x,y */
+extern void gxy(coord x, coord y);
+~~~
+The ef9367 chip implements a reversed y-axis. To mitigate it - the library subtracts the y coordinate from the y-axis for every operation. This hack guarantees that the (0,0) location is in the top-left corner of the screen and the coordinates behave as expected.
+
+## Drawing a pixel
+
+## Drawing a line
+
+### Draw a relative line
+
+### Draw an absolute line
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
