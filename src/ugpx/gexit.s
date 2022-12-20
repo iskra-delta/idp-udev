@@ -15,7 +15,6 @@
 		;; void gexit()
         ;; ------------
         ;; exit graphics mode.
-        ;; affect:  a, hl, de, flags
 _gexit::
         ;; restoring AVDC cursor is not required.
         ;; it is done by the CP/M warm reset..

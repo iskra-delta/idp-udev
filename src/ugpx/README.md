@@ -14,7 +14,8 @@ Use this library in conjunction with the *μsdcc* and the
 
 ## Initialize the library
 
-You initiate the library by calling the `ginit()` function.
+You initiate the library by calling the 
+`[ginit()](ginit.s)` function.
 ~~~cpp
 /* enter graphics mode */
 #define RES_512x256     0xff
@@ -26,6 +27,10 @@ This function will initialize the ef9367 chip and set the resolution.
 
  > Unfortunately, you can't effectively use the highest resolution because the Iskra Delta Partner refresh frequency is too low. As a result, the screen will blink like a Christmas tree if you draw something complex on it. And the 1024x256 mode has rectangular pixels and a 4:1 ratio. So the library also allows you to use the recommended *emulated* 512x256 pixel resolution. The latter is not a native resolution of the ef9367 chip. It is produced by double painting each horizontal pixel in the 1024x256 mode.
 
+## Exiting the library
+
+When your program is finished, it should call the `gexit()`
+function. 
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
