@@ -15,7 +15,7 @@ Use this library in conjunction with the *μsdcc* and the
 ## Initialize the library
 
 You initiate the library by calling the 
-`[ginit()](ginit.s)` function.
+[ginit()](ginit.s) function.
 ~~~cpp
 /* enter graphics mode */
 #define RES_512x256     0xff
@@ -29,8 +29,31 @@ This function will initialize the ef9367 chip and set the resolution.
 
 ## Exiting the library
 
-When your program is finished, it should call the `gexit()`
-function. 
+To leave the graphics mode, call the [gexit()](gexit.s) function. 
+~~~cpp
+/* leave graphics mode */
+extern void gexit();
+~~~
+At present, this function doesn't do anything, but sometimes in the future, it might.
+
+## Set graphics page
+
+To set the display/write page, call the [gsetpage()](gsetpage.s) function.
+~~~cpp
+/* pages */
+#define PG_DISPLAY  1
+#define PG_WRITE    2
+extern void gsetpage(uint8_t op, uint8_t page);
+~~~
+Use the `PG_DISPLAY` for the `op` argument to set the page 
+shown to you, and the `PG_WRITE` to select the page your commands draw on. You can also set both at the same time,
+like this:
+~~~cpp
+gsetpage(PG_DISPLAY|PG_WRITE,0);
+~~~
+
+> The Iskra Delta Partner has two pages: 0 and 1. By drawing on both and quickly switching you can implement *double buffering* in games.
+
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
