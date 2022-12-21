@@ -18,6 +18,11 @@
 typedef int coord;
 typedef uint8_t color;
 
+typedef struct dim_s {                  /* the dimensions */
+    coord w;
+    coord h;
+} dim_t;
+
 typedef struct rect_s {                 /* the rectangle */
 	coord x0;
 	coord y0;

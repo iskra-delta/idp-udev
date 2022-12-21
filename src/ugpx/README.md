@@ -158,14 +158,12 @@ extern rect_t *gnormrect(rect_t *r);
 Use the [gdrawrect()](gdrawrect.c) function to draw a rectangle.
 ~~~cpp
 extern void gdrawrect(rect_t *r);
-extern void gfillrect(rect_t *r);
 ~~~
 
 #### Fill rectangle
 
 Use the [gfillrect()](gfillrect.c) function to draw a filled rectangle.
 ~~~cpp
-extern void gdrawrect(rect_t *r);
 extern void gfillrect(rect_t *r);
 ~~~
 
@@ -173,7 +171,14 @@ extern void gfillrect(rect_t *r);
 
 Because the *ef9367* chip is only good at drawing lines, the Micro Graphics library supports only two glyph types: tiny glyph, and line glyph. 
 
-The [gputglyph()](gputglyph.s) function supports the current color and combines it with the glyph color. The following table shows the result.
+### Drawing a glyph
+
+Use the [gputglyph()](gputglyph.s) function to draw a glyph.
+~~~cpp
+/* draw unclipped LINE or TINY glyph. */
+extern void gputglyph(void* glyph, coord x, coord y);
+~~~
+The `gputglyph()` supports the current color and combines it with the glyph color. The following table shows the result.
 
 | current color | glyph color | result     | 
 |---------------|-------------|------------|
@@ -182,13 +187,36 @@ The [gputglyph()](gputglyph.s) function supports the current color and combines 
 | foreground    | background  | background | 
 | background    | foreground  | background | 
 | foreground    | foreground  | foreground | 
-| background    | background  | background | 
+| background    | background  | foreground | 
 
+### Measuring a glyph
 
+You can measure a glyph by calling the `gmeglyph()` function. It returns the width and the height of the glyph.
+
+~~~cpp
+typedef struct dim_s {                  /* the dimensions */
+    coord w;
+    coord h;
+} dim_t;
+extern dim_t *gmeglyph(glyph_t *g, dim_t*d);
+~~~
 
 ## Fonts
 
 In the Micro Graphics library, a font is a set of glyphs with some metadata. Font drawing is implemented using the glyph drawing functions.
+
+The two functions to work with fonts are:
+
+~~~cpp
+/* print string */
+extern void gputtext(void *font, char *text, coord x, coord y);
+/* get text size */
+extern dim_t *gmetext(void *font, char *text, dim_t *d);
+~~~
+
+# Glyph and font format(s)
+
+See: [libgpx](https://github.com/tstih/libgpx)
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
