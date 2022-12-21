@@ -218,6 +218,10 @@ extern dim_t *gmetext(void *font, char *text, dim_t *d);
 
 See: [libgpx](https://github.com/tstih/libgpx)
 
+# To-do
+
+The glyph and text measuring functions are not implemented yet.
+
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
 
