@@ -1,19 +1,19 @@
-		;; gputglyph.s
+        ;; gputglyph.s
         ;; 
         ;; draw a glyph
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 06.06.2022    tstih
-		.module gputglyph
+        ;; 06.06.2022    tstih
+        .module gputglyph
 
         .globl  _gputglyph
         .globl  gpg_raw
 
         .area	_CODE
         ;; ---------------------------------------------
-		;; void gputglyph(void* glyph, coord x, coord y)
+        ;; void gputglyph(void* glyph, coord x, coord y)
         ;; ---------------------------------------------
         ;; draws glyph at x,y without clipping!
         ;; recognizes standard glyphs from libgpx
@@ -154,7 +154,6 @@ gpgl_draw:
         ;; and call command
         call    gdp_exec_cmd
         ret
-
         ;; draw tiny glyph
 gpg_tiny:
         call    gpgt_set_palette        ; get the pallete.

@@ -18,14 +18,14 @@ You initiate the library by calling the
 [ginit()](ginit.s) function.
 ~~~cpp
 /* enter graphics mode */
-#define RES_512x256     0xff
 #define RES_1024x256    0x00
 #define RES_1024x512    0x18
 extern void ginit(uint8_t resolution);
 ~~~
 This function will initialize the ef9367 chip and set the resolution. 
 
- > Unfortunately, you can't effectively use the highest resolution because the Iskra Delta Partner refresh frequency is too low. As a result, the screen will blink like a Christmas tree if you draw something complex on it. And the 1024x256 mode has rectangular pixels and a 4:1 ratio. So the library also allows you to use the recommended *emulated* 512x256 pixel resolution. The latter is not a native resolution of the ef9367 chip. It is produced by double painting each horizontal pixel in the 1024x256 mode.
+ > Unfortunately, you can't effectively use the highest resolution because the Iskra Delta Partner refresh frequency is too low. As a result, the screen will blink like a Christmas tree if you draw something complex on it. And the 1024x256 mode has rectangular pixels and a 4:1 ratio. 
+ Thus, many games implement the *emulated* 512x256 pixel resolution. The latter is not a native resolution of the ef9367 chip. It is produced by double painting each horizontal pixel in the 1024x256 mode.
 
 ## Exiting the library
 
@@ -78,7 +78,15 @@ You can set the color to foreground, background, and none by calling the [gsetco
 #define CO_NONE         0x00
 #define CO_FORE         0x01
 #define CO_BACK         0x02
+typedef uint8_t color;
 extern void gsetcolor(color c);
+~~~
+
+## The coordinates
+
+Micro Graphics functions use signed integer coordinates. Hence, the coordinates can be used to store off-screen locations. There is no automatic handling of off-screen coordinates. Your code is responsible for that. The coordinates are defined as:
+~~~cpp
+typedef int coord;
 ~~~
 
 ## Moving to a position
@@ -95,11 +103,92 @@ The ef9367 chip implements a reversed y-axis. To mitigate it - the library subtr
 
 ## Drawing a pixel
 
+The function for drawing a pixel at x,y is [gputpixel()](gputpixel.s). 
+~~~cpp
+/* draw pixel */
+extern void gputpixel(coord x, coord y);
+~~~
+This function respects the current color.
+
 ## Drawing a line
+
+Micro Graphics library comes with two line drawing functions.  Both respect the current color.
 
 ### Draw a relative line
 
+You can draw a relative line with x and y coordinates ranging from -255 to 255 by using the [gdrawdelta()](gdrawdelta.s) function.
+~~~cpp
+extern void gdrawdelta(coord dx, coord dy);
+~~~
+
 ### Draw an absolute line
+
+You can also draw a line with absolute coordinates of any length by using the [gdrawline()](gdrawline.s) function.
+~~~cpp
+extern void gdrawline(coord x0, coord y0, coord x1, coord y1);
+~~~
+ > This function recursively chops lines of length > 256 to half until they are shorter than 256 pixels, and then uses the `gdrawdelta()` function to draw them.
+
+## Drawing shapes
+
+Most shape drawing functions are implemented in C and combine drawing algorithms and atomic drawing functions `gputpixel()` and `gdrawdelta()`. Only a few functions are optimized and use the hardware directly.
+
+### Rectangles
+
+Rectangle drawing functions use the `rect_t` structure.
+~~~cpp
+typedef struct rect_s {                 /* the rectangle */
+	coord x0;
+	coord y0;
+	coord x1;
+	coord y1;
+} rect_t;
+~~~
+ > The `gdrawline()` function that all rectangle functions use is optimized for fast drawing of horizontal and vertical lines.
+
+#### Normalized rectangle
+
+A normalized rectangle is a rectangle with x0 < x1 and y0 < y1. You can normalize a rectangle by passing it to the [gnormrect()](gnormrect.s) function.
+~~~cpp
+extern rect_t *gnormrect(rect_t *r);
+~~~
+
+#### Draw rectangle
+
+Use the [gdrawrect()](gdrawrect.c) function to draw a rectangle.
+~~~cpp
+extern void gdrawrect(rect_t *r);
+extern void gfillrect(rect_t *r);
+~~~
+
+#### Fill rectangle
+
+Use the [gfillrect()](gfillrect.c) function to draw a filled rectangle.
+~~~cpp
+extern void gdrawrect(rect_t *r);
+extern void gfillrect(rect_t *r);
+~~~
+
+## Glyphs
+
+Because the *ef9367* chip is only good at drawing lines, the Micro Graphics library supports only two glyph types: tiny glyph, and line glyph. 
+
+The [gputglyph()](gputglyph.s) function supports the current color and combines it with the glyph color. The following table shows the result.
+
+| current color | glyph color | result     | 
+|---------------|-------------|------------|
+| none          | any         | none       | 
+| any           | none        | none       | 
+| foreground    | background  | background | 
+| background    | foreground  | background | 
+| foreground    | foreground  | foreground | 
+| background    | background  | background | 
+
+
+
+## Fonts
+
+In the Micro Graphics library, a font is a set of glyphs with some metadata. Font drawing is implemented using the glyph drawing functions.
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg

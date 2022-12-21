@@ -1,18 +1,18 @@
 		;; gdrawdelta.s
         ;; 
         ;; delta drawing functions!
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 17.06.2022    tstih
-		.module gdrawdelta
+        ;; 17.06.2022    tstih
+        .module gdrawdelta
 
         .globl  _gdrawdelta
 
         .area	_CODE
         ;; -------------------------------
-		;; void gdrawdelta(int dx, int dy)
+        ;; void gdrawdelta(int dx, int dy)
         ;; -------------------------------
         ;; idealised quick draw delta line 
 _gdrawdelta:

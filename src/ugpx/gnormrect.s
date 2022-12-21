@@ -1,13 +1,13 @@
-		;; gnormrect.s
+        ;; gnormrect.s
         ;; 
         ;; normalize rectangles' coordinates
         ;; after normalization x0 < x1 and y0 < y1
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 22.03.2022    tstih
-		.module gnormrect       
+        ;; 22.03.2022    tstih
+        .module gnormrect       
 
         .globl  _gnormrect
         .globl  gnormrectraw

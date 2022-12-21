@@ -32,7 +32,6 @@ typedef struct g_s {
 } g_t;
 
 /* enter graphics mode */
-#define RES_512x256     0xff            /* TODO: implement! */
 #define RES_1024x256    0x00
 #define RES_1024x512    0x18
 extern void ginit(uint8_t resolution);

@@ -1,12 +1,12 @@
-		;; gputtext.s
+        ;; gputtext.s
         ;; 
         ;; write string
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 13.06.2022    tstih
-		.module gputtext
+        ;; 13.06.2022    tstih
+        .module gputtext
 
         .globl  _gputtext
 
@@ -14,7 +14,7 @@
         
         .area	_CODE
         ;; ---------------------------------------------------------------
-		;; void gputtext(void *font, char *text, coord x, coord y)
+        ;; void gputtext(void *font, char *text, coord x, coord y)
         ;; ---------------------------------------------------------------
         ;; write string to display at x,y
         ;; affect:  a, 
