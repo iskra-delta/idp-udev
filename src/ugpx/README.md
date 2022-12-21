@@ -7,6 +7,24 @@ the Iskra Delta Partner. It is optimized for computer
 games and lacks sophisticated features such as clipping,
 scaling, etc.
 
+# Table of contents
+
+- [Using Micro Graphics](#using-micro-graphics)
+  - [Initialize the library](#initialize-the-library)
+  - [Exiting the library](#exiting-the-library)
+  - [Set graphics page](#set-graphics-page)
+  - [Clearing the screen](#clearing-the-screen)
+  - [Setting the ink color](#setting-the-ink-color)
+  - [The coordinates](#the-coordinates)
+  - [Moving to a position](#moving-to-a-position)
+  - [Drawing a pixel](#drawing-a-pixel)
+  - [Drawing a line](#drawing-a-line)
+  - [Drawing shapes](#drawing-shapes)
+  - [Glyphs](#glyphs)
+  - [Fonts](#fonts)
+- [Glyph and font format(s)](#glyph-and-font-formats)
+- [To-do](#to-do)
+
 # Using Micro Graphics
 
 Use this library in conjunction with the *μsdcc* and the
