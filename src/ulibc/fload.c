@@ -25,9 +25,11 @@ extern void *memcpy(void *dest, const void * src, unsigned int n);
 /* load entire file into memory 
     if out == NULL then allocates the block, 
     else uses existing block
+    if *flen==0 reads to end, else reads flen bytes
+    pos = offset from start
     we assume successfull memory allocation!
 */
-void *fload(char *path, void* out, unsigned int *flen) {
+void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
 
     /* return value */
     void *retval=NULL;
@@ -61,10 +63,15 @@ void *fload(char *path, void* out, unsigned int *flen) {
     if (result.reta==BDOS_FAILURE) goto fload_done;
     file_opened=1; /* file is open... */
   
-    /* Gef file length */
-    bdosret(F_SIZE,(unsigned int)fcb,&result);
-    if (result.reta==BDOS_FAILURE) goto fload_done;
-    *flen=fcb->rrec * DMA_SIZE;
+    /* Gef full file length into flen */
+    if ((*flen)==0) {
+        bdosret(F_SIZE,(unsigned int)fcb,&result);
+        if (result.reta==BDOS_FAILURE) goto fload_done;
+        *flen=fcb->rrec * DMA_SIZE;
+    }
+
+    /* If skip then reduce flen */
+    if (pos>0) (*flen) -= pos;
 
     /* if out is NULL then allocate out find out file size */
     if (out==NULL) {
@@ -79,16 +86,28 @@ void *fload(char *path, void* out, unsigned int *flen) {
         problematic because i can't restore prev. dma address */
     bdos(F_DMAOFF,(unsigned int)dma);
 
+    /* seek to pos and stay at that record */
+    unsigned int rec = pos / DMA_SIZE;
+    fcb->rrec = rec;
+    bdosret(F_READRAND, (unsigned int)fcb, &result);
+    if (result.reta == BDOS_FAILURE) goto fload_done;
+
+    /* now read! */
     unsigned int bcount = 0; /* block count */
+    unsigned int dma_offs = pos % DMA_SIZE; /* where are we? */
     unsigned char *pout=(unsigned char *)out;
-    while (bcount<fcb->rrec) {
+    while (bcount < (*flen)) {
         /* read a block */
         bdosret(F_READ,(unsigned int)fcb,&result);
-        if (result.reta!=0) goto fload_done;
-        memcpy(pout, dma, DMA_SIZE);
+        if (result.reta != BDOS_SUCCESS) goto fload_done;
+        unsigned int bytes2copy=DMA_SIZE-dma_offs;
+        dma_offs=0; /* just first DMA may have the offset */
+        if (bcount + bytes2copy > (*flen)) bytes2copy=(*flen)-bcount;
+        /* finally, copy */
+        memcpy(pout, dma + dma_offs, bytes2copy);
         /* next block */
-        pout+=DMA_SIZE;
-        bcount++;
+        pout+=bytes2copy;
+        bcount+=bytes2copy;
     }
 
     /* yaay, we did it! */

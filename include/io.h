@@ -28,8 +28,11 @@ typedef struct fcb_s {
 	uint8_t rrecob;         /* rand record overflow byte (MS) */
 } fcb_t; /* file control block */
 
-/* load entire file into memory */
-extern void *fload(char *path, void* out, unsigned int *flen);
+/* load file into memory, skip first skip bytes (if flen==0 read everything, else return len) */
+extern void *fload(char *path, void* out, unsigned int *flen, unsigned int skip);
+
+/* save entire file to disk */
+extern int fsave(char *path, void* buf, unsigned int flen);
 
 /* parse path such as 1A:TEST.DAT and returns path_t
    structure */
