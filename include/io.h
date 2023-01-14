@@ -29,7 +29,7 @@ typedef struct fcb_s {
 } fcb_t; /* file control block */
 
 /* load file into memory, skip first skip bytes (if flen==0 read everything, else return len) */
-extern void *fload(char *path, void* out, unsigned int *flen, unsigned int skip);
+extern void *fload(char *path, void* out, unsigned int pos, unsigned int *flen);
 
 /* save entire file to disk */
 extern int fsave(char *path, void* buf, unsigned int flen);
