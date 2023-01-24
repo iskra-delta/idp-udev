@@ -56,14 +56,11 @@ extern void gputpixel(coord x, coord y);
 /* draw unclipped LINE or TINY glyph. */
 extern void gputglyph(void* glyph, coord x, coord y);
 
-/* return LINE or TINY glyph dimensions */
-extern dim_t *gmeglyph(void *glyph, dim_t *dim);
-
 /* print string */
 extern void gputtext(void *font, char *text, coord x, coord y);
 
 /* get text size */
-extern dim_t *gmetext(void *font, char *text, dim_t *dim);
+extern void gmetext(void *font, char *text, dim_t *dim);
 
 /* set color, sets drawing color 
    NOTES: 

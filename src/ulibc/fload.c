@@ -12,6 +12,8 @@
 #include <ulibc/bdos.h>
 #include <ulibc/mem.h>
 
+#include <stdio.h>
+
 #ifndef NULL
 #define NULL (void *)0
 #endif
@@ -33,11 +35,10 @@ void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
 
     /* return value */
     void *retval=NULL;
-    *flen=0; /* default */
 
     /* allocate fcb */
     fcb_t *fcb=calloc(1,sizeof(fcb_t));
-
+    
     /* parse filename */
     unsigned char area;
     if (fparse(path, fcb, &area)) {
@@ -60,18 +61,18 @@ void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
 
     /* open file */
     bdosret(F_OPEN,(unsigned int)fcb,&result);
-    if (result.reta==BDOS_FAILURE) goto fload_done;
+    if (result.reta==BDOS_FAILURE) 
+        goto fload_done;
     file_opened=1; /* file is open... */
-  
+
     /* Gef full file length into flen */
     if ((*flen)==0) {
         bdosret(F_SIZE,(unsigned int)fcb,&result);
         if (result.reta==BDOS_FAILURE) goto fload_done;
         *flen=fcb->rrec * DMA_SIZE;
+        /* If skip then reduce flen */
+        if (pos>0) (*flen) -= pos;
     }
-
-    /* If skip then reduce flen */
-    if (pos>0) (*flen) -= pos;
 
     /* if out is NULL then allocate out find out file size */
     if (out==NULL) {
@@ -79,6 +80,7 @@ void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
             CPM 3 Plus enables exact file len, but we are
             happy with aligned flen (to 128 bytes) */
         out=malloc(*flen);
+        if (out==NULL) goto fload_done;
         blk_allocated=1;
     }
 
@@ -87,10 +89,12 @@ void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
     bdos(F_DMAOFF,(unsigned int)dma);
 
     /* seek to pos and stay at that record */
-    unsigned int rec = pos / DMA_SIZE;
-    fcb->rrec = rec;
-    bdosret(F_READRAND, (unsigned int)fcb, &result);
-    if (result.reta == BDOS_FAILURE) goto fload_done;
+    if (pos > 0) {
+        unsigned int rec = pos / DMA_SIZE;
+        fcb->rrec = rec;
+        bdosret(F_READRAND, (unsigned int)fcb, &result);
+        if (result.reta == BDOS_FAILURE) goto fload_done;
+    }
 
     /* now read! */
     unsigned int bcount = 0; /* block count */
@@ -101,10 +105,10 @@ void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
         bdosret(F_READ,(unsigned int)fcb,&result);
         if (result.reta != BDOS_SUCCESS) goto fload_done;
         unsigned int bytes2copy=DMA_SIZE-dma_offs;
-        dma_offs=0; /* just first DMA may have the offset */
         if (bcount + bytes2copy > (*flen)) bytes2copy=(*flen)-bcount;
         /* finally, copy */
         memcpy(pout, dma + dma_offs, bytes2copy);
+        dma_offs=0; /* just first DMA may have the offset */
         /* next block */
         pout+=bytes2copy;
         bcount+=bytes2copy;
