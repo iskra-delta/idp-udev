@@ -28,7 +28,7 @@ If you redirect those two directories, you are responsible for implementing the 
 
 # Demo
 
-[Explore the Mavrica project](https://github.com/tstih/mavrica) to see this library in action.
+[Explore the Lunatik project](https://github.com/tstih/lunatik) to see this library in action.
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
