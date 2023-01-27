@@ -10,6 +10,7 @@
 
         .globl  _gputglyph
         .globl  gpg_raw
+        .globl  gpgt_set_palette
 
         .area	_CODE
         ;; ---------------------------------------------

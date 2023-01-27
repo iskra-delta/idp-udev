@@ -18,12 +18,14 @@
         ;; extern void gsetcolor(color c)
         ;; ------------------------------
         ;; sets color (pen)
+        ;; affects: a, iy, hl
 _gsetcolor:
         ld      iy,#2
         add     iy,sp
         ld      l,(iy)                  ; l=color
         ;; input parameters
         ;; l=color
+        ;; affects:a,hl
 gsc_raw:
         ld      a,(gdata+3)             ; previous color to a
         cp      l                       ; compare to current color
