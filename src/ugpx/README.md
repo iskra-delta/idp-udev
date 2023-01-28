@@ -207,18 +207,6 @@ The `gputglyph()` supports the current color and combines it with the glyph colo
 | foreground    | foreground  | foreground | 
 | background    | background  | foreground | 
 
-### Measuring a glyph
-
-You can measure a glyph by calling the `gmeglyph()` function. It returns the width and the height of the glyph.
-
-~~~cpp
-typedef struct dim_s {                  /* the dimensions */
-    coord w;
-    coord h;
-} dim_t;
-extern dim_t *gmeglyph(glyph_t *g, dim_t*d);
-~~~
-
 ## Fonts
 
 In the Micro Graphics library, a font is a set of glyphs with some metadata. Font drawing is implemented using the glyph drawing functions.
@@ -229,16 +217,16 @@ The two functions to work with fonts are:
 /* print string */
 extern void gputtext(void *font, char *text, coord x, coord y);
 /* get text size */
+typedef struct dim_s {                  /* the dimensions */
+    coord w;
+    coord h;
+} dim_t;
 extern dim_t *gmetext(void *font, char *text, dim_t *d);
 ~~~
 
 # Glyph and font format(s)
 
 See: [libgpx](https://github.com/tstih/libgpx)
-
-# To-do
-
-The glyph and text measuring functions are not implemented yet.
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg
