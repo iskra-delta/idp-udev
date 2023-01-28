@@ -51,25 +51,13 @@ gpg_raw:
         ;; draw lines glyph
 gpg_lines:
         ld      a,b                     ; restore a
+        and     #0x0f                   ; a=msb
+        ld      b,a                     ; b=msb
         inc     hl                      ; skip width
         inc     hl                      ; skip height
-        ld      b,(hl)                  ; b=count MSB
+        ld      c,(hl)                  ; c=count LSB
         inc     hl                      ; hl=first line
-        ld      c,#0                    ; for now
-        ;; move BC to the right 4 bits...
-        srl     b
-        rr      c
-        srl     b
-        rr      c
-        srl     b
-        rr      c
-        srl     b
-        rr      c
-        ;; and OR with A
-        and     #0x0f                   ; a=count LSN (LS nibble)
-        or      c
-        ld      c,a                     ; and BC=count!
-        ;; loop through all points
+        ;; loop through all points, BC=count
 gpgl_loop:
         ld      a,(hl)                  ; get byte
         dec     bc                      ; decrease count
