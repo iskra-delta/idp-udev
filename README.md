@@ -5,8 +5,8 @@
 A micro-library to create computer games for the Iskra Delta Partner. The library is stripped to the bare minimum and optimized for size and speed.
 
 It consists of three micro-libraries:
- * **μsdcc**. Support for integer arithmetics for the SDCC compiler.
- * **μlibc**. Minimal subset of the standard C library.
+ * [**μsdcc**](src/ulibc/README.md]. Support for integer arithmetic for the SDCC compiler.
+ * [**μlibc**](src/usdcc/README.md). Minimal subset of the standard C library.
  * [**μgpx**](src/ugpx/README.md). The graphics library.
 
 # Compiling the idp-udev

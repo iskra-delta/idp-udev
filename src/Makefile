@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = usdcc ulibc ugpx udebug
+SUBDIRS = usdcc ulibc ugpx
 
 # Rules.
 .PHONY: all

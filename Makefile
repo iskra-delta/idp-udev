@@ -19,7 +19,8 @@ export CRT0			=	crt0
 
 # Globa settings: 8 bit tools.
 export CC			=	sdcc
-export CFLAGS		=	--std-c11 -mz80 --debug --nostdinc \
+export CFLAGS		=	--std-c11 -mz80 --debug \
+						--no-std-crt0 --nostdinc --nostdlib \
 						$(addprefix -I,$(INC_DIR))
 export AS			=	sdasz80
 export ASFLAGS		=	-xlos -g
