@@ -31,6 +31,7 @@ If you redirect those two directories, you are responsible for implementing the 
 You can see the library in action in following Iskra Delta Partner projects:
 
 [The Lunatik](https://github.com/tstih/lunatik) is the Moon Lander game for the Iskra Delta Partner.
+
 [The Quills](https://github.com/tstih/idp-quill) are ZX Spectrum ports of three Slovenian adventures for the Iskra Delta Partner made with the Quill adventure writing system.
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
