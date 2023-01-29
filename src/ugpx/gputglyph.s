@@ -12,6 +12,8 @@
         .globl  gpg_raw
         .globl  gpgt_set_palette
 
+        .equ    ESCAPE,-128
+
         .area	_CODE
         ;; ---------------------------------------------
         ;; void gputglyph(void* glyph, coord x, coord y)
@@ -20,8 +22,7 @@
         ;; recognizes standard glyphs from libgpx
 _gputglyph:
         ;; first obtain arguments
-        ;;  de=g_t *
-        ;;  hl=void *
+        ;;  hl=void * (glyph)
         ;;  hl'=x
         ;;  de'=y
         pop     bc                      ; return address
@@ -41,7 +42,7 @@ gpg_raw:
         inc     hl                      ; next byte...
         ;; recognize glyph type
         ld      b,a                     ; store to b
-        and     #0b01100000             ; only leave signature
+        and     #0b11100000             ; only leave signature
         cp      #0b01000000             ; test for lines glyph
         jr      z,gpg_lines
         cp      #0b00100000             ; test for tiny glyph
@@ -50,6 +51,7 @@ gpg_raw:
         ret
         ;; draw lines glyph
 gpg_lines:
+        call    gpgt_set_palette        ; get the pallete.
         ld      a,b                     ; restore a
         and     #0x0f                   ; a=msb
         ld      b,a                     ; b=msb
@@ -62,7 +64,7 @@ gpgl_loop:
         ld      a,(hl)                  ; get byte
         dec     bc                      ; decrease count
         inc     hl                      ; next byte
-        cp      #-128                   ; is escape sequence?
+        cp      #ESCAPE                 ; is escape sequence?
         jr      z,gpgl_escape
         ;; it's not an escape sequence
         push    bc                      ; store counter
@@ -76,11 +78,33 @@ gpgl_loop:
         or      c
         jr      nz,gpgl_loop            ; then loop
         ret
+        ;; NOTE: 
+        ;;      there is no bound check here, the glyph
+        ;;      must be correct!!!
 gpgl_escape:
-        ;; DISCLAIMER: at present there's only one command
-        ;; (cmd value = 0), so there's no parsing...
-        ;; count bounds are also not checked so glyph 
-        ;; definition must be correct!
+        ;; first check if we change the color?
+        ld      a,(hl)                  ; command to a
+        and     #0b00000010             ; bit 1 = set color
+        jr      z,pgl_chk_eos           ; no color change
+        ;; let's change color!
+        ld      a,(hl)
+        and     #0b00001100             ; get the color
+        sra     a                       ; color into a
+        sra     a                       ; xxxxxxbb
+        rrca                            ; bxxxxxxb
+        call    gpgt_handle_pen         ; set pen
+        ;; check end of stroke?
+pgl_chk_eos:
+        ld      a,(hl)                  ; command to a (again!)
+        and     #0b00000001             ; bit 0 = end of stroke
+        jr      z,pgl_eos
+        ;; we don't change the position...
+        ;; ...next 2 parameters are relative.
+        ;; so don't do anything!
+        dec     bc
+        inc     hl
+        jr gpgl_loop
+pgl_eos:
         dec     bc                      ; skip over 0!
         inc     hl
         ld      e,(hl)                  ; e=x
