@@ -24,7 +24,7 @@ Alternatively, you can create a local repository.
 
 [Download](template.zip) and unzip the template project into your project folder. 
 
-`unzip template.zip <my repository directory>`
+`unzip template.zip -d <my repository directory>`
 
 The directory structure below will be the result.
 
