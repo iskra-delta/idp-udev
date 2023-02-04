@@ -22,7 +22,7 @@ Alternatively, you can create a local repository.
 
 ## Unzip the template project into it
 
-Download and unzip the template project into your project folder. 
+[Download](template.zip) and unzip the template project into your project folder. 
 
 `unzip template.zip <my repository directory>`
 
@@ -65,4 +65,3 @@ The build process creates an Iskra Delta Partner disk image using the `cpm tools
 Any `.c` file you add under the `src/` folder will be compiled into the binary. Any `.s` file will be compiled using the SDCC assembler. You can use subdirectories. 
 
 > If you'd like to add data files to your disk image, add them to the `disk/extras/` directory. Anything in this directory will be copied to the final CP/M disk image to user area 0:. The files placed here must respect the CP/M filename limits: they can only have 8 letters for the name and 3 letters for the extension.
-
