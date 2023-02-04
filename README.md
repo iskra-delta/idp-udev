@@ -9,7 +9,7 @@ It consists of three micro-libraries:
  * [**μlibc**](src/usdcc/README.md). Minimal subset of the standard C library.
  * [**μgpx**](src/ugpx/README.md). The graphics library.
 
-# Compiling the idp-udev
+# Compiling
 
 You need Linux to compile the micro-library. 
 
@@ -26,9 +26,8 @@ make BUILD_DIR=mybuild BIN_DIR=mybin
 ~~~
 If you redirect those two directories, you are responsible for implementing the `make clean` command. 
 
-# Demo
-
-You can see the library in action in following Iskra Delta Partner projects:
+# Using
+You can use an [**empty project template**](template/README.md) for your new project. If you want to study the library in action further, consult these Iskra Delta Partner projects:
 
 [The Lunatik](https://github.com/tstih/lunatik) is the Moon Lander game for the Iskra Delta Partner.
 
