@@ -1,4 +1,4 @@
-		;; gdrawdelta.s
+        ;; gdrawd.s
         ;; 
         ;; delta drawing functions!
         ;;
@@ -6,16 +6,16 @@
         ;; copyright (c) 2022 tomaz stih
         ;;
         ;; 17.06.2022    tstih
-        .module gdrawdelta
+        .module gdrawd
 
-        .globl  _gdrawdelta
+        .globl  _gdrawd
 
         .area	_CODE
         ;; -------------------------------
         ;; void gdrawdelta(int dx, int dy)
         ;; -------------------------------
         ;; idealised quick draw delta line 
-_gdrawdelta:
+_gdrawd:
         pop     bc                      ; ret address
         pop     hl                      ; hl=dx
         pop     de                      ; de=dy

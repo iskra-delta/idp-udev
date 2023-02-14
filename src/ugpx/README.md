@@ -134,9 +134,10 @@ Micro Graphics library comes with two line drawing functions.  Both respect the 
 
 ### Draw a relative line
 
-You can draw a relative line with x and y coordinates ranging from -255 to 255 by using the [gdrawdelta()](gdrawdelta.s) function.
+You can draw a relative line with x and y coordinates ranging from -255 to 255 by using the [gdrawd()](gdrawd.s) function.
 ~~~cpp
-extern void gdrawdelta(coord dx, coord dy);
+/* draw delta */
+extern void gdrawd(coord dx, coord dy);
 ~~~
 
 ### Draw an absolute line

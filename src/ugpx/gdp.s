@@ -115,7 +115,7 @@ gdp_get_delta_cmd:
         rlca                            
         rlca
         rlca
-        ld      c,a                     ; sotre sign of y
+        ld      c,a                     ; store sign of y
         ;; now find out if dx=0 or dy=0
         ld      a,h
         or      l

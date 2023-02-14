@@ -74,7 +74,7 @@ extern void gsetcolor(color c);
 
 /* draw line (optimized!) */
 extern void gdrawline(coord x0, coord y0, coord x1, coord y1);
-extern void gdrawdelta(coord dx, coord dy);
+extern void gdrawd(coord dx, coord dy);
 
 /* rectangles */
 extern rect_t *gnormrect(rect_t *r);
