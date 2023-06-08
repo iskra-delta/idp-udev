@@ -19,6 +19,9 @@
 #define NULL 0
 #endif /* NULL */
 
+/* Exit app. */
+void exit(int status);
+
 /* Memory allocation. */
 extern void *malloc(size_t size);
 

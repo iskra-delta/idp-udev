@@ -12,6 +12,7 @@
 		.module crt0
 
        	.globl  _main
+        .globl  _exit
         .globl  __heap
 
 		.area 	_CODE
@@ -37,8 +38,8 @@ start:
 
         ;; call the main
 	    call    _main
-
-        ;; BDOS exit (reset) return control to CP/M.
+_exit:
+        ;; Brute force BDOS exit (reset) return control to CP/M.
         ld      c,#0
 	    jp      5
 
