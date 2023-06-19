@@ -62,6 +62,9 @@ extern void gputtext(void *font, char *text, coord x, coord y);
 /* get text size */
 extern void gmetext(void *font, char *text, dim_t *dim);
 
+/* get glyph size */
+extern void gmegpy(void *glyph, dim_t *dim);
+
 /* set color, sets drawing color 
    NOTES: 
     when drawing glyph this color
