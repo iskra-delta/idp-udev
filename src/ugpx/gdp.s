@@ -1,15 +1,15 @@
-		;; gdp.s
+        ;; gdp.s
         ;; 
         ;; a library of primitives for the thompson ef9367 card (GDP)
         ;; 
         ;; TODO: 
         ;;  - 
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 22.03.2022    tstih
-		.module gdp       
+        ;; 22.03.2022    tstih
+        .module gdp       
 
         .globl  gdp_set_xy
         .globl  gdp_set_dxdy
@@ -21,7 +21,7 @@
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
         ;; wait for the GDP to finish previous operation
         ;; don't touch interrupts!
         ;; affects: a
@@ -41,7 +41,7 @@ gdp_wait_vbl:
         ret
 
         ;; execute command in a
-        ;; input:	a=command
+        ;; input:    a=command
         ;; affects: -
 gdp_exec_cmd:
         push    af

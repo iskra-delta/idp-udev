@@ -13,16 +13,14 @@
 
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
         ;; ------------------------------
         ;; extern void gsetcolor(color c)
         ;; ------------------------------
         ;; sets color (pen)
-        ;; affects: a, iy, hl
+        ;; affects: a, hl
 _gsetcolor:
-        ld      iy,#2
-        add     iy,sp
-        ld      l,(iy)                  ; l=color
+        ;; (no stack access needed)
         ;; input parameters
         ;; l=color
         ;; affects:a,hl

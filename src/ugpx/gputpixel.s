@@ -1,4 +1,4 @@
-		;; gputpixel.s
+        ;; gputpixel.s
         ;; 
         ;; draw single pixel
         ;;
@@ -12,21 +12,14 @@
 
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
         ;; --------------------------------
         ;; void gputpixel(coord x, coord y)
         ;; --------------------------------
         ;; places pixel at x,y
 _gputpixel:
-        pop     bc                      ; return address
-        pop     hl                      ; hl=x
-        pop     de                      ; de=y
-        ;; restore stack
-        push    de
-        push    hl
-        push    bc
         call    gdp_set_xy
         ;; and draw pixel
         ld      a,#0x80                 ; fast pixel code
         call    gdp_exec_cmd
-		ret
+        ret

@@ -1,18 +1,18 @@
-		;; qmath.s
+        ;; qmath.s
         ;; 
         ;; quick math
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 30.06.2022    tstih
-		.module qmath
+        ;; 30.06.2022    tstih
+        .module qmath
 
         .globl  abs_hl
 
-        .area	_CODE
+        .area    _CODE
         ;; calculates absolute value of hl
-		;; inputs:  hl
+        ;; inputs:  hl
         ;; outputs: hl = abs(hl)
         ;; affect:  af, hl
 abs_hl:

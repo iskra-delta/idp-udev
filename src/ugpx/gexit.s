@@ -10,7 +10,7 @@
 
         .globl  _gexit
 
-        .area	_CODE
+        .area    _CODE
         ;; ------------
         ;; void gexit()
         ;; ------------

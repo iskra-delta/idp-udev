@@ -14,28 +14,24 @@
 
         .equ    ESCAPE,-128
 
-        .area	_CODE
+        .area    _CODE
         ;; ---------------------------------------------
         ;; void gputglyph(void* glyph, coord x, coord y)
         ;; ---------------------------------------------
         ;; draws glyph at x,y without clipping!
         ;; recognizes standard glyphs from libgpx
 _gputglyph:
-        ;; first obtain arguments
-        ;;  hl=void * (glyph)
-        ;;  hl'=x
-        ;;  de'=y
-        pop     bc                      ; return address
-        pop     hl                      ; glyph address
+        ;;  hl=void * (glyph) - already in HL
+        ;;  hl'=x - from DE
+        ;;  de'=y - from stack
+        ld      ix,#0
+        add     ix,sp
         exx
-        pop     hl                      ; hl'=x
-        pop     de                      ; de'=y
-        ;; and restore stack!
-        push    de
-        push    hl
+        ex      de,hl                   ; hl'=x (from DE parameter)
+        ld      e,(ix)                  ; de'=y from stack
+        ld      d,1(ix)
         exx
-        push    hl
-        push    bc
+        ;; HL contains glyph pointer, alternate regs contain x,y
 gpg_raw:
         ;; now get number of bytes into bc
         ld      a,(hl)                  ; get sprite signature

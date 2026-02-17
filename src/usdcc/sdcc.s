@@ -1,12 +1,12 @@
-		;; sdcc.s
+    ;; sdcc.s
         ;; 
         ;; minimal sdcc library contains only functions to support
         ;; basic integer operations.
-		;;
+    ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 31.03.2022    tstih
+    ;; 31.03.2022    tstih
         .module sdcc
 
         .globl  __mulint
@@ -22,12 +22,9 @@
         .area   _CODE
 
 __mulint::
-        pop     af
-        pop     bc
-        pop     de
-        push    de
-        push    bc
-        push    af
+        ;; Move HL to BC for the multiplication algorithm
+        ld      b,h
+        ld      c,l
 __mul16:
         xor     a,a
         ld      l,a
@@ -47,19 +44,8 @@ __mul16:
         djnz    1$
         ret
  __divuint::
-        pop     af
-        pop     hl
-        pop     de
-        push    de
-        push    hl
-        push    af
         jr      __divu16
 __divuchar::
-        ld      hl,#2+1
-        add     hl,sp
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
 __divu8:
         ld      h,#0x00
         ld      d,h
@@ -103,41 +89,19 @@ __divu16:
         ex      de,hl           
         ret
 __moduchar::
-        ld      hl,#2+1
-        add     hl,sp
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
         call    __divu8
-	    ex	de,hl
+        ex    de,hl
         ret
 __modschar::
-        ld      hl,#2+1
-        add     hl,sp
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
         call    __div8
-        jp	    __get_remainder
+        jp        __get_remainder
 __moduint::
-        pop     af
-        pop     hl
-        pop     de
-        push    de
-        push    hl
-        push    af
         call    __divu16
         ex      de,hl
         ret
 __modsint:
-        pop     af
-        pop     hl
-        pop     de
-        push    de
-        push    hl
-        push    af
         call    __div16
-        jp	    __get_remainder
+        jp        __get_remainder
 __div8::
         ld      a, l            
         rlca
@@ -175,7 +139,7 @@ __div16::
         call    __divu16
 .fix_quotient:
         pop     af             
-        ret	    nc
+        ret        nc
         ld      b, a
         sub     a, a           
         sub     a, l
@@ -184,10 +148,10 @@ __div16::
         sub     a, h
         ld      h, a
         ld      a, b
-	    ret
+        ret
 __get_remainder::
         rla
-        ex	    de, hl
+        ex        de, hl
         ret     nc            
         sub     a, a            
         sub     a, l
@@ -197,12 +161,6 @@ __get_remainder::
         ld      h, a
         ret
 __divsint::
-        pop     af
-        pop     hl
-        pop     de
-        push    de
-        push    hl
-        push    af
         jp      __div16
 ___sdcc_call_hl:
-	    jp	(hl)
+        jp    (hl)

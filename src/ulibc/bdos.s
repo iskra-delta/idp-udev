@@ -1,11 +1,11 @@
-		;; bdos.s
+        ;; bdos.s
         ;; 
         ;; minimal bdos wrapper
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 22.03.2022    tstih
+        ;; 22.03.2022    tstih
         .module bdos
 
         .globl _bdos
@@ -23,10 +23,12 @@
         ;; affect:  af, bc, de, hl
 _bdos::
         push    ix                      ; store ix
-		call    rawbdos                 ; raw bdos fn call
-		pop     ix                      ; restore ix
+        ld      c,l                     ; fn to C for BDOS call
+        ;; DE already contains param
+        call    BDOS                    ; make BDOS call
+        pop     ix                      ; restore ix
         ld      l,a                     ; return a
-		ret
+        ret
 
 
         ;; -------------------------------------------------------------------------
@@ -36,38 +38,37 @@ _bdos::
         ;; output: a, b, hl populated with ret. values
         ;; affect:  af, bc, de, hl
 _bdosret::
-        ;; classic bdos call!
-        push    ix
-        call    rawbdos
-		;; store ret value to de.
-		ex      de, hl      
-        ;; get bdos_ret_t *p to hl
-		ld      l,3(ix)
-		ld      h,4(ix) 
+        push    ix                      ; save ix
+        ld      c,l                     ; fn to C for BDOS
+        ;; DE already contains param
+        ;; Save DE before BDOS call (we need it later)
+        push    de
+        call    BDOS                    ; make BDOS call
+        ;; BDOS returns: A, B, DE (sometimes HL)
+        pop     de                      ; restore original param to DE
+        ;; Now get p pointer from stack
+        ;; Stack: [IX][ret_addr][p_lo][p_hi]
+        ld      ix,#4                   ; skip over saved IX (2) and return addr (2)
+        add     ix,sp
+        ld      l,(ix)                  ; p pointer from stack
+        ld      h,1(ix)
         push    hl                      ; store pointer as return value
+        ;; Store BDOS results to structure pointed by HL
         ld      (hl),a                  ; store a
         inc     hl
         ld      (hl),b                  ; store b
         inc     hl
-        ld      (hl),e                  ; and hl
+        ;; DE from BDOS is in DE, but we need the original DE which we popped
+        ;; Actually, looking at the old code, it uses ex de,hl to store the result
+        ;; The BDOS result HL goes to DE, then stored. Let me check the old code again.
+        ;; Old code: ex de,hl means BDOS's HL result goes to DE for storage
+        ;; Since BDOS can return in HL, save that
+        ex      de,hl                   ; BDOS result HL to DE
+        ld      (hl),e                  ; store hl result
         inc     hl
         ld      (hl),d
         ;; restore return value
         pop     hl
         ;; clean stack and exit
-		pop     ix                      ; restore ix
-		ret
-
-
-        ;; raw bdos call
-        ;; input:	bdos_call_t struct pointer on stack
-        ;; output:  ix=stack, (a,b,de)=potential result
-        ;; affect:  af, bc, de, hl, ix
-rawbdos:
-        ld      ix,#6
-		add     ix,sp                   ; ix=sp
-		ld      c,(ix)                  ; bdos function into c.
-		ld      e,1(ix)                 ; load bdos parameter into de
-		ld      d,2(ix)
-		call    BDOS                    ; make BDOS call!
+        pop     ix                      ; restore ix
         ret

@@ -80,16 +80,13 @@ _tolower::
         ;; get low byte of int argument to a
         ;; and reset hl
         ;; input(s):
-        ;;  stack + 4   int argument
         ;; output(s):
         ;;  a           lo byte of argument
         ;;  hl          reset to 0
         ;; affects:
-        ;;  a, hl, iy
+        ;;  a, hl
 ctype_args:
-        ld      iy,#4                   ; skip over 2x ret value
-        add     iy,sp
-        ld      a,(iy)                  ; get lo byte arg to a
+        ld      a,l                     ; get low byte from L
         ld      hl,#0                   ; init hl
         ret
 
@@ -143,7 +140,7 @@ test_is_alphanumeric:
         jr      test_is_alpha
 
 test_is_digit:
-	    ld      de,#0x3930	            ; d='9', e='0'
+        ld      de,#0x3930                ; d='9', e='0'
         ;; test if a is within DE: D >= A >= E
         ;; input(s):
         ;;  A   value to test
@@ -155,12 +152,12 @@ test_is_digit:
 test_inside_interval:
         push    bc                      ; store original bc
         ld      c,a                     ; store a
-        cp      e			            ; a=a-e
-        jr      nc, tidg_possible	    ; a>=e       
+        cp      e                        ; a=a-e
+        jr      nc, tidg_possible        ; a>=e       
         jr      tidg_false              ; false
 tidg_possible:
         cp      d                       ; a=a-d
-        jr      c,tidg_true		        ; a<d
+        jr      c,tidg_true                ; a<d
         jr      z,tidg_true             ; a=d
         jr      tidg_false
 tidg_true:

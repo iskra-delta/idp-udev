@@ -27,10 +27,10 @@ $(BUILD_DIR)/$(TARGET).lib: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(BUILD_DIR)/%.rel:	%.s
-	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(@F) $<
+	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(@F) $(CURDIR)/$<
 
 $(BUILD_DIR)/%.rel: %.c
-	$(CC) -c -o $(BUILD_DIR)/$(@F) $< $(CFLAGS)
+	$(CC) -c -o $(BUILD_DIR)/$(@F) $(CURDIR)/$< $(CFLAGS)
 
 $(BUILD_DIR)/%.rel: %.h
 

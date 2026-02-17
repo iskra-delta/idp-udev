@@ -14,19 +14,16 @@
 
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
 
         ;; ---------------------
         ;; rect_t *gnormrect(
         ;;     rect_t *r)
-        ;; ---------------------  
+        ;; ---------------------
 _gnormrect:
-        ;; get args
-        pop     bc                      ; ret address
-        pop     iy                      ; rect address
-        ;; restore stack
-        push    iy
-        push    bc
+        ;; move HL to IY
+        push    hl
+        pop     iy
         ;; iy=pointer to rect...
 gnormrectraw:
         ;; now compare x0 and x1

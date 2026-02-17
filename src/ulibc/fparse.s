@@ -1,11 +1,11 @@
-		;; fparse.s
+        ;; fparse.s
         ;; 
         ;; minimal io ops
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 14.04.2022    tstih
+        ;; 14.04.2022    tstih
         .module fparse
 
         .globl  _fparse
@@ -53,25 +53,36 @@
         .area _CODE
         ;; ----- int fparse(char *path, fcb_t *fcb, uint8_t *area) ------------
 _fparse::
-        ;; fetch args from stack
-        pop     af                      ; ignore the return address...
-        pop     hl                      ; pointer to path to hl
+        ;; Need: HL=path, DE'=fcb, BC'=area
+        ;; Strategy: Push fcb, read area, push area, exx, pop to BC' and DE'
+        push    de                      ; save fcb
+        ;; Stack now: [fcb][ret_addr][area]
+        ;; Read area from SP+4 and SP+5 into BC temporarily
+        ld      ix,#4
+        add     ix,sp
+        ld      c,(ix)                  ; area_lo from stack
+        ld      b,1(ix)                 ; area_hi from stack
+        push    bc                      ; push area
+        ;; Stack now: [area][fcb][ret_addr][area_on_stack]
+        ;; Switch to alternate and set up BC'=area, DE'=fcb
         exx
-        ;; pad filename and extension (of FCB) with spaces
-        pop     de                      ; pointer to fcb to de
-        push    de                      ; return it
+        pop     bc                      ; BC' = area pointer
+        pop     de                      ; DE' = fcb pointer
+        ;; Now initialize FCB (DE' points to it)
+        push    de                      ; save fcb
         xor     a                       ; a=0
         ld      (de),a                  ; default drive
-        inc     de                      ; skip over default 
+        inc     de                      ; skip over default
         ld      b,#11                   ; 8+3 filename
         ld      a,#' '                  ; pad with spaces
 fpa_init_fcb:
         ld      (de),a
         inc     de
         djnz    fpa_init_fcb
-        pop     de                      ; restore de
-        pop     bc                      ; pointer to area to bc
+        pop     de                      ; restore DE' = fcb
+        ;; Switch back to normal registers
         exx
+        ;; HL still contains path (never changed it)
         ;; restore stack and make iy point to it
         ld      iy,#-8
         add     iy,sp

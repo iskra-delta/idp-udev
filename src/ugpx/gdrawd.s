@@ -10,19 +10,12 @@
 
         .globl  _gdrawd
 
-        .area	_CODE
+        .area    _CODE
         ;; -------------------------------
         ;; void gdrawdelta(int dx, int dy)
         ;; -------------------------------
-        ;; idealised quick draw delta line 
+        ;; idealised quick draw delta line
 _gdrawd:
-        pop     bc                      ; ret address
-        pop     hl                      ; hl=dx
-        pop     de                      ; de=dy
-        ;; restore stack
-        push    de
-        push    hl
-        push    bc
         ;; command into a
         call    gdp_get_delta_cmd
         push    af                      ; sotre command

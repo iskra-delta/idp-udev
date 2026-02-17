@@ -13,7 +13,7 @@
 
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
         ;; ------------------------------
         ;; void ginit(uint8_t resolution)
         ;; ------------------------------        
@@ -26,12 +26,7 @@ _ginit::
         call    avdc_hide_cursor
         call    avdc_cls
 
-        ;; get resolution to the L register and restore stack
-        pop     de                      ; ret value
-        pop     hl                      ; L=resolution
-        push    hl
-        push    de
-        
+
         ;; pen down, set default drawing mode to pen
         ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN)
         out     (EF9367_CR1),a          ; control reg 1 to default
@@ -41,7 +36,7 @@ _ginit::
         out     (EF9367_CH_SIZE),a      ; no scaling!
         ;; now set the resolution.
         ld      a,l                     ; resolution const.
-		out     (PIO_GR_CMN),a
+        out     (PIO_GR_CMN),a
         ;; set return value
         ld      hl,#gdata
         ;; store resolution

@@ -12,28 +12,25 @@
 
         .include "gdp.inc"
         
-        .area	_CODE
+        .area    _CODE
         ;; ---------------------------------------------------------------
         ;; void gputtext(void *font, char *text, coord x, coord y)
         ;; ---------------------------------------------------------------
         ;; write string to display at x,y
-        ;; affect:  a, 
+        ;; affect:  a,
 _gputtext:
-        ;; get args from stack
-        pop     bc                      ; return address
-        pop     hl                      ; font
-        pop     iy                      ; string
+        push    de                      ; save text pointer
+        pop     iy                      ; iy=text (from DE)
+        ld      ix,#0
+        add     ix,sp
         exx
-        pop     hl                      ; hl'=x
-        pop     de                      ; de'=y
-        ;; and restore stack
-        push    de
-        push    hl
+        ld      l,(ix)                  ; hl'=x from stack
+        ld      h,1(ix)
+        ld      e,2(ix)                 ; de'=y from stack
+        ld      d,3(ix)
         ld      b,#0                    ; prepare bc
         exx
-        push    iy
-        push    hl
-        push    bc
+        ;; HL contains font, IY contains text, alt regs contain x,y
         ;; obtain first ascii to b, and hor spacing to c
         ;; point hl to glyph offset table
         ld      a,(hl)

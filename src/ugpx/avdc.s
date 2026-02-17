@@ -1,20 +1,20 @@
-		;; scn2674.s
+        ;; scn2674.s
         ;; 
         ;; scn2674 minimal code
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 05.05.2022    tstih
-		.module avdc
+        ;; 05.05.2022    tstih
+        .module avdc
 
-		.globl	avdc_cls
+        .globl    avdc_cls
         .globl  avdc_hide_cursor
         .globl  avdc_show_cursor
 
         .include "avdc.inc"
 
-        .area	_CODE
+        .area    _CODE
 
 
         ;; ----- support functions --------------------------------------------
@@ -94,7 +94,7 @@ avdc_read:
         ld      d,a                     ; into d
         ret
 
-		;; avdc_rowptr (l=row index) into hl
+        ;; avdc_rowptr (l=row index) into hl
         ;; returns row address
         ;; NOTES:
         ;;  on idp a row table mode is used to access

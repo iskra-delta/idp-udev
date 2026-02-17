@@ -14,19 +14,28 @@
         ;; --- include ef9367 ports and regs definitions ----------------------
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
 
         ;; ---------------------
         ;; void gdrawline(
-        ;;     unsigned int  x0, 
-        ;;     unsigned int  y0, 
+        ;;     unsigned int  x0,
+        ;;     unsigned int  y0,
         ;;     unsigned int  x1,
         ;;     unsigned int  y1)
-        ;; ---------------------  
+        ;; ---------------------
 _gdrawline:
-        ;; pick parameters
-        ld      iy,#2                   ; skip over ret address
-        add     iy,sp
+        ;; Need to set up stack so IY can access all parameters
+        ;; Stack layout needed by gdrawlineraw:
+        ;;   IY+0,1 = x0
+        ;;   IY+2,3 = y0
+        ;;   IY+4,5 = x1 (already at SP+0)
+        ;;   IY+6,7 = y1 (already at SP+2)
+        ;; Push y0 and x0 to complete the layout
+        push    de                      ; push y0
+        push    hl                      ; push x0
+        ;; Now stack has: [x0][y0][x1][y1]
+        ld      iy,#0
+        add     iy,sp                   ; IY points to x0
         ;; to support HW patterns we'll draw line
         ;; from back to front!
 gdrawlineraw:
@@ -77,6 +86,9 @@ gdl_recurse:
         ld      a,c                     ; command
         call    gdp_exec_cmd            ; draw!
         djnz    gdl_recurse
+        ;; cleanup stack (pop x0 and y0 that we pushed)
+        pop     hl
+        pop     hl
         ret
 gld_divide:
         ;; divide hl and de to half
@@ -107,4 +119,7 @@ gld_div_yr:
         push    de
         inc     b
         djnz    gdl_recurse
+        ;; cleanup stack (pop x0 and y0 that we pushed)
+        pop     hl
+        pop     hl
         ret

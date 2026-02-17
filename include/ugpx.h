@@ -42,10 +42,10 @@ typedef struct g_s {
 extern void ginit(uint8_t resolution);
 
 /* leave graphics mode */
-extern void gexit();
+extern void gexit(void);
 
 /* clear current (display page) graphics screen */
-extern void gcls();
+extern void gcls(void);
 
 /* manually move graphics cursor to x,y */
 extern void gxy(coord x, coord y);

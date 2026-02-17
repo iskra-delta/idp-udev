@@ -12,7 +12,7 @@
 #include <ulibc/mem.h>
 
 /* memory initialization */
-void _memory_init()
+void _memory_init(void)
 {
     /* First block is the heap. s*/
     block_t *first = (block_t *)&_heap;

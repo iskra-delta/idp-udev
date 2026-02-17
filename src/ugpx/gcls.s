@@ -12,13 +12,13 @@
 
         .include "gdp.inc"
 
-        .area	_CODE
+        .area    _CODE
         ;; -----------
         ;; void gcls()
         ;; -----------
         ;; clear graphic screen
         ;; affect:  af
 _gcls:
-		ld      a,#EF9367_CMD_CLS
-		call    gdp_exec_cmd
+        ld      a,#EF9367_CMD_CLS
+        call    gdp_exec_cmd
         ret

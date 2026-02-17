@@ -1,4 +1,4 @@
-		;; args.s
+        ;; args.s
         ;; 
         ;; the pargs routine handles cp/m plus 3 program arguments.
         ;; 
@@ -23,7 +23,7 @@
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 22.03.2022    tstih
+        ;; 22.03.2022    tstih
         .module args
 
 

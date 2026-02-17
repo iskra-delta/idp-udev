@@ -1,11 +1,11 @@
-		;; rnd.s
+        ;; rnd.s
         ;; 
         ;; iumplementation of rand and srand
-		;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
         ;;
-		;; 13.06.2022    tstih
+        ;; 13.06.2022    tstih
         .module rnd
 
         .globl  _rand
@@ -29,11 +29,6 @@ __rand_init:
         ret
 
 _srand:
-        pop     de                      ; return address
-        pop     hl                      ; seed
-        ;; restore regs!
-        push    hl
-        push    de
         ;; first seed is from system clock.
         in      a,(RTC_THOUS_S)
         ld      (rnd_seedA),a
