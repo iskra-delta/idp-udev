@@ -16,8 +16,13 @@
         ;; -----------
         ;; void gcls()
         ;; -----------
-        ;; clear graphic screen
-        ;; affect:  af
+        ;; clears the active graphics page
+        ;; NOTES:
+        ;;  sends the EF9367 clear-screen command to the
+        ;;  currently selected write page
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af
 _gcls:
         ld      a,#EF9367_CMD_CLS
         call    gdp_exec_cmd

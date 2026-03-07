@@ -38,15 +38,27 @@
         ;;  4. or with src and mask  XXXX1101 -> NM & D | S & M
         ;;
 _gsetpage:
-        ;; extend page number to 2nd bit
-        ld      a,e                     ; page to a
+        ;; inputs: a=ops, l=page
+        ;; outputs: none
+        ;; affects: af, bc
+        ld      b,a                     ; preserve ops
+        ld      a,l                     ; page to a
         and     #1                      ; keep only bit 0
         jr      z,gsp_select            ; is it 0?
         or      #2                      ; set bit 2
+        ;; gsp_select
+        ;; normalizes page select bits
+        ;; NOTES:
+        ;;  expands the one-bit page number into the
+        ;;  EF9367 page bit layout and masks it with
+        ;;  the requested page operation flags
+        ;; inputs: a=page bits, b=ops
+        ;; outputs: c=selected page bits
+        ;; affects: af, bc
 gsp_select:
-        and     l                       ; and with selector (op)
+        and     b                       ; and with selector (op)
         ld      c,a                     ; store extended page in C
-        ld      a,l                     ; get selector (op)
+        ld      a,b                     ; get selector (op)
         cpl                             ; complement it
         ld      b,a                     ; store neg selector into reg B
         ;; get current state of the page register to a
@@ -57,12 +69,22 @@ gsp_select:
         ld      b,a                     ; store into b
         or      c                       ; final result is in a (OR with extended page)
         push    af                      ; store result
-        ld      a,l                     ; get selector (op)
+        ld      a,b                     ; get negated selector
+        cpl                             ; get selector (op)
         and     #1                      ; test display page?
         jr      z,gsp_write
         ;; need to wait for vblank
         call    gdp_wait_vbl
         ;; write back to reg!
+        ;; gsp_write
+        ;; writes the new page selection to hardware
+        ;; NOTES:
+        ;;  waits for vertical blank when the display
+        ;;  page changes, then updates the shared page
+        ;;  control register
+        ;; inputs: a=selector, stack=result byte
+        ;; outputs: none
+        ;; affects: af
 gsp_write:
         pop     af                      ; restore a
         out     (PIO_GR_CMN),a          ; set pages!

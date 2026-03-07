@@ -1,0 +1,146 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; ginit.s
+                                      2         ;; 
+                                      3         ;; initialize gpx
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 06.06.2022    tstih
+                                      9         .module ginit
+                                     10 
+                                     11         .globl  _ginit
+                                     12         .globl  gdata
+                                     13 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+                                     14         .include "gdp.inc"
+                                      1 		;; gdp.s
+                                      2         ;; 
+                                      3         ;; thompson ef9367 graphics display processor consts. 
+                                      4 		;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8 		;; 22.03.2022    tstih
+                                      9 
+                                     10         ;; --- limits ---------------------------------------------------------
+                         00000400    11         .equ    GDP_WIDTH,          1024
+                         000000FF    12         .equ    GDP_MAX_DELTA,      255
+                                     13 
+                                     14         ;; --- 0x20 - W: command, R:the status register -----------------------     
+                         00000020    15         .equ	EF9367_CMD,             0x20    ; command register (W)
+                         00000000    16         .equ    EF9367_CMD_DMOD_SET,    0x00    ; select pen (set bit 1 of CR1)
+                         00000001    17         .equ    EF9367_CMD_DMOD_CLR,    0x01    ; select eraser (clr bit 1 of CR1)
+                         00000002    18         .equ    EF9367_CMD_PEN_DOWN,    0x02    ; pen/eraser down
+                         00000003    19         .equ    EF9367_CMD_PEN_UP,      0x03    ; pen/eraser up
+                         00000004    20         .equ    EF9367_CMD_CLS,         0x04    ; clear screen
+                         00000005    21         .equ    EF9367_CMD_00,          0x05    ; x=y=0
+                         00000006    22         .equ    EF9367_CMD_CLS00,       0x06    ; clear screen, x=y=0
+                         00000007    23         .equ    EF9367_CMD_CLEAR,       0x07    ; cls, CSIZE to min., all regs to 0
+                         0000000C    24         .equ    EF9367_CMD_SCAN,        0x0c    ; screen scan
+                         0000000D    25         .equ    EF9367_CMD_X0,          0x0d    ; x=0
+                         0000000E    26         .equ    EF9367_CMD_Y0,          0x0e    ; y=0
+                         0000000F    27         .equ    EF9367_CMD_DMEM,        0x0f    ; direct memory access 4 next cyc.
+                                     28 
+                                     29 
+                                     30         ;; --- 0x21 - RW: control register, bit 7 is reserved (always 0) ------
+                         00000021    31         .equ    EF9367_CR1,             0x21
+                         00000001    32         .equ    EF9367_CR1_PEN_DOWN,    0x01    ; 1 pen down, 0 pen up
+                         00000002    33         .equ    EF9367_CR1_SET_PEN,     0x02    ; 1 pen, 0 eraser
+                                     34 
+                                     35 
+                                     36         ;; --- 0x22 - RW: control register 2, bit 7-4 are not used ------------
+                         00000022    37         .equ    EF9367_CR2,             0x22
+                                     38         ;; bits 1 and 2 are vector type
+                         00000000    39         .equ    EF9367_CR2_SOLID,       0b00    ; solid vector type
+                                     40 
+                                     41 
+                                     42         ;; --- 0x23 - RW: character size --------------------------------------
+                                     43         ;; low nibble is scaling on x, high nibble is scaling on y)
+                         00000023    44         .equ    EF9367_CH_SIZE,         0x23
+                                     45 
+                                     46 
+                                     47         ;; --- 0x25 - RW: delta x ---------------------------------------------
+                         00000025    48         .equ    EF9367_DX,              0x25
+                                     49         ;; --- 0x27 - RW: delta y ---------------------------------------------
+                         00000027    50         .equ    EF9367_DY,              0x27
+                                     51 
+                                     52 
+                                     53         ;; --- 0x28 - RW: x pos hi --------------------------------------------
+                         00000028    54         .equ    EF9367_XPOS_HI,         0x28
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+
+
+                                     55         ;; --- 0x29 - RW: x pos low -------------------------------------------
+                         00000029    56         .equ    EF9367_XPOS_LO,         0x29
+                                     57         ;; --- 0x2a - RW: y pos hi --------------------------------------------
+                         0000002A    58         .equ    EF9367_YPOS_HI,         0x2a
+                                     59         ;; --- 0x2b - RW: y pos low -------------------------------------------
+                         0000002B    60         .equ    EF9367_YPOS_LO,         0x2b
+                                     61 
+                                     62 
+                                     63         ;; --- 0x2f - R:the status (NI) register and its bitmask --------------
+                         0000002F    64         .equ    EF9367_STS_NI,          0x2f    ; status reg. (no interrupt reset)
+                         00000002    65         .equ    EF9367_STS_NI_VBLANK,   0x02    ; high during vertical blanking.
+                         00000004    66         .equ    EF9367_STS_NI_READY,    0x04    ; low when executing command
+                                     67 
+                                     68         ;; --- 0x30 - R/W:PIO gr. common register -----------------------------
+                         00000030    69         .equ    PIO_GR_CMN,             0x30
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 4
+Hexadecimal [32-Bits]
+
+
+
+                                     15 
+                                     16         .area    _CODE
+                                     17         ;; ------------------------------
+                                     18         ;; void ginit(uint8_t resolution)
+                                     19         ;; ------------------------------        
+                                     20         ;; initializes the ef9367, sets the resolution to desired
+                                     21         ;; mode. disclaimer: this command does not waiting for gdp 
+                                     22         ;; bcs no command should be executing at time of init!
+                                     23         ;; affect:  a, hl, de, flags
+    00000000                         24 _ginit::
+                                     25         ;; TODO: exit text by hiding cursor and clearing the screen
+    00000000 CD 00 00         [17]   26         call    avdc_hide_cursor
+    00000003 CD 00 00         [17]   27         call    avdc_cls
+                                     28 
+                                     29 
+                                     30         ;; pen down, set default drawing mode to pen
+    00000006 3E 03            [ 7]   31         ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN)
+    00000008 D3 21            [11]   32         out     (EF9367_CR1),a          ; control reg 1 to default
+    0000000A AF               [ 4]   33         xor     a                       ; a=0
+    0000000B D3 22            [11]   34         out     (EF9367_CR2),a          ; control reg 2 to default
+    0000000D 3E 21            [ 7]   35         ld      a,#0b00100001
+    0000000F D3 23            [11]   36         out     (EF9367_CH_SIZE),a      ; no scaling!
+                                     37         ;; now set the resolution.
+    00000011 7D               [ 4]   38         ld      a,l                     ; resolution const.
+    00000012 D3 30            [11]   39         out     (PIO_GR_CMN),a
+                                     40         ;; set return value
+    00000014 21 2A 00         [10]   41         ld      hl,#gdata
+                                     42         ;; store resolution
+    00000017 11 00 01         [10]   43         ld      de,#256
+    0000001A B7               [ 4]   44         or      a                       ; check a
+    0000001B 28 03            [12]   45         jr      z,gi_lowres
+    0000001D 11 00 02         [10]   46         ld      de,#512
+    00000020                         47 gi_lowres:
+    00000020 ED 53 2A 00      [20]   48         ld      (gdata),de
+                                     49         ;; and cache pen
+    00000024 3E 01            [ 7]   50         ld      a,#1                    ; cached color is C_FORE
+    00000026 32 2D 00         [13]   51         ld      (gdata+3),a             ; write to cache
+    00000029 C9               [10]   52         ret
+                                     53 
+                                     54         ;; global space for graphics data.
+    0000002A                         55 gdata:
+    0000002A 00 00                   56         .dw     0                       ; screen height
+    0000002C 00                      57         .db     0                       ; current color

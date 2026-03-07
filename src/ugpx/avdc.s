@@ -19,7 +19,13 @@
 
         ;; ----- support functions --------------------------------------------
 
-        ;; wait for avdc int
+        ;; avdc_wait_mem_acc
+        ;; waits for AVDC memory access window
+        ;; NOTES:
+        ;;  waits for the SCN2674A memory access signal
+        ;;  to assert and then deassert before returning
+        ;; inputs: none
+        ;; outputs: none
         ;; affects: af
 avdc_wait_mem_acc:
         ;; if low, wait for high
@@ -33,7 +39,13 @@ awint:
         jr      nz,awint
         ret
 
-        ;; wait for avdc ready
+        ;; avdc_wait_rdy
+        ;; waits for AVDC ready state
+        ;; NOTES:
+        ;;  polls the SCN2674 status register until the
+        ;;  ready bit becomes set
+        ;; inputs: none
+        ;; outputs: none
         ;; affects: af
 avdc_wait_rdy:
         in      a,(#SCN2674_STS)
@@ -41,7 +53,14 @@ avdc_wait_rdy:
         jr      z,avdc_wait_rdy
         ret
 
-        ;; write hl to cursor
+        ;; avdc_hl2cursor
+        ;; writes cursor address from hl
+        ;; NOTES:
+        ;;  updates the SCN2674 cursor low and high
+        ;;  registers after waiting for the device
+        ;; inputs: hl=cursor address
+        ;; outputs: none
+        ;; affects: af
 avdc_hl2cursor:
         call    avdc_wait_rdy
         ;; set cursor
@@ -51,7 +70,14 @@ avdc_hl2cursor:
         out     (#SCN2674_CUR_HI),a
         ret
 
-        ;; write cursor to hl
+        ;; avdc_cursor2hl
+        ;; reads cursor address into hl
+        ;; NOTES:
+        ;;  reads the SCN2674 cursor low and high
+        ;;  registers after waiting for the device
+        ;; inputs: none
+        ;; outputs: hl=cursor address
+        ;; affects: af, hl
 avdc_cursor2hl:
         call    avdc_wait_rdy
         ;; get cursor
@@ -61,7 +87,14 @@ avdc_cursor2hl:
         ld      h,a
         ret
 
-        ;; write hl to pointer
+        ;; avdc_hl2pointer
+        ;; writes pointer address from hl
+        ;; NOTES:
+        ;;  programs the SCN2674 pointer registers by
+        ;;  first selecting the initialization register
+        ;;  pair and then writing low/high bytes
+        ;; inputs: hl=pointer address
+        ;; outputs: none
         ;; affects: af
 avdc_hl2pointer:
         call    avdc_wait_rdy
@@ -123,7 +156,15 @@ avdc_rowptr:
 
         ;; ----- functions ----------------------------------------------------
 
-        ;; clear screen
+        ;; avdc_cls
+        ;; clears the text screen through row pointers
+        ;; NOTES:
+        ;;  iterates all 26 rows, resolves each row start
+        ;;  address from the row table, then fills the row
+        ;;  with spaces and zero attributes
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af, bc, de, hl
 avdc_cls:
         ld      b,#26                   ; 26 rows
         ld      hl,#0                   ; row #
@@ -157,14 +198,28 @@ scls_loop:
         call    avdc_hl2cursor
         ret
 
-        ;; show cursor
+        ;; avdc_show_cursor
+        ;; enables the text cursor
+        ;; NOTES:
+        ;;  waits for a safe memory access window before
+        ;;  sending the cursor-on command
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af
 avdc_show_cursor:
         call    avdc_wait_mem_acc
         ld      a, #SCN2674_CMD_CURS_ON
         out     (SCN2674_CMD), a
         ret
 
-        ;; hide cursor
+        ;; avdc_hide_cursor
+        ;; disables the text cursor
+        ;; NOTES:
+        ;;  waits for a safe memory access window before
+        ;;  sending the cursor-off command
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af
 avdc_hide_cursor:
         call    avdc_wait_mem_acc
         ld      a, #SCN2674_CMD_CURS_OFF

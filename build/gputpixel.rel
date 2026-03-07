@@ -1,0 +1,12 @@
+XL4
+H 1 areas 4 global symbols
+M gputpixel
+S gdp_exec_cmd Ref00000000
+S .__.ABS. Def00000000
+S gdp_set_xy Ref00000000
+A _CODE size 9 flags 0 addr 0
+S _gputpixel Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 CD 00 00 3E 80 CD 00 00 C9
+R 00 00 00 00 02 05 02 00 02 0A 00 00

@@ -1,0 +1,143 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; args.s
+                                      2         ;; 
+                                      3         ;; the pargs routine handles cp/m plus 3 program arguments.
+                                      4         ;; 
+                                      5         ;; NOTES:
+                                      6         ;;  program arguments start at address 0x80. all arguments 
+                                      7         ;;  are uppercase. the layout is as follows.
+                                      8         ;;
+                                      9         ;;  0   1     2                           n-1         n
+                                     10         ;;  ┌───┬─────┬────────────────────────────┬──────────┐
+                                     11         ;;  │len│space│program arguments           │terminator│
+                                     12         ;;  └───┴─────┴────────────────────────────┴──────────┘
+                                     13         ;;
+                                     14         ;;  the first byte is length. if > 0 then second byte
+                                     15         ;;  is a space (0x20), followed by space delimited arguments,
+                                     16         ;;  and a terminator (0x00). 
+                                     17         ;;
+                                     18         ;;  the parser does not allocate extra space for arguments,
+                                     19         ;;  but instead replaces spaces in program arguments with 0x00
+                                     20         ;;  to create multiple zero terminated strings and then points
+                                     21         ;;  the argv[] to addresses following 0x80.
+                                     22         ;;
+                                     23         ;; MIT License (see: LICENSE)
+                                     24         ;; copyright (c) 2022 tomaz stih
+                                     25         ;;
+                                     26         ;; 22.03.2022    tstih
+                                     27         .module args
+                                     28 
+                                     29 
+                                     30         .globl  pargs
+                                     31         .globl  argc
+                                     32         .globl  argv
+                                     33 
+                                     34 
+                                     35         .area   _CODE
+                                     36         ;; parse command line in CP/M
+    00000000                         37 pargs::
+    00000000 21 80 00         [10]   38         ld      hl,#0x80                ; args start
+                                     39         ;; argv[0] is NULL
+    00000003 11 02 00         [10]   40         ld      de,#argv                ; argv pointers
+    00000006 AF               [ 4]   41         xor     a
+    00000007 12               [ 7]   42         ld      (de),a
+    00000008 13               [ 6]   43         inc     de
+    00000009 12               [ 7]   44         ld      (de),a
+    0000000A 13               [ 6]   45         inc     de                      ; dl points to first "real" argv
+                                     46         ;; argc=1 (default)
+    0000000B AF               [ 4]   47         xor     a
+    0000000C 32 01 00         [13]   48         ld      (argc+1),a
+    0000000F 3C               [ 4]   49         inc     a
+    00000010 32 00 00         [13]   50         ld      (argc),a
+                                     51         ;; let de point to first char which is length
+    00000013 7E               [ 7]   52         ld      a,(hl)                  ; get number of bytes to b
+    00000014 47               [ 4]   53         ld      b,a                     ; b is counter
+    00000015 23               [ 6]   54         inc     hl                      ; hl points to first char
+    00000016 7E               [ 7]   55         ld      a,(hl)                  ; check it
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+    00000017 FE 20            [ 7]   56         cp      #' '                    ; skip initial space...
+    00000019 20 01            [12]   57         jr      nz,pargs_go 
+    0000001B 23               [ 6]   58         inc     hl                      ; next char...
+    0000001C                         59 pargs_go:
+    0000001C E5               [11]   60         push    hl                      ; "remember" start of current arg
+    0000001D                         61 pargs_loop:
+                                     62         ;; now iterate
+    0000001D 7E               [ 7]   63         ld      a,(hl)
+                                     64         ;; is it end of arguments?
+    0000001E FE 00            [ 7]   65         cp      #0                      
+    00000020 28 07            [12]   66         jr      z,pargs_end
+                                     67         ;; is it end of current argument?
+    00000022 FE 20            [ 7]   68         cp      #' '                    
+    00000024 28 1A            [12]   69         jr      z,pargs_next
+                                     70         ;; if we're here it's a simple char...
+    00000026 23               [ 6]   71         inc     hl
+    00000027 10 F4            [13]   72         djnz    pargs_loop
+                                     73         ;; if no more looping we're done
+    00000029                         74 pargs_end:
+                                     75         ;; get a at start of arg
+    00000029 D9               [ 4]   76         exx
+    0000002A E1               [10]   77         pop     hl
+    0000002B 7E               [ 7]   78         ld      a,(hl)
+    0000002C E5               [11]   79         push    hl
+    0000002D D9               [ 4]   80         exx
+                                     81         ;; is it 0?
+    0000002E B7               [ 4]   82         or      a
+    0000002F 28 29            [12]   83         jr      z,pargs_noarg
+                                     84         ;; else store argument
+    00000031 E1               [10]   85         pop     hl                      ; get arg
+    00000032 EB               [ 4]   86         ex      de,hl
+    00000033 73               [ 7]   87         ld      (hl),e
+    00000034 23               [ 6]   88         inc     hl
+    00000035 72               [ 7]   89         ld      (hl),d
+    00000036 EB               [ 4]   90         ex      de,hl
+                                     91         ;; inc. argc
+    00000037 3A 00 00         [13]   92         ld      a,(argc)
+    0000003A 3C               [ 4]   93         inc     a
+    0000003B 32 00 00         [13]   94         ld      (argc),a
+                                     95         ;; and return
+    0000003E 18 1B            [12]   96         jr      pargs_done   
+    00000040                         97 pargs_next:
+    00000040 AF               [ 4]   98         xor     a                       ; zero terminate
+    00000041 77               [ 7]   99         ld      (hl),a                  ; the argument
+    00000042 23               [ 6]  100         inc     hl                      ; next arg
+    00000043 D5               [11]  101         push    de                      ; current arg to stack
+    00000044 D9               [ 4]  102         exx
+    00000045 D1               [10]  103         pop     de                      ; get current arg from stack
+    00000046 E1               [10]  104         pop     hl                      ; get start of arg from stack
+    00000047 EB               [ 4]  105         ex      de,hl
+    00000048 73               [ 7]  106         ld      (hl),e                  ; write arg to arg list
+    00000049 23               [ 6]  107         inc     hl
+    0000004A 72               [ 7]  108         ld      (hl),d
+    0000004B 23               [ 6]  109         inc     hl
+    0000004C EB               [ 4]  110         ex      de,hl
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+
+
+    0000004D D5               [11]  111         push    de                      ; store arg list new end
+    0000004E D9               [ 4]  112         exx
+    0000004F D1               [10]  113         pop     de                      ; get arg list 
+    00000050 E5               [11]  114         push    hl                      ; next arg to stack
+    00000051 3A 00 00         [13]  115         ld      a,(argc)                ; increase argc
+    00000054 3C               [ 4]  116         inc     a
+    00000055 32 00 00         [13]  117         ld      (argc),a
+    00000058 10 C3            [13]  118         djnz    pargs_loop
+    0000005A                        119 pargs_noarg:
+    0000005A E1               [10]  120         pop     hl                      ; clean stack
+    0000005B                        121 pargs_done:
+    0000005B C9               [10]  122         ret
+                                    123 
+                                    124         .area   _DATA
+    00000000                        125 argc::
+    00000000 01 00                  126         .dw 1                           ; default argc is 1 (filename!)
+    00000002                        127 argv::
+    00000002                        128         .ds 16                          ; max 8 argv arguments

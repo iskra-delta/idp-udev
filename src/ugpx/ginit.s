@@ -17,15 +17,18 @@
         ;; ------------------------------
         ;; void ginit(uint8_t resolution)
         ;; ------------------------------        
-        ;; initializes the ef9367, sets the resolution to desired
-        ;; mode. disclaimer: this command does not waiting for gdp 
-        ;; bcs no command should be executing at time of init!
-        ;; affect:  a, hl, de, flags
+        ;; initializes the graphics subsystem
+        ;; NOTES:
+        ;;  hides the text cursor, clears the AVDC text
+        ;;  screen, initializes EF9367 state, and caches
+        ;;  screen height plus default foreground color
+        ;; inputs: a=resolution
+        ;; outputs: hl=&gdata
+        ;; affects: af, de, hl
 _ginit::
-        ;; TODO: exit text by hiding cursor and clearing the screen
+        push    af                      ; preserve resolution
         call    avdc_hide_cursor
         call    avdc_cls
-
 
         ;; pen down, set default drawing mode to pen
         ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN)
@@ -35,7 +38,7 @@ _ginit::
         ld      a,#0b00100001
         out     (EF9367_CH_SIZE),a      ; no scaling!
         ;; now set the resolution.
-        ld      a,l                     ; resolution const.
+        pop     af                      ; restore resolution
         out     (PIO_GR_CMN),a
         ;; set return value
         ld      hl,#gdata

@@ -1,0 +1,248 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; gdp.s
+                                      2         ;; 
+                                      3         ;; a library of primitives for the thompson ef9367 card (GDP)
+                                      4         ;; 
+                                      5         ;; TODO: 
+                                      6         ;;  - 
+                                      7         ;;
+                                      8         ;; MIT License (see: LICENSE)
+                                      9         ;; copyright (c) 2022 tomaz stih
+                                     10         ;;
+                                     11         ;; 22.03.2022    tstih
+                                     12         .module gdp       
+                                     13 
+                                     14         .globl  gdp_set_xy
+                                     15         .globl  gdp_set_dxdy
+                                     16         .globl  gdp_exec_cmd
+                                     17         .globl  gdp_wait_ready
+                                     18         .globl  gdp_wait_vbl
+                                     19         .globl  gdp_get_delta_cmd
+                                     20 
+                                     21         ;; --- include ef9367 ports and regs definitions ----------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+                                     22         .include "gdp.inc"
+                                      1 		;; gdp.s
+                                      2         ;; 
+                                      3         ;; thompson ef9367 graphics display processor consts. 
+                                      4 		;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8 		;; 22.03.2022    tstih
+                                      9 
+                                     10         ;; --- limits ---------------------------------------------------------
+                         00000400    11         .equ    GDP_WIDTH,          1024
+                         000000FF    12         .equ    GDP_MAX_DELTA,      255
+                                     13 
+                                     14         ;; --- 0x20 - W: command, R:the status register -----------------------     
+                         00000020    15         .equ	EF9367_CMD,             0x20    ; command register (W)
+                         00000000    16         .equ    EF9367_CMD_DMOD_SET,    0x00    ; select pen (set bit 1 of CR1)
+                         00000001    17         .equ    EF9367_CMD_DMOD_CLR,    0x01    ; select eraser (clr bit 1 of CR1)
+                         00000002    18         .equ    EF9367_CMD_PEN_DOWN,    0x02    ; pen/eraser down
+                         00000003    19         .equ    EF9367_CMD_PEN_UP,      0x03    ; pen/eraser up
+                         00000004    20         .equ    EF9367_CMD_CLS,         0x04    ; clear screen
+                         00000005    21         .equ    EF9367_CMD_00,          0x05    ; x=y=0
+                         00000006    22         .equ    EF9367_CMD_CLS00,       0x06    ; clear screen, x=y=0
+                         00000007    23         .equ    EF9367_CMD_CLEAR,       0x07    ; cls, CSIZE to min., all regs to 0
+                         0000000C    24         .equ    EF9367_CMD_SCAN,        0x0c    ; screen scan
+                         0000000D    25         .equ    EF9367_CMD_X0,          0x0d    ; x=0
+                         0000000E    26         .equ    EF9367_CMD_Y0,          0x0e    ; y=0
+                         0000000F    27         .equ    EF9367_CMD_DMEM,        0x0f    ; direct memory access 4 next cyc.
+                                     28 
+                                     29 
+                                     30         ;; --- 0x21 - RW: control register, bit 7 is reserved (always 0) ------
+                         00000021    31         .equ    EF9367_CR1,             0x21
+                         00000001    32         .equ    EF9367_CR1_PEN_DOWN,    0x01    ; 1 pen down, 0 pen up
+                         00000002    33         .equ    EF9367_CR1_SET_PEN,     0x02    ; 1 pen, 0 eraser
+                                     34 
+                                     35 
+                                     36         ;; --- 0x22 - RW: control register 2, bit 7-4 are not used ------------
+                         00000022    37         .equ    EF9367_CR2,             0x22
+                                     38         ;; bits 1 and 2 are vector type
+                         00000000    39         .equ    EF9367_CR2_SOLID,       0b00    ; solid vector type
+                                     40 
+                                     41 
+                                     42         ;; --- 0x23 - RW: character size --------------------------------------
+                                     43         ;; low nibble is scaling on x, high nibble is scaling on y)
+                         00000023    44         .equ    EF9367_CH_SIZE,         0x23
+                                     45 
+                                     46 
+                                     47         ;; --- 0x25 - RW: delta x ---------------------------------------------
+                         00000025    48         .equ    EF9367_DX,              0x25
+                                     49         ;; --- 0x27 - RW: delta y ---------------------------------------------
+                         00000027    50         .equ    EF9367_DY,              0x27
+                                     51 
+                                     52 
+                                     53         ;; --- 0x28 - RW: x pos hi --------------------------------------------
+                         00000028    54         .equ    EF9367_XPOS_HI,         0x28
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+
+
+                                     55         ;; --- 0x29 - RW: x pos low -------------------------------------------
+                         00000029    56         .equ    EF9367_XPOS_LO,         0x29
+                                     57         ;; --- 0x2a - RW: y pos hi --------------------------------------------
+                         0000002A    58         .equ    EF9367_YPOS_HI,         0x2a
+                                     59         ;; --- 0x2b - RW: y pos low -------------------------------------------
+                         0000002B    60         .equ    EF9367_YPOS_LO,         0x2b
+                                     61 
+                                     62 
+                                     63         ;; --- 0x2f - R:the status (NI) register and its bitmask --------------
+                         0000002F    64         .equ    EF9367_STS_NI,          0x2f    ; status reg. (no interrupt reset)
+                         00000002    65         .equ    EF9367_STS_NI_VBLANK,   0x02    ; high during vertical blanking.
+                         00000004    66         .equ    EF9367_STS_NI_READY,    0x04    ; low when executing command
+                                     67 
+                                     68         ;; --- 0x30 - R/W:PIO gr. common register -----------------------------
+                         00000030    69         .equ    PIO_GR_CMN,             0x30
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 4
+Hexadecimal [32-Bits]
+
+
+
+                                     23 
+                                     24         .area    _CODE
+                                     25         ;; wait for the GDP to finish previous operation
+                                     26         ;; don't touch interrupts!
+                                     27         ;; affects: a
+    00000000                         28 gdp_wait_ready:
+                                     29         ;; make sure GDP is free
+    00000000 DB 2F            [11]   30         in      a,(EF9367_STS_NI)       ; read the status register
+    00000002 E6 04            [ 7]   31         and     #EF9367_STS_NI_READY    ; get ready flag, it's the same bit
+    00000004 28 FA            [12]   32         jr      z,gdp_wait_ready
+    00000006 C9               [10]   33         ret
+                                     34 
+                                     35         ;; wait for VBL
+                                     36         ;; affects: a
+    00000007                         37 gdp_wait_vbl:
+    00000007 DB 2F            [11]   38         in      a,(EF9367_STS_NI)
+    00000009 E6 02            [ 7]   39         and     #EF9367_STS_NI_VBLANK
+    0000000B 28 FA            [12]   40         jr      z,gdp_wait_vbl
+    0000000D C9               [10]   41         ret
+                                     42 
+                                     43         ;; execute command in a
+                                     44         ;; input:    a=command
+                                     45         ;; affects: -
+    0000000E                         46 gdp_exec_cmd:
+    0000000E F5               [11]   47         push    af
+    0000000F CD 00 00         [17]   48         call    gdp_wait_ready        ; wait gdp
+    00000012 F1               [10]   49         pop     af
+    00000013 D3 20            [11]   50         out     (#EF9367_CMD), a        ; exec. command
+    00000015 C9               [10]   51         ret
+                                     52 
+                                     53         ;; set deltas to dx, dy
+                                     54         ;; inputs:  b=dy, c=dx
+                                     55         ;; affect:  a
+    00000016                         56 gdp_set_dxdy:
+    00000016 CD 00 00         [17]   57         call    gdp_wait_ready
+    00000019 78               [ 4]   58         ld      a,b
+    0000001A D3 27            [11]   59         out     (#EF9367_DY),a
+    0000001C 79               [ 4]   60         ld      a,c
+    0000001D D3 25            [11]   61         out     (#EF9367_DX),a
+    0000001F C9               [10]   62         ret
+                                     63 
+                                     64         ;; move the cursor to x,y
+                                     65         ;; notes:   y is transformed (ef9367 has negative axis!
+                                     66         ;; inputs:  hl=x, de=y
+                                     67         ;; affect:  af
+    00000020                         68 gdp_set_xy:
+                                     69         ;; store hl and de regs
+    00000020 D5               [11]   70         push    de
+    00000021 E5               [11]   71         push    hl
+                                     72         ;; reverse y coordinate
+    00000022 E5               [11]   73         push    hl                      ; store x
+    00000023 2A 00 00         [16]   74         ld      hl,(gdata)              ; hl=height
+    00000026 2B               [ 6]   75         dec     hl                      ; -1
+    00000027 B7               [ 4]   76         or      a                       ; clear carry
+    00000028 ED 52            [15]   77         sbc     hl,de                   ; hl=maxy-y
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 5
+Hexadecimal [32-Bits]
+
+
+
+    0000002A D1               [10]   78         pop     de                      ; de=x
+    0000002B EB               [ 4]   79         ex      de,hl                   ; switch
+                                     80         ;; wait for gdp
+    0000002C CD 00 00         [17]   81         call    gdp_wait_ready
+    0000002F 7D               [ 4]   82         ld      a,l
+    00000030 D3 29            [11]   83         out     (EF9367_XPOS_LO),a
+    00000032 7C               [ 4]   84         ld      a,h
+    00000033 D3 28            [11]   85         out     (EF9367_XPOS_HI),a
+    00000035 7B               [ 4]   86         ld      a,e
+    00000036 D3 2B            [11]   87         out     (EF9367_YPOS_LO),a
+    00000038 7A               [ 4]   88         ld      a,d
+    00000039 D3 2A            [11]   89         out     (EF9367_YPOS_HI),a
+                                     90         ;; restore de and hl
+    0000003B E1               [10]   91         pop     hl
+    0000003C D1               [10]   92         pop     de
+    0000003D C9               [10]   93         ret
+                                     94 
+                                     95         ;; given 16 bit signed
+                                     96         ;; dx and dy, this routine
+                                     97         ;; returns a command to draw
+                                     98         ;; NOTE:
+                                     99         ;;  dx and dy are not limited to 255
+                                    100         ;;  for this function, they must be
+                                    101         ;;  signed 16 bit numbers
+                                    102         ;; a delta line in a
+                                    103         ;; inputs:  hl=dx, de=dy
+                                    104         ;; output:  a=delta command
+                                    105         ;; affects: af, bc
+    0000003E                        106 gdp_get_delta_cmd:
+                                    107         ;; first grab both sign bits
+    0000003E 7C               [ 4]  108         ld      a,h                     ; check if hl is neg.
+    0000003F E6 80            [ 7]  109         and     #0b10000000             ; sign bit?
+    00000041 07               [ 4]  110         rlca                            ; rotate sign bit to...
+    00000042 07               [ 4]  111         rlca                            ; ...bit 1
+    00000043 47               [ 4]  112         ld      b,a                     ; store sign of x
+    00000044 7A               [ 4]  113         ld      a,d                     ; the same for de...
+    00000045 E6 80            [ 7]  114         and     #0b10000000
+    00000047 07               [ 4]  115         rlca                            
+    00000048 07               [ 4]  116         rlca
+    00000049 07               [ 4]  117         rlca
+    0000004A 4F               [ 4]  118         ld      c,a                     ; store sign of y
+                                    119         ;; now find out if dx=0 or dy=0
+    0000004B 7C               [ 4]  120         ld      a,h
+    0000004C B5               [ 4]  121         or      l
+    0000004D 28 0B            [12]  122         jr      z,gdp_gd_ign_dx         ; ignore dx?
+    0000004F 7A               [ 4]  123         ld      a,d
+    00000050 B3               [ 4]  124         or      e
+    00000051 28 0F            [12]  125         jr      z,gdp_gd_ign_dy         ; ignore dy?
+                                    126         ;; if we are here there's no ignore so
+                                    127         ;; create command in a
+                                    128         ;; NOTE: because y is reverse axis, you need
+                                    129         ;;       to invert dy sign bit!
+    00000053 3E 11            [ 7]  130         ld      a,#0b00010001           ; draw command
+    00000055 B0               [ 4]  131         or      b                       ; add dx sign
+    00000056 B1               [ 4]  132         or      c                       ; add dy sign
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 6
+Hexadecimal [32-Bits]
+
+
+
+    00000057 EE 04            [ 7]  133         xor     #0b00000100             ; invert dy bit
+    00000059 C9               [10]  134         ret
+                                    135         ;; ignore dx command...
+    0000005A                        136 gdp_gd_ign_dx:
+    0000005A 79               [ 4]  137         ld      a,c                     ; dy to a
+    0000005B 0F               [ 4]  138         rrca                            ; move into dx
+    0000005C B1               [ 4]  139         or      c                       ; set dy again!
+    0000005D EE 04            [ 7]  140         xor     #0b00000100             ; negate it (neg. axis)
+    0000005F F6 10            [ 7]  141         or      #0b00010000             ; and set the command bit
+    00000061 C9               [10]  142         ret
+    00000062                        143 gdp_gd_ign_dy:
+    00000062 78               [ 4]  144         ld      a,b                     ; dx to a
+    00000063 07               [ 4]  145         rlca                            ; move into dy
+    00000064 B0               [ 4]  146         or      b                       ; set dx again!
+    00000065 F6 10            [ 7]  147         or      #0b00010000             ; and set the command bit
+    00000067 C9               [10]  148         ret
+                                    149 

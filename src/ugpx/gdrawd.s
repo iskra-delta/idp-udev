@@ -14,11 +14,18 @@
         ;; -------------------------------
         ;; void gdrawdelta(int dx, int dy)
         ;; -------------------------------
-        ;; idealised quick draw delta line
+        ;; draws a delta line
+        ;; NOTES:
+        ;;  builds the GDP delta command from signed dx,dy,
+        ;;  converts both magnitudes to absolute values,
+        ;;  then issues the hardware line command
+        ;; inputs: hl=dx, de=dy
+        ;; outputs: none
+        ;; affects: af, bc, de, hl
 _gdrawd:
         ;; command into a
         call    gdp_get_delta_cmd
-        push    af                      ; sotre command
+        push    af                      ; store command
         call    abs_hl                  ; hl=abs(dx)       
         ex      de,hl                   ; de=abs(dx)
         call    abs_hl                  ; hl=abs(dy)

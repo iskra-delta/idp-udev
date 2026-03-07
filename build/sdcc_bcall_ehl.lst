@@ -1,0 +1,18 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; banked-call helper variant for e:hl target
+                                      2         ;;
+                                      3         ;; gpl-2.0-or-later (see: LICENSE)
+                                      4         ;; copyright (c) 2026 tomaz stih
+                                      5 
+                                      6         .module bcall_ehl
+                                      7         .optsdcc -mz80 sdcccall(1)
+                                      8 
+                                      9         .globl  ___sdcc_bcall_ehl
+                                     10         .area   _CODE
+                                     11 
+    00000000                         12 ___sdcc_bcall_ehl:
+    00000000 E9               [ 4]   13         jp      (hl)

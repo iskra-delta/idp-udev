@@ -22,9 +22,14 @@
         .include "gdp.inc"
 
         .area    _CODE
-        ;; wait for the GDP to finish previous operation
-        ;; don't touch interrupts!
-        ;; affects: a
+        ;; gdp_wait_ready
+        ;; waits for GDP to finish the previous operation
+        ;; NOTES:
+        ;;  polls the EF9367 ready bit and does not
+        ;;  manipulate interrupt state while waiting
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af
 gdp_wait_ready:
         ;; make sure GDP is free
         in      a,(EF9367_STS_NI)       ; read the status register
@@ -32,17 +37,28 @@ gdp_wait_ready:
         jr      z,gdp_wait_ready
         ret
 
-        ;; wait for VBL
-        ;; affects: a
+        ;; gdp_wait_vbl
+        ;; waits for vertical blank
+        ;; NOTES:
+        ;;  polls the EF9367 status register until the
+        ;;  vertical blank flag becomes set
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af
 gdp_wait_vbl:
         in      a,(EF9367_STS_NI)
         and     #EF9367_STS_NI_VBLANK
         jr      z,gdp_wait_vbl
         ret
 
-        ;; execute command in a
-        ;; input:    a=command
-        ;; affects: -
+        ;; gdp_exec_cmd
+        ;; executes a GDP command from a
+        ;; NOTES:
+        ;;  waits for the device to become ready before
+        ;;  writing the command register
+        ;; inputs: a=command
+        ;; outputs: none
+        ;; affects: af
 gdp_exec_cmd:
         push    af
         call    gdp_wait_ready        ; wait gdp
@@ -50,9 +66,14 @@ gdp_exec_cmd:
         out     (#EF9367_CMD), a        ; exec. command
         ret
 
-        ;; set deltas to dx, dy
-        ;; inputs:  b=dy, c=dx
-        ;; affect:  a
+        ;; gdp_set_dxdy
+        ;; writes GDP delta registers
+        ;; NOTES:
+        ;;  waits for readiness and then stores the
+        ;;  8-bit dy and dx values to hardware
+        ;; inputs: b=dy, c=dx
+        ;; outputs: none
+        ;; affects: af
 gdp_set_dxdy:
         call    gdp_wait_ready
         ld      a,b
@@ -61,10 +82,15 @@ gdp_set_dxdy:
         out     (#EF9367_DX),a
         ret
 
-        ;; move the cursor to x,y
-        ;; notes:   y is transformed (ef9367 has negative axis!
-        ;; inputs:  hl=x, de=y
-        ;; affect:  af
+        ;; gdp_set_xy
+        ;; moves the graphics cursor to x,y
+        ;; NOTES:
+        ;;  the EF9367 uses an inverted y axis, so the
+        ;;  routine transforms y using the cached screen
+        ;;  height before programming the position regs
+        ;; inputs: hl=x, de=y
+        ;; outputs: none
+        ;; affects: af, hl
 gdp_set_xy:
         ;; store hl and de regs
         push    de
@@ -92,16 +118,14 @@ gdp_set_xy:
         pop     de
         ret
 
-        ;; given 16 bit signed
-        ;; dx and dy, this routine
-        ;; returns a command to draw
-        ;; NOTE:
-        ;;  dx and dy are not limited to 255
-        ;;  for this function, they must be
-        ;;  signed 16 bit numbers
-        ;; a delta line in a
-        ;; inputs:  hl=dx, de=dy
-        ;; output:  a=delta command
+        ;; gdp_get_delta_cmd
+        ;; builds a GDP delta-draw command
+        ;; NOTES:
+        ;;  accepts signed 16-bit dx and dy values and
+        ;;  derives the command bits for axis direction,
+        ;;  zero-delta cases, and the inverted y axis
+        ;; inputs: hl=dx, de=dy
+        ;; outputs: a=delta command
         ;; affects: af, bc
 gdp_get_delta_cmd:
         ;; first grab both sign bits
@@ -146,4 +170,3 @@ gdp_gd_ign_dy:
         or      b                       ; set dx again!
         or      #0b00010000             ; and set the command bit
         ret
-

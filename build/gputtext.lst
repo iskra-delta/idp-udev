@@ -1,0 +1,191 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; gputtext.s
+                                      2         ;; 
+                                      3         ;; write string
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 13.06.2022    tstih
+                                      9         .module gputtext
+                                     10 
+                                     11         .globl  _gputtext
+                                     12 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+                                     13         .include "gdp.inc"
+                                      1 		;; gdp.s
+                                      2         ;; 
+                                      3         ;; thompson ef9367 graphics display processor consts. 
+                                      4 		;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8 		;; 22.03.2022    tstih
+                                      9 
+                                     10         ;; --- limits ---------------------------------------------------------
+                         00000400    11         .equ    GDP_WIDTH,          1024
+                         000000FF    12         .equ    GDP_MAX_DELTA,      255
+                                     13 
+                                     14         ;; --- 0x20 - W: command, R:the status register -----------------------     
+                         00000020    15         .equ	EF9367_CMD,             0x20    ; command register (W)
+                         00000000    16         .equ    EF9367_CMD_DMOD_SET,    0x00    ; select pen (set bit 1 of CR1)
+                         00000001    17         .equ    EF9367_CMD_DMOD_CLR,    0x01    ; select eraser (clr bit 1 of CR1)
+                         00000002    18         .equ    EF9367_CMD_PEN_DOWN,    0x02    ; pen/eraser down
+                         00000003    19         .equ    EF9367_CMD_PEN_UP,      0x03    ; pen/eraser up
+                         00000004    20         .equ    EF9367_CMD_CLS,         0x04    ; clear screen
+                         00000005    21         .equ    EF9367_CMD_00,          0x05    ; x=y=0
+                         00000006    22         .equ    EF9367_CMD_CLS00,       0x06    ; clear screen, x=y=0
+                         00000007    23         .equ    EF9367_CMD_CLEAR,       0x07    ; cls, CSIZE to min., all regs to 0
+                         0000000C    24         .equ    EF9367_CMD_SCAN,        0x0c    ; screen scan
+                         0000000D    25         .equ    EF9367_CMD_X0,          0x0d    ; x=0
+                         0000000E    26         .equ    EF9367_CMD_Y0,          0x0e    ; y=0
+                         0000000F    27         .equ    EF9367_CMD_DMEM,        0x0f    ; direct memory access 4 next cyc.
+                                     28 
+                                     29 
+                                     30         ;; --- 0x21 - RW: control register, bit 7 is reserved (always 0) ------
+                         00000021    31         .equ    EF9367_CR1,             0x21
+                         00000001    32         .equ    EF9367_CR1_PEN_DOWN,    0x01    ; 1 pen down, 0 pen up
+                         00000002    33         .equ    EF9367_CR1_SET_PEN,     0x02    ; 1 pen, 0 eraser
+                                     34 
+                                     35 
+                                     36         ;; --- 0x22 - RW: control register 2, bit 7-4 are not used ------------
+                         00000022    37         .equ    EF9367_CR2,             0x22
+                                     38         ;; bits 1 and 2 are vector type
+                         00000000    39         .equ    EF9367_CR2_SOLID,       0b00    ; solid vector type
+                                     40 
+                                     41 
+                                     42         ;; --- 0x23 - RW: character size --------------------------------------
+                                     43         ;; low nibble is scaling on x, high nibble is scaling on y)
+                         00000023    44         .equ    EF9367_CH_SIZE,         0x23
+                                     45 
+                                     46 
+                                     47         ;; --- 0x25 - RW: delta x ---------------------------------------------
+                         00000025    48         .equ    EF9367_DX,              0x25
+                                     49         ;; --- 0x27 - RW: delta y ---------------------------------------------
+                         00000027    50         .equ    EF9367_DY,              0x27
+                                     51 
+                                     52 
+                                     53         ;; --- 0x28 - RW: x pos hi --------------------------------------------
+                         00000028    54         .equ    EF9367_XPOS_HI,         0x28
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+
+
+                                     55         ;; --- 0x29 - RW: x pos low -------------------------------------------
+                         00000029    56         .equ    EF9367_XPOS_LO,         0x29
+                                     57         ;; --- 0x2a - RW: y pos hi --------------------------------------------
+                         0000002A    58         .equ    EF9367_YPOS_HI,         0x2a
+                                     59         ;; --- 0x2b - RW: y pos low -------------------------------------------
+                         0000002B    60         .equ    EF9367_YPOS_LO,         0x2b
+                                     61 
+                                     62 
+                                     63         ;; --- 0x2f - R:the status (NI) register and its bitmask --------------
+                         0000002F    64         .equ    EF9367_STS_NI,          0x2f    ; status reg. (no interrupt reset)
+                         00000002    65         .equ    EF9367_STS_NI_VBLANK,   0x02    ; high during vertical blanking.
+                         00000004    66         .equ    EF9367_STS_NI_READY,    0x04    ; low when executing command
+                                     67 
+                                     68         ;; --- 0x30 - R/W:PIO gr. common register -----------------------------
+                         00000030    69         .equ    PIO_GR_CMN,             0x30
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 4
+Hexadecimal [32-Bits]
+
+
+
+                                     14         
+                                     15         .area    _CODE
+                                     16         ;; ---------------------------------------------------------------
+                                     17         ;; void gputtext(void *font, char *text, coord x, coord y)
+                                     18         ;; ---------------------------------------------------------------
+                                     19         ;; write string to display at x,y
+                                     20         ;; affect:  a,
+    00000000                         21 _gputtext:
+    00000000 D5               [11]   22         push    de                      ; save text pointer
+    00000001 FD E1            [14]   23         pop     iy                      ; iy=text (from DE)
+    00000003 DD 21 00 00      [14]   24         ld      ix,#0
+    00000007 DD 39            [15]   25         add     ix,sp
+    00000009 D9               [ 4]   26         exx
+    0000000A DD 6E 00         [19]   27         ld      l,(ix)                  ; hl'=x from stack
+    0000000D DD 66 01         [19]   28         ld      h,1(ix)
+    00000010 DD 5E 02         [19]   29         ld      e,2(ix)                 ; de'=y from stack
+    00000013 DD 56 03         [19]   30         ld      d,3(ix)
+    00000016 06 00            [ 7]   31         ld      b,#0                    ; prepare bc
+    00000018 D9               [ 4]   32         exx
+                                     33         ;; HL contains font, IY contains text, alt regs contain x,y
+                                     34         ;; obtain first ascii to b, and hor spacing to c
+                                     35         ;; point hl to glyph offset table
+    00000019 7E               [ 7]   36         ld      a,(hl)
+    0000001A E6 0F            [ 7]   37         and     #0x0f
+    0000001C 4F               [ 4]   38         ld      c,a
+    0000001D 23               [ 6]   39         inc     hl
+    0000001E 23               [ 6]   40         inc     hl
+    0000001F 23               [ 6]   41         inc     hl
+    00000020 46               [ 7]   42         ld      b,(hl)
+    00000021 23               [ 6]   43         inc     hl
+    00000022 23               [ 6]   44         inc     hl
+                                     45         ;; main loop
+    00000023                         46 gpt_loop:
+    00000023 FD 7E 00         [19]   47         ld      a,(iy)                  ; get char
+    00000026 B7               [ 4]   48         or      a                       ; test
+    00000027 28 38            [12]   49         jr      z,gpt_end               ; terminator (0)?
+    00000029 90               [ 4]   50         sub     b                       ; minust first ascii
+    0000002A CD 35 00         [17]   51         call    gpt_draw                ; draw glyph
+    0000002D D9               [ 4]   52         exx
+    0000002E 4F               [ 4]   53         ld      c,a
+    0000002F 09               [11]   54         add     hl,bc                   ; add width!
+    00000030 D9               [ 4]   55         exx
+    00000031 FD 23            [10]   56         inc     iy                      ; next char 
+    00000033 18 EE            [12]   57         jr      gpt_loop                ; loop
+    00000035                         58 gpt_draw:
+    00000035 E5               [11]   59         push    hl                      ; store table of offsets
+    00000036 EB               [ 4]   60         ex      de,hl
+    00000037 26 00            [ 7]   61         ld      h,#0                    ; hl=char
+    00000039 6F               [ 4]   62         ld      l,A
+    0000003A 29               [11]   63         add     hl,hl                   ; multiply by 2
+    0000003B EB               [ 4]   64         ex      de,hl
+    0000003C 19               [11]   65         add     hl,de                   ; hl points to offset
+    0000003D 5E               [ 7]   66         ld      e,(hl)                  ; de points to glyph
+    0000003E 23               [ 6]   67         inc     hl
+    0000003F 56               [ 7]   68         ld      d,(hl)
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 5
+Hexadecimal [32-Bits]
+
+
+
+    00000040 E1               [10]   69         pop     hl                      ; restore table of offsets
+    00000041 E5               [11]   70         push    hl                      ; and store again
+    00000042 19               [11]   71         add     hl,de                   ; point to glyph plus offset
+    00000043 11 05 00         [10]   72         ld      de,#5                   ; minus 5
+    00000046 B7               [ 4]   73         or      a                       ; clear carry
+    00000047 ED 52            [15]   74         sbc     hl,de                   ; correct for table offset
+    00000049 23               [ 6]   75         inc     hl                      ; hl points to width
+    0000004A 7E               [ 7]   76         ld      a,(hl)                  ; get width to a
+    0000004B 81               [ 4]   77         add     c                       ; add default width hint
+    0000004C 2B               [ 6]   78         dec     hl                      ; restore hl
+    0000004D CD 52 00         [17]   79         call    gpt_gdraw               ; draw glyph            
+    00000050 E1               [10]   80         pop     hl                      ; restore table of offsets
+    00000051 C9               [10]   81         ret 
+    00000052                         82 gpt_gdraw:
+    00000052 F5               [11]   83         push    af
+    00000053 C5               [11]   84         push    bc
+    00000054 D9               [ 4]   85         exx
+    00000055 E5               [11]   86         push    hl
+    00000056 D5               [11]   87         push    de
+    00000057 D9               [ 4]   88         exx
+    00000058 CD 00 00         [17]   89         call    gpg_raw                 ; print glyph
+    0000005B D9               [ 4]   90         exx
+    0000005C D1               [10]   91         pop     de
+    0000005D E1               [10]   92         pop     hl
+    0000005E D9               [ 4]   93         exx
+    0000005F C1               [10]   94         pop     bc
+    00000060 F1               [10]   95         pop     af                      ; return width in a
+    00000061                         96 gpt_end:
+    00000061 C9               [10]   97         ret

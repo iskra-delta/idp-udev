@@ -1,0 +1,19 @@
+XL4
+H 1 areas 4 global symbols
+M banked_call
+O -mz80 sdcccall(1)
+S .__.ABS. Def00000000
+A _CODE size F flags 0 addr 0
+S ___sdcc_bcall Def00000000
+S __sdcc_banked_call Def00000000
+S __sdcc_bcall Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 E1 5E 23 56 23 4E 23 46 23 E5 00 00
+R 00 00 00 00
+T 0C 00 00 00 D5 E1 E9
+R 00 00 00 00

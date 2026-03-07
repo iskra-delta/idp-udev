@@ -1,0 +1,151 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =   00002710 L
+    .__.ABS.                                                    =   00000000 G
+    .__.CPU.                                                    =   00000000 L
+    .__.H$L.                                                    =   00000000 L
+  0 A$gmetext$102                                                   0000003B GR
+  0 A$gmetext$103                                                   0000003E GR
+  0 A$gmetext$104                                                   00000041 GR
+  0 A$gmetext$105                                                   00000044 GR
+  0 A$gmetext$106                                                   00000047 GR
+  0 A$gmetext$107                                                   0000004A GR
+  0 A$gmetext$108                                                   0000004D GR
+  0 A$gmetext$109                                                   0000004E GR
+  0 A$gmetext$110                                                   0000004F GR
+  0 A$gmetext$111                                                   00000050 GR
+  0 A$gmetext$115                                                   00000051 GR
+  0 A$gmetext$116                                                   00000054 GR
+  0 A$gmetext$117                                                   00000055 GR
+  0 A$gmetext$118                                                   00000058 GR
+  0 A$gmetext$123                                                   0000005B GR
+  0 A$gmetext$124                                                   0000005E GR
+  0 A$gmetext$125                                                   00000061 GR
+  0 A$gmetext$126                                                   00000062 GR
+  0 A$gmetext$127                                                   00000063 GR
+  0 A$gmetext$131                                                   00000065 GR
+  0 A$gmetext$132                                                   00000066 GR
+  0 A$gmetext$133                                                   00000068 GR
+  0 A$gmetext$134                                                   0000006B GR
+  0 A$gmetext$135                                                   0000006D GR
+  0 A$gmetext$136                                                   0000006E GR
+  0 A$gmetext$137                                                   00000070 GR
+  0 A$gmetext$138                                                   00000071 GR
+  0 A$gmetext$139                                                   00000074 GR
+  0 A$gmetext$140                                                   00000077 GR
+  0 A$gmetext$141                                                   00000078 GR
+  0 A$gmetext$142                                                   00000079 GR
+  0 A$gmetext$143                                                   0000007A GR
+  0 A$gmetext$144                                                   0000007B GR
+  0 A$gmetext$145                                                   0000007C GR
+  0 A$gmetext$146                                                   0000007D GR
+  0 A$gmetext$147                                                   00000080 GR
+  0 A$gmetext$151                                                   00000083 GR
+  0 A$gmetext$152                                                   00000086 GR
+  0 A$gmetext$153                                                   00000089 GR
+  0 A$gmetext$154                                                   0000008A GR
+  0 A$gmetext$155                                                   0000008B GR
+  0 A$gmetext$156                                                   0000008C GR
+  0 A$gmetext$157                                                   0000008F GR
+  0 A$gmetext$158                                                   00000092 GR
+  0 A$gmetext$159                                                   00000093 GR
+  0 A$gmetext$160                                                   00000094 GR
+  0 A$gmetext$161                                                   00000096 GR
+  0 A$gmetext$162                                                   00000097 GR
+  0 A$gmetext$163                                                   00000098 GR
+  0 A$gmetext$164                                                   0000009B GR
+  0 A$gmetext$165                                                   0000009D GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+  0 A$gmetext$166                                                   0000009E GR
+  0 A$gmetext$167                                                   0000009F GR
+  0 A$gmetext$168                                                   000000A0 GR
+  0 A$gmetext$169                                                   000000A3 GR
+  0 A$gmetext$170                                                   000000A6 GR
+  0 A$gmetext$171                                                   000000A7 GR
+  0 A$gmetext$172                                                   000000A8 GR
+  0 A$gmetext$176                                                   000000A9 GR
+  0 A$gmetext$177                                                   000000AC GR
+  0 A$gmetext$178                                                   000000AE GR
+  0 A$gmetext$179                                                   000000B1 GR
+  0 A$gmetext$184                                                   000000B3 GR
+  0 A$gmetext$185                                                   000000B5 GR
+  0 A$gmetext$186                                                   000000B7 GR
+  0 A$gmetext$187                                                   000000B8 GR
+  0 A$gmetext$188                                                   000000B9 GR
+  0 A$gmetext$52                                                    00000000 GR
+  0 A$gmetext$53                                                    00000002 GR
+  0 A$gmetext$54                                                    00000006 GR
+  0 A$gmetext$55                                                    00000008 GR
+  0 A$gmetext$56                                                    0000000C GR
+  0 A$gmetext$57                                                    0000000E GR
+  0 A$gmetext$58                                                    00000010 GR
+  0 A$gmetext$59                                                    00000013 GR
+  0 A$gmetext$63                                                    00000016 GR
+  0 A$gmetext$67                                                    00000017 GR
+  0 A$gmetext$68                                                    00000018 GR
+  0 A$gmetext$69                                                    0000001A GR
+  0 A$gmetext$73                                                    0000001D GR
+  0 A$gmetext$74                                                    0000001E GR
+  0 A$gmetext$75                                                    0000001F GR
+  0 A$gmetext$76                                                    00000020 GR
+  0 A$gmetext$77                                                    00000021 GR
+  0 A$gmetext$78                                                    00000022 GR
+  0 A$gmetext$79                                                    00000023 GR
+  0 A$gmetext$83                                                    00000026 GR
+  0 A$gmetext$84                                                    00000029 GR
+  0 A$gmetext$85                                                    0000002C GR
+  0 A$gmetext$86                                                    0000002D GR
+  0 A$gmetext$87                                                    0000002E GR
+  0 A$gmetext$88                                                    0000002F GR
+  0 A$gmetext$89                                                    00000030 GR
+  0 A$gmetext$90                                                    00000031 GR
+  0 A$gmetext$91                                                    00000032 GR
+  0 A$gmetext$92                                                    00000033 GR
+  0 A$gmetext$93                                                    00000035 GR
+  0 A$gmetext$94                                                    00000036 GR
+  0 A$gmetext$95                                                    00000037 GR
+  0 A$gmetext$96                                                    00000038 GR
+  0 A$gmetext$97                                                    00000039 GR
+  0 A$gmetext$98                                                    0000003A GR
+  0 C$gmetext.c$22$0_0$18                                       =   00000000 GR
+  0 C$gmetext.c$23$1_0$18                                       =   00000016 GR
+  0 C$gmetext.c$24$1_0$18                                       =   00000017 GR
+  0 C$gmetext.c$25$1_0$18                                       =   0000001D GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+  0 C$gmetext.c$26$1_0$18                                       =   00000026 GR
+  0 C$gmetext.c$27$1_0$18                                       =   0000003B GR
+  0 C$gmetext.c$29$1_1$19                                       =   00000051 GR
+  0 C$gmetext.c$30$1_1$19                                       =   0000005B GR
+  0 C$gmetext.c$31$2_1$20                                       =   00000065 GR
+  0 C$gmetext.c$32$2_1$20                                       =   00000083 GR
+  0 C$gmetext.c$33$2_1$20                                       =   000000A9 GR
+  0 C$gmetext.c$35$1_1$18                                       =   000000B3 GR
+  0 G$gmetext$0$0                                               =   00000000 GR
+  0 _gmetext                                                        00000000 GR
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 4
+Hexadecimal [32-Bits]
+
+Area Table
+
+   0 _CODE                                      size       BA   flags    0
+   1 _DATA                                      size        0   flags    0
+   2 _INITIALIZED                               size        0   flags    0
+   3 _DABS                                      size        0   flags    8
+   4 _HOME                                      size        0   flags    0
+   5 _GSINIT                                    size        0   flags    0
+   6 _GSFINAL                                   size        0   flags    0
+   7 _INITIALIZER                               size        0   flags    0
+   8 _CABS                                      size        0   flags    8
+

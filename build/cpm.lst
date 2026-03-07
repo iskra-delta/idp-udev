@@ -1,0 +1,122 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module cpm
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _kbhit
+                                     12 	.globl _putchar
+                                     13 	.globl _bdos
+                                     14 ;--------------------------------------------------------
+                                     15 ; special function registers
+                                     16 ;--------------------------------------------------------
+                                     17 ;--------------------------------------------------------
+                                     18 ; ram data
+                                     19 ;--------------------------------------------------------
+                                     20 	.area _DATA
+                                     21 ;--------------------------------------------------------
+                                     22 ; ram data
+                                     23 ;--------------------------------------------------------
+                                     24 	.area _INITIALIZED
+                                     25 ;--------------------------------------------------------
+                                     26 ; absolute external ram data
+                                     27 ;--------------------------------------------------------
+                                     28 	.area _DABS (ABS)
+                                     29 ;--------------------------------------------------------
+                                     30 ; global & static initialisations
+                                     31 ;--------------------------------------------------------
+                                     32 	.area _HOME
+                                     33 	.area _GSINIT
+                                     34 	.area _GSFINAL
+                                     35 	.area _GSINIT
+                                     36 ;--------------------------------------------------------
+                                     37 ; Home
+                                     38 ;--------------------------------------------------------
+                                     39 	.area _HOME
+                                     40 	.area _HOME
+                                     41 ;--------------------------------------------------------
+                                     42 ; code
+                                     43 ;--------------------------------------------------------
+                                     44 	.area _CODE
+                         00000000    45 	G$putchar$0$0	= .
+                                     46 	.globl	G$putchar$0$0
+                         00000000    47 	C$cpm.c$14$0_0$4	= .
+                                     48 	.globl	C$cpm.c$14$0_0$4
+                                     49 ;/workspace/idp-udev/src/ulibc/cpm.c:14: int putchar(int c) {
+                                     50 ;	---------------------------------
+                                     51 ; Function putchar
+                                     52 ; ---------------------------------
+    00000000                         53 _putchar::
+    00000000 EB               [ 4]   54 	ex	de, hl
+                         00000001    55 	C$cpm.c$16$1_0$4	= .
+                                     56 	.globl	C$cpm.c$16$1_0$4
+                                     57 ;/workspace/idp-udev/src/ulibc/cpm.c:16: if ((char)c=='\n') {
+    00000001 7B               [ 4]   58 	ld	a, e
+    00000002 D6 0A            [ 7]   59 	sub	a, #0x0a
+    00000004 20 13            [12]   60 	jr	NZ, 00102$
+                         00000006    61 	C$cpm.c$17$2_0$5	= .
+                                     62 	.globl	C$cpm.c$17$2_0$5
+                                     63 ;/workspace/idp-udev/src/ulibc/cpm.c:17: bdos(C_WRITE,'\r');
+    00000006 D5               [11]   64 	push	de
+    00000007 11 0D 00         [10]   65 	ld	de, #0x000d
+    0000000A 3E 02            [ 7]   66 	ld	a, #0x02
+    0000000C CDr00r00         [17]   67 	call	_bdos
+                         0000000F    68 	C$cpm.c$18$2_0$5	= .
+                                     69 	.globl	C$cpm.c$18$2_0$5
+                                     70 ;/workspace/idp-udev/src/ulibc/cpm.c:18: bdos(C_WRITE,'\n');
+    0000000F 11 0A 00         [10]   71 	ld	de, #0x000a
+    00000012 3E 02            [ 7]   72 	ld	a, #0x02
+    00000014 CDr00r00         [17]   73 	call	_bdos
+    00000017 D1               [10]   74 	pop	de
+    00000018 C9               [10]   75 	ret
+    00000019                         76 00102$:
+                         00000019    77 	C$cpm.c$19$1_0$4	= .
+                                     78 	.globl	C$cpm.c$19$1_0$4
+                                     79 ;/workspace/idp-udev/src/ulibc/cpm.c:19: } else bdos(C_WRITE,c);
+    00000019 D5               [11]   80 	push	de
+    0000001A 3E 02            [ 7]   81 	ld	a, #0x02
+    0000001C CDr00r00         [17]   82 	call	_bdos
+    0000001F D1               [10]   83 	pop	de
+                         00000020    84 	C$cpm.c$20$1_0$4	= .
+                                     85 	.globl	C$cpm.c$20$1_0$4
+                                     86 ;/workspace/idp-udev/src/ulibc/cpm.c:20: return c;
+                         00000020    87 	C$cpm.c$21$1_0$4	= .
+                                     88 	.globl	C$cpm.c$21$1_0$4
+                                     89 ;/workspace/idp-udev/src/ulibc/cpm.c:21: }
+                         00000020    90 	C$cpm.c$21$1_0$4	= .
+                                     91 	.globl	C$cpm.c$21$1_0$4
+                         00000020    92 	XG$putchar$0$0	= .
+                                     93 	.globl	XG$putchar$0$0
+    00000020 C9               [10]   94 	ret
+                         00000021    95 	G$kbhit$0$0	= .
+                                     96 	.globl	G$kbhit$0$0
+                         00000021    97 	C$cpm.c$23$1_0$7	= .
+                                     98 	.globl	C$cpm.c$23$1_0$7
+                                     99 ;/workspace/idp-udev/src/ulibc/cpm.c:23: int kbhit(void) {
+                                    100 ;	---------------------------------
+                                    101 ; Function kbhit
+                                    102 ; ---------------------------------
+    00000021                        103 _kbhit::
+                         00000021   104 	C$cpm.c$24$1_0$7	= .
+                                    105 	.globl	C$cpm.c$24$1_0$7
+                                    106 ;/workspace/idp-udev/src/ulibc/cpm.c:24: return bdos(C_RAWIO,0xff);
+    00000021 11 FF 00         [10]  107 	ld	de, #0x00ff
+    00000024 3E 06            [ 7]  108 	ld	a, #0x06
+    00000026 CDr00r00         [17]  109 	call	_bdos
+    00000029 5F               [ 4]  110 	ld	e, a
+    0000002A 16 00            [ 7]  111 	ld	d, #0x00
+                         0000002C   112 	C$cpm.c$25$1_0$7	= .
+                                    113 	.globl	C$cpm.c$25$1_0$7
+                                    114 ;/workspace/idp-udev/src/ulibc/cpm.c:25: }
+                         0000002C   115 	C$cpm.c$25$1_0$7	= .
+                                    116 	.globl	C$cpm.c$25$1_0$7
+                         0000002C   117 	XG$kbhit$0$0	= .
+                                    118 	.globl	XG$kbhit$0$0
+    0000002C C9               [10]  119 	ret
+                                    120 	.area _CODE
+                                    121 	.area _INITIALIZER
+                                    122 	.area _CABS (ABS)

@@ -1,0 +1,27 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+    .__.$$$.=   00002710 L   |     .__.ABS.=   00000000 G   |     .__.CPU.=   00000000 L
+    .__.H$L.=   00000000 L   |     EF9367_C=   00000023     |     EF9367_C=   00000020 
+    EF9367_C=   00000005     |     EF9367_C=   00000007     |     EF9367_C=   00000004 
+    EF9367_C=   00000006     |     EF9367_C=   0000000F     |     EF9367_C=   00000001 
+    EF9367_C=   00000000     |     EF9367_C=   00000002     |     EF9367_C=   00000003 
+    EF9367_C=   0000000C     |     EF9367_C=   0000000D     |     EF9367_C=   0000000E 
+    EF9367_C=   00000021     |     EF9367_C=   00000001     |     EF9367_C=   00000002 
+    EF9367_C=   00000022     |     EF9367_C=   00000000     |     EF9367_D=   00000025 
+    EF9367_D=   00000027     |     EF9367_S=   0000002F     |     EF9367_S=   00000004 
+    EF9367_S=   00000002     |     EF9367_X=   00000028     |     EF9367_X=   00000029 
+    EF9367_Y=   0000002A     |     EF9367_Y=   0000002B     |     GDP_MAX_=   000000FF 
+    GDP_WIDT=   00000400     |     PIO_GR_C=   00000030     |   0 _gputtex    00000000 GR
+    gpg_raw     ******** GX  |   0 gpt_draw    00000035 R   |   0 gpt_end     00000061 R
+  0 gpt_gdra    00000052 R   |   0 gpt_loop    00000023 R
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+Area Table
+
+   0 _CODE      size       62   flags    0
+

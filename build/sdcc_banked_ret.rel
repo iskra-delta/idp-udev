@@ -1,0 +1,11 @@
+XL4
+H 1 areas 2 global symbols
+M banked_ret
+O -mz80 sdcccall(1)
+S .__.ABS. Def00000000
+A _CODE size 3 flags 0 addr 0
+S __sdcc_banked_ret Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 00 00 C9
+R 00 00 00 00

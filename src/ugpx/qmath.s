@@ -11,10 +11,14 @@
         .globl  abs_hl
 
         .area    _CODE
+        ;; abs_hl
         ;; calculates absolute value of hl
-        ;; inputs:  hl
-        ;; outputs: hl = abs(hl)
-        ;; affect:  af, hl
+        ;; NOTES:
+        ;;  treats hl as a signed 16-bit integer and
+        ;;  negates it in place when the sign bit is set
+        ;; inputs: hl=value
+        ;; outputs: hl=abs(value)
+        ;; affects: af, hl
 abs_hl:
         bit     7,h
         ret     z

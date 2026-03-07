@@ -1,0 +1,41 @@
+;!FILE /workspace/idp-udev/build/init.asm
+XL4
+H 9 areas 15 global symbols
+M init
+O -mz80 sdcccall(1)
+S __heap Ref00000000
+S .__.ABS. Def00000000
+A _CODE size 18 flags 0 addr 0
+S C$init.c$20$1_0$12 Def00000006
+S C$init.c$21$1_0$12 Def00000012
+S G$_memory_init$0$0 Def00000000
+S C$init.c$22$1_0$12 Def00000017
+S C$init.c$15$0_0$12 Def00000000
+S C$init.c$18$1_0$12 Def00000000
+S A$init$80 Def00000017
+S A$init$71 Def00000012
+S C$init.c$19$1_0$12 Def00000000
+S A$init$72 Def00000015
+S A$init$63 Def00000006
+S A$init$64 Def00000009
+S A$init$65 Def0000000C
+S A$init$66 Def0000000D
+S A$init$67 Def0000000F
+S A$init$58 Def00000000
+S __memory_init Def00000000
+S A$init$59 Def00000003
+S XG$_memory_init$0$0 Def00000017
+A _DATA size 0 flags 0 addr 0
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 21 00 00 22 00 00 01 00 00 21 FB BF
+R 00 00 00 00 02 08 00 00 02 0B 00 00
+T 0C 00 00 00 BF ED 42 22 03 00 21 02 00 36 00 C9
+R 00 00 00 00 02 08 00 00 02 0B 00 00

@@ -23,16 +23,30 @@
 _gputglyph:
         ;;  hl=void * (glyph) - already in HL
         ;;  hl'=x - from DE
-        ;;  de'=y - from stack
+        ;;  de'=y - from stack at sp+2
         ld      ix,#0
         add     ix,sp
         exx
         ex      de,hl                   ; hl'=x (from DE parameter)
-        ld      e,(ix)                  ; de'=y from stack
-        ld      d,1(ix)
+        ld      e,2(ix)                 ; de'=y from stack
+        ld      d,3(ix)
         exx
+        call    gpg_raw
+        pop     bc                      ; preserve return address
+        pop     hl                      ; discard stacked y argument
+        push    bc
+        ret
         ;; HL contains glyph pointer, alternate regs contain x,y
 gpg_raw:
+        ;; gpg_raw
+        ;; draws a glyph from hl using alt-reg origin
+        ;; NOTES:
+        ;;  expects hl=glyph and alternate registers to
+        ;;  already hold x and y; dispatches to line or
+        ;;  tiny glyph handlers by signature
+        ;; inputs: hl=glyph, hl'=x, de'=y
+        ;; outputs: none
+        ;; affects: af, bc, de, hl
         ;; now get number of bytes into bc
         ld      a,(hl)                  ; get sprite signature
         inc     hl                      ; next byte...
@@ -130,6 +144,15 @@ pgl_eos:
         exx
         jr      gpgl_loop               ; and loop!
 gpgl_drawline:
+        ;; gpgl_drawline
+        ;; draws one signed line segment
+        ;; NOTES:
+        ;;  converts signed dx,dy values in c,b into the
+        ;;  absolute deltas and EF9367 line command bits
+        ;;  required by gdp_set_dxdy and gdp_exec_cmd
+        ;; inputs: b=dy, c=dx
+        ;; outputs: none
+        ;; affects: af, bc, de
         ;; values are signed! b=dy, c=dx
         ;; need to create command and run it...
         ld      d,#0b00010001           ; basic command
@@ -206,10 +229,15 @@ gpgt_loop:
         djnz    gpgt_loop
         ret
 gpgt_set_palette:
-        ;; this sets the correct pallete for drawing
-        ;; palette is mapping from currently set ink to 
-        ;; ink inside tiny glyph
-        ;; affects: a, de
+        ;; gpgt_set_palette
+        ;; prepares the tiny-glyph palette mapping
+        ;; NOTES:
+        ;;  maps glyph-local colors through the currently
+        ;;  cached drawing color and stores the resolved
+        ;;  palette values in static workspace bytes
+        ;; inputs: hl=glyph
+        ;; outputs: none
+        ;; affects: af, de, hl
         xor     a
         ld      (gpgt_none_value),a
         push    hl
@@ -230,9 +258,15 @@ gpgt_palette:
         .db     1, 2
         .db     2, 1
         .db     1, 2
-        ;; handle pen and color
-        ;; inputs: a is the tiny command
-        ;; affects: de
+        ;; gpgt_handle_pen
+        ;; applies tiny-glyph pen state from command byte
+        ;; NOTES:
+        ;;  extracts the encoded color, compares it with
+        ;;  the cached color, and routes through gsc_raw
+        ;;  only when the effective pen must change
+        ;; inputs: a=tiny glyph command
+        ;; outputs: none
+        ;; affects: af, de, hl
 gpgt_handle_pen:
         push    af
         ;; get the pen

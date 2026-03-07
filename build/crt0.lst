@@ -1,0 +1,89 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; crt0.s
+                                      2         ;; 
+                                      3         ;; a minimal crt0.s startup code for Iskra Delta Partner program
+                                      4         ;; 
+                                      5         ;; TODO: 
+                                      6         ;;  - handle cmd line
+                                      7         ;;
+                                      8         ;; MIT License (see: LICENSE)
+                                      9         ;; copyright (c) 2022 tomaz stih
+                                     10         ;;
+                                     11         ;; 22.03.2022    tstih
+                                     12         .module crt0
+                                     13 
+                                     14            .globl  _main
+                                     15         .globl  _exit
+                                     16         .globl  __heap
+                                     17 
+                                     18         .area     _CODE
+    00000000                         19 start:
+                                     20         ;; define a stack   
+    00000000 31 00 04         [10]   21         ld      sp,#stack
+                                     22 
+                                     23         ;; SDCC init globals
+    00000003 CD 00 00         [17]   24         call    gsinit
+                                     25 
+    00000006 CD 00 00         [17]   26         call    pargs
+    00000009 2A 00 00         [16]   27         ld      hl, (argc)
+    0000000C 11 00 00         [10]   28         ld      de, #argv
+                                     29 
+                                     30         ;; initialize memory management
+    0000000F CD 00 00         [17]   31         call    __memory_init
+                                     32 
+                                     33         ;; initialize random generator
+    00000012 CD 00 00         [17]   34         call    __rand_init
+                                     35 
+                                     36         ;; call the main
+    00000015 CD 00 00         [17]   37         call    _main
+    00000018                         38 _exit:
+                                     39         ;; Brute force BDOS exit (reset) return control to CP/M.
+    00000018 0E 00            [ 7]   40         ld      c,#0
+    0000001A C3 05 00         [10]   41         jp      5
+                                     42 
+                                     43         ;; Ordering of segments for the linker (after header)
+                                     44         .area     _CODE
+                                     45         .area   _GSINIT
+                                     46         .area   _GSFINAL    
+                                     47         .area   _HOME
+                                     48         .area   _INITIALIZER
+                                     49         .area   _INITFINAL
+                                     50         .area   _INITIALIZED
+                                     51         .area   _DATA
+                                     52         .area   _BSS
+                                     53         .area    _STACK
+                                     54         .area   _HEAP
+                                     55 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+                                     56 
+                                     57         ;; init code for functions/var.
+                                     58         .area   _GSINIT
+    00000000                         59 gsinit::      
+                                     60         ;; copy statics.
+    00000000 01 00 00         [10]   61         ld      bc, #l__INITIALIZER
+    00000003 78               [ 4]   62         ld      a, b
+    00000004 B1               [ 4]   63         or      a, c
+    00000005 28 08            [12]   64         jr      Z, gsinit_done
+    00000007 11 00 00         [10]   65         ld      de, #s__INITIALIZED
+    0000000A 21 00 00         [10]   66         ld      hl, #s__INITIALIZER
+    0000000D ED B0            [21]   67         ldir
+    0000000F                         68 gsinit_done:
+                                     69         .area   _GSFINAL
+    00000000 C9               [10]   70         ret
+                                     71 
+                                     72 
+                                     73         .area    _STACK
+    00000000                         74         .ds        1024
+    00000400                         75 stack:
+                                     76 
+                                     77 
+                                     78         .area   _HEAP
+    00000000                         79 __heap::                                ; start of our heap.

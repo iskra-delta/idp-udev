@@ -1,0 +1,83 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module init
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl __memory_init
+                                     12 ;--------------------------------------------------------
+                                     13 ; special function registers
+                                     14 ;--------------------------------------------------------
+                                     15 ;--------------------------------------------------------
+                                     16 ; ram data
+                                     17 ;--------------------------------------------------------
+                                     18 	.area _DATA
+                                     19 ;--------------------------------------------------------
+                                     20 ; ram data
+                                     21 ;--------------------------------------------------------
+                                     22 	.area _INITIALIZED
+                                     23 ;--------------------------------------------------------
+                                     24 ; absolute external ram data
+                                     25 ;--------------------------------------------------------
+                                     26 	.area _DABS (ABS)
+                                     27 ;--------------------------------------------------------
+                                     28 ; global & static initialisations
+                                     29 ;--------------------------------------------------------
+                                     30 	.area _HOME
+                                     31 	.area _GSINIT
+                                     32 	.area _GSFINAL
+                                     33 	.area _GSINIT
+                                     34 ;--------------------------------------------------------
+                                     35 ; Home
+                                     36 ;--------------------------------------------------------
+                                     37 	.area _HOME
+                                     38 	.area _HOME
+                                     39 ;--------------------------------------------------------
+                                     40 ; code
+                                     41 ;--------------------------------------------------------
+                                     42 	.area _CODE
+                         00000000    43 	G$_memory_init$0$0	= .
+                                     44 	.globl	G$_memory_init$0$0
+                         00000000    45 	C$init.c$15$0_0$12	= .
+                                     46 	.globl	C$init.c$15$0_0$12
+                                     47 ;/workspace/idp-udev/src/ulibc/init.c:15: void _memory_init(void)
+                                     48 ;	---------------------------------
+                                     49 ; Function _memory_init
+                                     50 ; ---------------------------------
+    00000000                         51 __memory_init::
+                         00000000    52 	C$init.c$18$1_0$12	= .
+                                     53 	.globl	C$init.c$18$1_0$12
+                                     54 ;/workspace/idp-udev/src/ulibc/init.c:18: block_t *first = (block_t *)&_heap;
+                         00000000    55 	C$init.c$19$1_0$12	= .
+                                     56 	.globl	C$init.c$19$1_0$12
+                                     57 ;/workspace/idp-udev/src/ulibc/init.c:19: first->hdr.next = NULL;
+    00000000 21 00 00         [10]   58 	ld	hl, #0x0000
+    00000003 22r00r00         [16]   59 	ld	(__heap), hl
+                         00000006    60 	C$init.c$20$1_0$12	= .
+                                     61 	.globl	C$init.c$20$1_0$12
+                                     62 ;/workspace/idp-udev/src/ulibc/init.c:20: first->size = ( MEM_TOP - (unsigned int)&_heap ) - BLK_SIZE;
+    00000006 01r00r00         [10]   63 	ld	bc, #__heap+0
+    00000009 21 FB BF         [10]   64 	ld	hl, #0xbffb
+    0000000C BF               [ 4]   65 	cp	a, a
+    0000000D ED 42            [15]   66 	sbc	hl, bc
+    0000000F 22r03r00         [16]   67 	ld	((__heap + 3)), hl
+                         00000012    68 	C$init.c$21$1_0$12	= .
+                                     69 	.globl	C$init.c$21$1_0$12
+                                     70 ;/workspace/idp-udev/src/ulibc/init.c:21: first->stat = NEW;
+    00000012 21r02r00         [10]   71 	ld	hl, #__heap + 2
+    00000015 36 00            [10]   72 	ld	(hl), #0x00
+                         00000017    73 	C$init.c$22$1_0$12	= .
+                                     74 	.globl	C$init.c$22$1_0$12
+                                     75 ;/workspace/idp-udev/src/ulibc/init.c:22: }
+                         00000017    76 	C$init.c$22$1_0$12	= .
+                                     77 	.globl	C$init.c$22$1_0$12
+                         00000017    78 	XG$_memory_init$0$0	= .
+                                     79 	.globl	XG$_memory_init$0$0
+    00000017 C9               [10]   80 	ret
+                                     81 	.area _CODE
+                                     82 	.area _INITIALIZER
+                                     83 	.area _CABS (ABS)

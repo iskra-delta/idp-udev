@@ -1,0 +1,10 @@
+M:cpm
+F:G$putchar$0_0$0({2}DF,SI:S),C,0,0,0,0,0
+S:Lcpm.putchar$c$1_0$0({2}SI:S),R,0,0,[e,d]
+F:G$kbhit$0_0$0({2}DF,SI:S),C,0,0,0,0,0
+T:Fcpm$bdos_ret_s[({0}S:S$reta$0_0$0({1}SC:U),Z,0,0)({1}S:S$retb$0_0$0({1}SC:U),Z,0,0)({2}S:S$rethl$0_0$0({2}SI:U),Z,0,0)]
+T:Fcpm$fcb_s[({0}S:S$drive$0_0$0({1}SC:U),Z,0,0)({1}S:S$filename$0_0$0({8}DA8d,SC:U),Z,0,0)({9}S:S$filetype$0_0$0({3}DA3d,SC:U),Z,0,0)({12}S:S$ex$0_0$0({1}SC:U),Z,0,0)({13}S:S$resv$0_0$0({2}SI:U),Z,0,0)({15}S:S$rc$0_0$0({1}SC:U),Z,0,0)({16}S:S$alb$0_0$0({16}DA16d,SC:U),Z,0,0)({32}S:S$seqreq$0_0$0({1}SC:U),Z,0,0)({33}S:S$rrec$0_0$0({2}SI:U),Z,0,0)({35}S:S$rrecob$0_0$0({1}SC:U),Z,0,0)]
+S:G$bdos$0_0$0({2}DF,SC:U),C,0,0
+S:G$bdosret$0_0$0({2}DF,DG,STbdos_ret_s:S),C,0,0
+S:G$putchar$0_0$0({2}DF,SI:S),C,0,0
+S:G$kbhit$0_0$0({2}DF,SI:S),C,0,0

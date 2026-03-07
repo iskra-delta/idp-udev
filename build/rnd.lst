@@ -1,0 +1,77 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; rnd.s
+                                      2         ;; 
+                                      3         ;; iumplementation of rand and srand
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 13.06.2022    tstih
+                                      9         .module rnd
+                                     10 
+                                     11         .globl  _rand
+                                     12         .globl  _srand
+                                     13         .globl  __rand_init
+                                     14 
+                         000000A0    15         .equ    RTC_THOUS_S,    0xa0
+                         000000A1    16         .equ    RTC_HUNDR_S,    0xa1
+                         000000A2    17         .equ    RTC_SECOND,     0xa2
+                         000000A3    18         .equ    RTC_MINUTE,     0xa3
+                                     19 
+                                     20         .area _CODE
+    00000000                         21 __rand_init:
+    00000000 DB A2            [11]   22         in      a,(RTC_SECOND)
+    00000002 6F               [ 4]   23         ld      l,a
+    00000003 DB A3            [11]   24         in      a,(RTC_MINUTE)
+    00000005 67               [ 4]   25         ld      h,a
+    00000006 E5               [11]   26         push    hl
+    00000007 CD 0C 00         [17]   27         call    _srand
+    0000000A E1               [10]   28         pop     hl
+    0000000B C9               [10]   29         ret
+                                     30 
+    0000000C                         31 _srand:
+                                     32         ;; first seed is from system clock.
+    0000000C DB A0            [11]   33         in      a,(RTC_THOUS_S)
+    0000000E 32 38 00         [13]   34         ld      (rnd_seedA),a
+    00000011 DB A1            [11]   35         in      a,(RTC_HUNDR_S)
+    00000013 32 39 00         [13]   36         ld      (rnd_seedA+1),a
+                                     37         ;; second from hl
+    00000016 22 3A 00         [16]   38         ld      (rnd_seedB),hl
+    00000019 C9               [10]   39         ret
+                                     40 
+                                     41         ;; return random between 0 and 32767
+                                     42         ;; source: https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
+    0000001A                         43 _rand:
+    0000001A 2A 38 00         [16]   44         ld      hl,(rnd_seedA)
+    0000001D 44               [ 4]   45         ld      b,h
+    0000001E 4D               [ 4]   46         ld      c,l
+    0000001F 29               [11]   47         add     hl,hl
+    00000020 29               [11]   48         add     hl,hl
+    00000021 2C               [ 4]   49         inc     l
+    00000022 09               [11]   50         add     hl,bc
+    00000023 22 38 00         [16]   51         ld      (rnd_seedA),hl
+    00000026 2A 3A 00         [16]   52         ld      hl,(rnd_seedB)
+    00000029 29               [11]   53         add     hl,hl
+    0000002A 9F               [ 4]   54         sbc     a,a
+    0000002B E6 2D            [ 7]   55         and     #0b00101101
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+    0000002D AD               [ 4]   56         xor     l
+    0000002E 6F               [ 4]   57         ld      l,a
+    0000002F 22 3A 00         [16]   58         ld      (rnd_seedB),hl
+    00000032 09               [11]   59         add     hl,bc
+    00000033 CB 3C            [ 8]   60         srl     h
+    00000035 CB 1D            [ 8]   61         rr      l
+    00000037 C9               [10]   62         ret
+                                     63 
+    00000038                         64 rnd_seedA:
+    00000038 00 00                   65         .dw 0
+    0000003A                         66 rnd_seedB:
+    0000003A 00 00                   67         .dw 0

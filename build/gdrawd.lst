@@ -1,0 +1,35 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; gdrawd.s
+                                      2         ;; 
+                                      3         ;; delta drawing functions!
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 17.06.2022    tstih
+                                      9         .module gdrawd
+                                     10 
+                                     11         .globl  _gdrawd
+                                     12 
+                                     13         .area    _CODE
+                                     14         ;; -------------------------------
+                                     15         ;; void gdrawdelta(int dx, int dy)
+                                     16         ;; -------------------------------
+                                     17         ;; idealised quick draw delta line
+    00000000                         18 _gdrawd:
+                                     19         ;; command into a
+    00000000 CD 00 00         [17]   20         call    gdp_get_delta_cmd
+    00000003 F5               [11]   21         push    af                      ; sotre command
+    00000004 CD 00 00         [17]   22         call    abs_hl                  ; hl=abs(dx)       
+    00000007 EB               [ 4]   23         ex      de,hl                   ; de=abs(dx)
+    00000008 CD 00 00         [17]   24         call    abs_hl                  ; hl=abs(dy)
+    0000000B 45               [ 4]   25         ld      b,l                     ; b=y
+    0000000C 4B               [ 4]   26         ld      c,e                     ; c=x
+    0000000D CD 00 00         [17]   27         call    gdp_set_dxdy            ; set dx,dy
+    00000010 F1               [10]   28         pop     af                      ; a=command
+    00000011 CD 00 00         [17]   29         call    gdp_exec_cmd            ; draw!
+    00000014 C9               [10]   30         ret

@@ -1,0 +1,21 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; banked return helper for sdcc z80
+                                      2         ;;
+                                      3         ;; gpl-2.0-or-later (see: LICENSE)
+                                      4         ;; copyright (c) 2026 tomaz stih
+                                      5 
+                                      6         .module banked_ret
+                                      7         .optsdcc -mz80 sdcccall(1)
+                                      8 
+                                      9         .globl  __sdcc_banked_ret
+                                     10         .area   _CODE
+                                     11 
+    00000000                         12 __sdcc_banked_ret:
+                                     13         ;; platform-specific bank restore hook.
+    00000000 00               [ 4]   14         nop
+    00000001 00               [ 4]   15         nop
+    00000002 C9               [10]   16         ret

@@ -1,0 +1,563 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module fload
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _fload
+                                     12 	.globl _memcpy
+                                     13 	.globl _fparse
+                                     14 	.globl _malloc
+                                     15 	.globl _free
+                                     16 	.globl _calloc
+                                     17 	.globl _bdosret
+                                     18 	.globl _bdos
+                                     19 ;--------------------------------------------------------
+                                     20 ; special function registers
+                                     21 ;--------------------------------------------------------
+                                     22 ;--------------------------------------------------------
+                                     23 ; ram data
+                                     24 ;--------------------------------------------------------
+                                     25 	.area _DATA
+                                     26 ;--------------------------------------------------------
+                                     27 ; ram data
+                                     28 ;--------------------------------------------------------
+                                     29 	.area _INITIALIZED
+                                     30 ;--------------------------------------------------------
+                                     31 ; absolute external ram data
+                                     32 ;--------------------------------------------------------
+                                     33 	.area _DABS (ABS)
+                                     34 ;--------------------------------------------------------
+                                     35 ; global & static initialisations
+                                     36 ;--------------------------------------------------------
+                                     37 	.area _HOME
+                                     38 	.area _GSINIT
+                                     39 	.area _GSFINAL
+                                     40 	.area _GSINIT
+                                     41 ;--------------------------------------------------------
+                                     42 ; Home
+                                     43 ;--------------------------------------------------------
+                                     44 	.area _HOME
+                                     45 	.area _HOME
+                                     46 ;--------------------------------------------------------
+                                     47 ; code
+                                     48 ;--------------------------------------------------------
+                                     49 	.area _CODE
+                         00000000    50 	G$fload$0$0	= .
+                                     51 	.globl	G$fload$0$0
+                         00000000    52 	C$fload.c$34$0_0$20	= .
+                                     53 	.globl	C$fload.c$34$0_0$20
+                                     54 ;/workspace/idp-udev/src/ulibc/fload.c:34: void *fload(char *path, void* out, unsigned int pos, unsigned int *flen) {
+                                     55 ;	---------------------------------
+                                     56 ; Function fload
+                                     57 ; ---------------------------------
+    00000000                         58 _fload::
+    00000000 DD E5            [15]   59 	push	ix
+    00000002 DD 21 00 00      [14]   60 	ld	ix,#0
+    00000006 DD 39            [15]   61 	add	ix,sp
+    00000008 FD 21 E9 FF      [14]   62 	ld	iy, #-23
+    0000000C FD 39            [15]   63 	add	iy, sp
+    0000000E FD F9            [10]   64 	ld	sp, iy
+    00000010 4D               [ 4]   65 	ld	c, l
+    00000011 44               [ 4]   66 	ld	b, h
+    00000012 DD 73 FA         [19]   67 	ld	-6 (ix), e
+    00000015 DD 72 FB         [19]   68 	ld	-5 (ix), d
+                         00000018    69 	C$fload.c$37$2_0$20	= .
+                                     70 	.globl	C$fload.c$37$2_0$20
+                                     71 ;/workspace/idp-udev/src/ulibc/fload.c:37: void *retval=NULL;
+    00000018 AF               [ 4]   72 	xor	a, a
+    00000019 DD 77 EE         [19]   73 	ld	-18 (ix), a
+    0000001C DD 77 EF         [19]   74 	ld	-17 (ix), a
+                         0000001F    75 	C$fload.c$40$1_0$20	= .
+                                     76 	.globl	C$fload.c$40$1_0$20
+                                     77 ;/workspace/idp-udev/src/ulibc/fload.c:40: fcb_t *fcb=calloc(1,sizeof(fcb_t));
+    0000001F C5               [11]   78 	push	bc
+    00000020 11 24 00         [10]   79 	ld	de, #0x0024
+    00000023 21 01 00         [10]   80 	ld	hl, #0x0001
+    00000026 CDr00r00         [17]   81 	call	_calloc
+    00000029 C1               [10]   82 	pop	bc
+    0000002A DD 73 FC         [19]   83 	ld	-4 (ix), e
+    0000002D DD 72 FD         [19]   84 	ld	-3 (ix), d
+                         00000030    85 	C$fload.c$44$1_0$20	= .
+                                     86 	.globl	C$fload.c$44$1_0$20
+                                     87 ;/workspace/idp-udev/src/ulibc/fload.c:44: if (fparse(path, fcb, &area)) {
+    00000030 21 00 00         [10]   88 	ld	hl, #0
+    00000033 39               [11]   89 	add	hl, sp
+    00000034 E5               [11]   90 	push	hl
+    00000035 DD 5E FC         [19]   91 	ld	e, -4 (ix)
+    00000038 DD 56 FD         [19]   92 	ld	d, -3 (ix)
+    0000003B 69               [ 4]   93 	ld	l, c
+    0000003C 60               [ 4]   94 	ld	h, b
+    0000003D CDr00r00         [17]   95 	call	_fparse
+                         00000040    96 	C$fload.c$45$1_3$20	= .
+                                     97 	.globl	C$fload.c$45$1_3$20
+                                     98 ;/workspace/idp-udev/src/ulibc/fload.c:45: free(fcb); 
+    00000040 DD 7E FC         [19]   99 	ld	a, -4 (ix)
+    00000043 DD 77 F0         [19]  100 	ld	-16 (ix), a
+    00000046 DD 7E FD         [19]  101 	ld	a, -3 (ix)
+    00000049 DD 77 F1         [19]  102 	ld	-15 (ix), a
+                         0000004C   103 	C$fload.c$44$1_0$20	= .
+                                    104 	.globl	C$fload.c$44$1_0$20
+                                    105 ;/workspace/idp-udev/src/ulibc/fload.c:44: if (fparse(path, fcb, &area)) {
+    0000004C 7A               [ 4]  106 	ld	a, d
+    0000004D B3               [ 4]  107 	or	a, e
+    0000004E 28 0F            [12]  108 	jr	Z, 00102$
+                         00000050   109 	C$fload.c$45$2_0$21	= .
+                                    110 	.globl	C$fload.c$45$2_0$21
+                                    111 ;/workspace/idp-udev/src/ulibc/fload.c:45: free(fcb); 
+    00000050 DD 6E F0         [19]  112 	ld	l, -16 (ix)
+    00000053 DD 66 F1         [19]  113 	ld	h, -15 (ix)
+    00000056 CDr00r00         [17]  114 	call	_free
+                         00000059   115 	C$fload.c$46$2_0$21	= .
+                                    116 	.globl	C$fload.c$46$2_0$21
+                                    117 ;/workspace/idp-udev/src/ulibc/fload.c:46: return retval;
+    00000059 11 00 00         [10]  118 	ld	de, #0x0000
+    0000005C C3rB8r02         [10]  119 	jp	00133$
+    0000005F                        120 00102$:
+                         0000005F   121 	C$fload.c$50$1_1$22	= .
+                                    122 	.globl	C$fload.c$50$1_1$22
+                                    123 ;/workspace/idp-udev/src/ulibc/fload.c:50: unsigned char prev_area = bdos(F_USERNUM, 0xff);
+    0000005F 11 FF 00         [10]  124 	ld	de, #0x00ff
+    00000062 3E 20            [ 7]  125 	ld	a, #0x20
+    00000064 CDr00r00         [17]  126 	call	_bdos
+    00000067 DD 77 F2         [19]  127 	ld	-14 (ix), a
+                         0000006A   128 	C$fload.c$51$1_1$22	= .
+                                    129 	.globl	C$fload.c$51$1_1$22
+                                    130 ;/workspace/idp-udev/src/ulibc/fload.c:51: if (area!=prev_area) { /* only if different */
+    0000006A DD 7E E9         [19]  131 	ld	a, -23 (ix)
+    0000006D DD 96 F2         [19]  132 	sub	a, -14 (ix)
+    00000070 28 14            [12]  133 	jr	Z, 00104$
+                         00000072   134 	C$fload.c$52$2_1$23	= .
+                                    135 	.globl	C$fload.c$52$2_1$23
+                                    136 ;/workspace/idp-udev/src/ulibc/fload.c:52: bdos(F_USERNUM, area);
+    00000072 DD 7E E9         [19]  137 	ld	a, -23 (ix)
+    00000075 DD 77 FE         [19]  138 	ld	-2 (ix), a
+    00000078 DD 36 FF 00      [19]  139 	ld	-1 (ix), #0x00
+    0000007C DD 5E FE         [19]  140 	ld	e, -2 (ix)
+    0000007F 16 00            [ 7]  141 	ld	d, #0x00
+    00000081 3E 20            [ 7]  142 	ld	a, #0x20
+    00000083 CDr00r00         [17]  143 	call	_bdos
+    00000086                        144 00104$:
+                         00000086   145 	C$fload.c$56$1_2$24	= .
+                                    146 	.globl	C$fload.c$56$1_2$24
+                                    147 ;/workspace/idp-udev/src/ulibc/fload.c:56: void *dma=malloc(DMA_SIZE);
+    00000086 21 80 00         [10]  148 	ld	hl, #0x0080
+    00000089 CDr00r00         [17]  149 	call	_malloc
+                         0000008C   150 	C$fload.c$60$1_2$24	= .
+                                    151 	.globl	C$fload.c$60$1_2$24
+                                    152 ;/workspace/idp-udev/src/ulibc/fload.c:60: unsigned char file_opened=0, blk_allocated=0;
+    0000008C DD 36 F3 00      [19]  153 	ld	-13 (ix), #0x00
+                         00000090   154 	C$fload.c$63$1_2$24	= .
+                                    155 	.globl	C$fload.c$63$1_2$24
+                                    156 ;/workspace/idp-udev/src/ulibc/fload.c:63: bdosret(F_OPEN,(unsigned int)fcb,&result);
+    00000090 DD 7E FC         [19]  157 	ld	a, -4 (ix)
+    00000093 DD 77 F4         [19]  158 	ld	-12 (ix), a
+    00000096 DD 7E FD         [19]  159 	ld	a, -3 (ix)
+    00000099 DD 77 F5         [19]  160 	ld	-11 (ix), a
+    0000009C D5               [11]  161 	push	de
+    0000009D 21 03 00         [10]  162 	ld	hl, #3
+    000000A0 39               [11]  163 	add	hl, sp
+    000000A1 E5               [11]  164 	push	hl
+    000000A2 DD 5E F4         [19]  165 	ld	e, -12 (ix)
+    000000A5 DD 56 F5         [19]  166 	ld	d, -11 (ix)
+    000000A8 3E 0F            [ 7]  167 	ld	a, #0x0f
+    000000AA CDr00r00         [17]  168 	call	_bdosret
+    000000AD D1               [10]  169 	pop	de
+                         000000AE   170 	C$fload.c$64$1_2$24	= .
+                                    171 	.globl	C$fload.c$64$1_2$24
+                                    172 ;/workspace/idp-udev/src/ulibc/fload.c:64: if (result.reta==BDOS_FAILURE) 
+    000000AE DD 7E EA         [19]  173 	ld	a, -22 (ix)
+    000000B1 3C               [ 4]  174 	inc	a
+    000000B2 CAr76r02         [10]  175 	jp	Z, 00128$
+                         000000B5   176 	C$fload.c$66$1_2$24	= .
+                                    177 	.globl	C$fload.c$66$1_2$24
+                                    178 ;/workspace/idp-udev/src/ulibc/fload.c:66: file_opened=1; /* file is open... */
+    000000B5 DD 36 F3 01      [19]  179 	ld	-13 (ix), #0x01
+                         000000B9   180 	C$fload.c$69$1_2$24	= .
+                                    181 	.globl	C$fload.c$69$1_2$24
+                                    182 ;/workspace/idp-udev/src/ulibc/fload.c:69: if ((*flen)==0) {
+    000000B9 DD 7E 06         [19]  183 	ld	a, 6 (ix)
+    000000BC DD 77 F6         [19]  184 	ld	-10 (ix), a
+    000000BF DD 7E 07         [19]  185 	ld	a, 7 (ix)
+    000000C2 DD 77 F7         [19]  186 	ld	-9 (ix), a
+    000000C5 DD 6E F6         [19]  187 	ld	l, -10 (ix)
+    000000C8 DD 66 F7         [19]  188 	ld	h, -9 (ix)
+    000000CB 4E               [ 7]  189 	ld	c, (hl)
+    000000CC 23               [ 6]  190 	inc	hl
+    000000CD 46               [ 7]  191 	ld	b, (hl)
+                         000000CE   192 	C$fload.c$72$1_3$20	= .
+                                    193 	.globl	C$fload.c$72$1_3$20
+                                    194 ;/workspace/idp-udev/src/ulibc/fload.c:72: *flen=fcb->rrec * DMA_SIZE;
+    000000CE DD 7E FC         [19]  195 	ld	a, -4 (ix)
+    000000D1 C6 21            [ 7]  196 	add	a, #0x21
+    000000D3 DD 77 FE         [19]  197 	ld	-2 (ix), a
+    000000D6 DD 7E FD         [19]  198 	ld	a, -3 (ix)
+    000000D9 CE 00            [ 7]  199 	adc	a, #0x00
+    000000DB DD 77 FF         [19]  200 	ld	-1 (ix), a
+                         000000DE   201 	C$fload.c$69$1_2$24	= .
+                                    202 	.globl	C$fload.c$69$1_2$24
+                                    203 ;/workspace/idp-udev/src/ulibc/fload.c:69: if ((*flen)==0) {
+    000000DE 78               [ 4]  204 	ld	a, b
+    000000DF B1               [ 4]  205 	or	a, c
+    000000E0 20 57            [12]  206 	jr	NZ, 00112$
+                         000000E2   207 	C$fload.c$70$2_2$25	= .
+                                    208 	.globl	C$fload.c$70$2_2$25
+                                    209 ;/workspace/idp-udev/src/ulibc/fload.c:70: bdosret(F_SIZE,(unsigned int)fcb,&result);
+    000000E2 D5               [11]  210 	push	de
+    000000E3 21 03 00         [10]  211 	ld	hl, #3
+    000000E6 39               [11]  212 	add	hl, sp
+    000000E7 E5               [11]  213 	push	hl
+    000000E8 DD 5E F4         [19]  214 	ld	e, -12 (ix)
+    000000EB DD 56 F5         [19]  215 	ld	d, -11 (ix)
+    000000EE 3E 23            [ 7]  216 	ld	a, #0x23
+    000000F0 CDr00r00         [17]  217 	call	_bdosret
+    000000F3 D1               [10]  218 	pop	de
+                         000000F4   219 	C$fload.c$71$2_2$25	= .
+                                    220 	.globl	C$fload.c$71$2_2$25
+                                    221 ;/workspace/idp-udev/src/ulibc/fload.c:71: if (result.reta==BDOS_FAILURE) goto fload_done;
+    000000F4 DD 7E EA         [19]  222 	ld	a, -22 (ix)
+    000000F7 3C               [ 4]  223 	inc	a
+    000000F8 CAr76r02         [10]  224 	jp	Z, 00128$
+                         000000FB   225 	C$fload.c$72$2_2$25	= .
+                                    226 	.globl	C$fload.c$72$2_2$25
+                                    227 ;/workspace/idp-udev/src/ulibc/fload.c:72: *flen=fcb->rrec * DMA_SIZE;
+    000000FB DD 6E FE         [19]  228 	ld	l, -2 (ix)
+    000000FE DD 66 FF         [19]  229 	ld	h, -1 (ix)
+    00000101 4E               [ 7]  230 	ld	c, (hl)
+    00000102 23               [ 6]  231 	inc	hl
+    00000103 46               [ 7]  232 	ld	b, (hl)
+    00000104 AF               [ 4]  233 	xor	a, a
+    00000105 CB 18            [ 8]  234 	rr	b
+    00000107 41               [ 4]  235 	ld	b, c
+    00000108 CB 18            [ 8]  236 	rr	b
+    0000010A 1F               [ 4]  237 	rra
+    0000010B 4F               [ 4]  238 	ld	c, a
+    0000010C DD 6E F6         [19]  239 	ld	l, -10 (ix)
+    0000010F DD 66 F7         [19]  240 	ld	h, -9 (ix)
+    00000112 71               [ 7]  241 	ld	(hl), c
+    00000113 23               [ 6]  242 	inc	hl
+    00000114 70               [ 7]  243 	ld	(hl), b
+                         00000115   244 	C$fload.c$74$2_2$25	= .
+                                    245 	.globl	C$fload.c$74$2_2$25
+                                    246 ;/workspace/idp-udev/src/ulibc/fload.c:74: if (pos>0) (*flen) -= pos;
+    00000115 DD 7E 05         [19]  247 	ld	a, 5 (ix)
+    00000118 DD B6 04         [19]  248 	or	a, 4 (ix)
+    0000011B 28 1C            [12]  249 	jr	Z, 00112$
+    0000011D DD 6E F6         [19]  250 	ld	l, -10 (ix)
+    00000120 DD 66 F7         [19]  251 	ld	h, -9 (ix)
+    00000123 4E               [ 7]  252 	ld	c, (hl)
+    00000124 23               [ 6]  253 	inc	hl
+    00000125 46               [ 7]  254 	ld	b, (hl)
+    00000126 79               [ 4]  255 	ld	a, c
+    00000127 DD 96 04         [19]  256 	sub	a, 4 (ix)
+    0000012A 4F               [ 4]  257 	ld	c, a
+    0000012B 78               [ 4]  258 	ld	a, b
+    0000012C DD 9E 05         [19]  259 	sbc	a, 5 (ix)
+    0000012F 47               [ 4]  260 	ld	b, a
+    00000130 DD 6E F6         [19]  261 	ld	l, -10 (ix)
+    00000133 DD 66 F7         [19]  262 	ld	h, -9 (ix)
+    00000136 71               [ 7]  263 	ld	(hl), c
+    00000137 23               [ 6]  264 	inc	hl
+    00000138 70               [ 7]  265 	ld	(hl), b
+    00000139                        266 00112$:
+                         00000139   267 	C$fload.c$78$1_2$24	= .
+                                    268 	.globl	C$fload.c$78$1_2$24
+                                    269 ;/workspace/idp-udev/src/ulibc/fload.c:78: if (out==NULL) {
+    00000139 DD 7E FB         [19]  270 	ld	a, -5 (ix)
+    0000013C DD B6 FA         [19]  271 	or	a, -6 (ix)
+    0000013F 20 1E            [12]  272 	jr	NZ, 00116$
+                         00000141   273 	C$fload.c$82$2_2$26	= .
+                                    274 	.globl	C$fload.c$82$2_2$26
+                                    275 ;/workspace/idp-udev/src/ulibc/fload.c:82: out=malloc(*flen);
+    00000141 DD 6E F6         [19]  276 	ld	l, -10 (ix)
+    00000144 DD 66 F7         [19]  277 	ld	h, -9 (ix)
+    00000147 7E               [ 7]  278 	ld	a, (hl)
+    00000148 23               [ 6]  279 	inc	hl
+    00000149 66               [ 7]  280 	ld	h, (hl)
+    0000014A 6F               [ 4]  281 	ld	l, a
+    0000014B D5               [11]  282 	push	de
+    0000014C CDr00r00         [17]  283 	call	_malloc
+    0000014F DD 73 FA         [19]  284 	ld	-6 (ix), e
+    00000152 DD 72 FB         [19]  285 	ld	-5 (ix), d
+    00000155 D1               [10]  286 	pop	de
+                         00000156   287 	C$fload.c$83$2_2$26	= .
+                                    288 	.globl	C$fload.c$83$2_2$26
+                                    289 ;/workspace/idp-udev/src/ulibc/fload.c:83: if (out==NULL) goto fload_done;
+    00000156 DD 7E FB         [19]  290 	ld	a, -5 (ix)
+    00000159 DD B6 FA         [19]  291 	or	a, -6 (ix)
+    0000015C CAr76r02         [10]  292 	jp	Z, 00128$
+                         0000015F   293 	C$fload.c$84$1_2$24	= .
+                                    294 	.globl	C$fload.c$84$1_2$24
+                                    295 ;/workspace/idp-udev/src/ulibc/fload.c:84: blk_allocated=1;
+    0000015F                        296 00116$:
+                         0000015F   297 	C$fload.c$89$1_2$24	= .
+                                    298 	.globl	C$fload.c$89$1_2$24
+                                    299 ;/workspace/idp-udev/src/ulibc/fload.c:89: bdos(F_DMAOFF,(unsigned int)dma);
+    0000015F 6B               [ 4]  300 	ld	l, e
+    00000160 62               [ 4]  301 	ld	h, d
+    00000161 EB               [ 4]  302 	ex	de, hl
+    00000162 E5               [11]  303 	push	hl
+    00000163 3E 1A            [ 7]  304 	ld	a, #0x1a
+    00000165 CDr00r00         [17]  305 	call	_bdos
+    00000168 D1               [10]  306 	pop	de
+                         00000169   307 	C$fload.c$92$1_2$24	= .
+                                    308 	.globl	C$fload.c$92$1_2$24
+                                    309 ;/workspace/idp-udev/src/ulibc/fload.c:92: if (pos > 0) {
+    00000169 DD 7E 05         [19]  310 	ld	a, 5 (ix)
+    0000016C DD B6 04         [19]  311 	or	a, 4 (ix)
+    0000016F 28 44            [12]  312 	jr	Z, 00120$
+                         00000171   313 	C$fload.c$93$2_2$27	= .
+                                    314 	.globl	C$fload.c$93$2_2$27
+                                    315 ;/workspace/idp-udev/src/ulibc/fload.c:93: unsigned int rec = pos / DMA_SIZE;
+    00000171 DD 4E 04         [19]  316 	ld	c, 4 (ix)
+    00000174 DD 46 05         [19]  317 	ld	b, 5 (ix)
+    00000177 CB 38            [ 8]  318 	srl	b
+    00000179 CB 19            [ 8]  319 	rr	c
+    0000017B CB 38            [ 8]  320 	srl	b
+    0000017D CB 19            [ 8]  321 	rr	c
+    0000017F CB 38            [ 8]  322 	srl	b
+    00000181 CB 19            [ 8]  323 	rr	c
+    00000183 CB 38            [ 8]  324 	srl	b
+    00000185 CB 19            [ 8]  325 	rr	c
+    00000187 CB 38            [ 8]  326 	srl	b
+    00000189 CB 19            [ 8]  327 	rr	c
+    0000018B CB 38            [ 8]  328 	srl	b
+    0000018D CB 19            [ 8]  329 	rr	c
+    0000018F CB 38            [ 8]  330 	srl	b
+    00000191 CB 19            [ 8]  331 	rr	c
+                         00000193   332 	C$fload.c$94$2_2$27	= .
+                                    333 	.globl	C$fload.c$94$2_2$27
+                                    334 ;/workspace/idp-udev/src/ulibc/fload.c:94: fcb->rrec = rec;
+    00000193 DD 6E FE         [19]  335 	ld	l, -2 (ix)
+    00000196 DD 66 FF         [19]  336 	ld	h, -1 (ix)
+    00000199 71               [ 7]  337 	ld	(hl), c
+    0000019A 23               [ 6]  338 	inc	hl
+    0000019B 70               [ 7]  339 	ld	(hl), b
+                         0000019C   340 	C$fload.c$95$2_2$27	= .
+                                    341 	.globl	C$fload.c$95$2_2$27
+                                    342 ;/workspace/idp-udev/src/ulibc/fload.c:95: bdosret(F_READRAND, (unsigned int)fcb, &result);
+    0000019C D5               [11]  343 	push	de
+    0000019D 21 03 00         [10]  344 	ld	hl, #3
+    000001A0 39               [11]  345 	add	hl, sp
+    000001A1 E5               [11]  346 	push	hl
+    000001A2 DD 5E F4         [19]  347 	ld	e, -12 (ix)
+    000001A5 DD 56 F5         [19]  348 	ld	d, -11 (ix)
+    000001A8 3E 21            [ 7]  349 	ld	a, #0x21
+    000001AA CDr00r00         [17]  350 	call	_bdosret
+    000001AD D1               [10]  351 	pop	de
+                         000001AE   352 	C$fload.c$96$2_2$27	= .
+                                    353 	.globl	C$fload.c$96$2_2$27
+                                    354 ;/workspace/idp-udev/src/ulibc/fload.c:96: if (result.reta == BDOS_FAILURE) goto fload_done;
+    000001AE DD 7E EA         [19]  355 	ld	a, -22 (ix)
+    000001B1 3C               [ 4]  356 	inc	a
+    000001B2 CAr76r02         [10]  357 	jp	Z, 00128$
+    000001B5                        358 00120$:
+                         000001B5   359 	C$fload.c$100$2_2$28	= .
+                                    360 	.globl	C$fload.c$100$2_2$28
+                                    361 ;/workspace/idp-udev/src/ulibc/fload.c:100: unsigned int bcount = 0; /* block count */
+    000001B5 AF               [ 4]  362 	xor	a, a
+    000001B6 DD 77 FC         [19]  363 	ld	-4 (ix), a
+    000001B9 DD 77 FD         [19]  364 	ld	-3 (ix), a
+                         000001BC   365 	C$fload.c$101$1_3$28	= .
+                                    366 	.globl	C$fload.c$101$1_3$28
+                                    367 ;/workspace/idp-udev/src/ulibc/fload.c:101: unsigned int dma_offs = pos % DMA_SIZE; /* where are we? */
+    000001BC DD 7E 04         [19]  368 	ld	a, 4 (ix)
+    000001BF E6 7F            [ 7]  369 	and	a, #0x7f
+    000001C1 DD 77 F8         [19]  370 	ld	-8 (ix), a
+    000001C4 DD 36 F9 00      [19]  371 	ld	-7 (ix), #0x00
+                         000001C8   372 	C$fload.c$102$1_3$28	= .
+                                    373 	.globl	C$fload.c$102$1_3$28
+                                    374 ;/workspace/idp-udev/src/ulibc/fload.c:102: unsigned char *pout=(unsigned char *)out;
+    000001C8 DD 7E FA         [19]  375 	ld	a, -6 (ix)
+    000001CB DD 77 FE         [19]  376 	ld	-2 (ix), a
+    000001CE DD 7E FB         [19]  377 	ld	a, -5 (ix)
+    000001D1 DD 77 FF         [19]  378 	ld	-1 (ix), a
+                         000001D4   379 	C$fload.c$103$1_3$28	= .
+                                    380 	.globl	C$fload.c$103$1_3$28
+                                    381 ;/workspace/idp-udev/src/ulibc/fload.c:103: while (bcount < (*flen)) {
+    000001D4                        382 00125$:
+    000001D4 DD 6E F6         [19]  383 	ld	l, -10 (ix)
+    000001D7 DD 66 F7         [19]  384 	ld	h, -9 (ix)
+    000001DA 4E               [ 7]  385 	ld	c, (hl)
+    000001DB 23               [ 6]  386 	inc	hl
+    000001DC 46               [ 7]  387 	ld	b, (hl)
+    000001DD DD 7E FC         [19]  388 	ld	a, -4 (ix)
+    000001E0 91               [ 4]  389 	sub	a, c
+    000001E1 DD 7E FD         [19]  390 	ld	a, -3 (ix)
+    000001E4 98               [ 4]  391 	sbc	a, b
+    000001E5 D2r6Ar02         [10]  392 	jp	NC, 00127$
+                         000001E8   393 	C$fload.c$105$2_3$29	= .
+                                    394 	.globl	C$fload.c$105$2_3$29
+                                    395 ;/workspace/idp-udev/src/ulibc/fload.c:105: bdosret(F_READ,(unsigned int)fcb,&result);
+    000001E8 D5               [11]  396 	push	de
+    000001E9 21 03 00         [10]  397 	ld	hl, #3
+    000001EC 39               [11]  398 	add	hl, sp
+    000001ED E5               [11]  399 	push	hl
+    000001EE DD 5E F4         [19]  400 	ld	e, -12 (ix)
+    000001F1 DD 56 F5         [19]  401 	ld	d, -11 (ix)
+    000001F4 3E 14            [ 7]  402 	ld	a, #0x14
+    000001F6 CDr00r00         [17]  403 	call	_bdosret
+    000001F9 D1               [10]  404 	pop	de
+                         000001FA   405 	C$fload.c$106$2_3$29	= .
+                                    406 	.globl	C$fload.c$106$2_3$29
+                                    407 ;/workspace/idp-udev/src/ulibc/fload.c:106: if (result.reta != BDOS_SUCCESS) goto fload_done;
+    000001FA DD 7E EA         [19]  408 	ld	a, -22 (ix)
+    000001FD B7               [ 4]  409 	or	a, a
+    000001FE 20 76            [12]  410 	jr	NZ, 00128$
+                         00000200   411 	C$fload.c$107$2_4$30	= .
+                                    412 	.globl	C$fload.c$107$2_4$30
+                                    413 ;/workspace/idp-udev/src/ulibc/fload.c:107: unsigned int bytes2copy=DMA_SIZE-dma_offs;
+    00000200 3E 80            [ 7]  414 	ld	a, #0x80
+    00000202 DD 96 F8         [19]  415 	sub	a, -8 (ix)
+    00000205 4F               [ 4]  416 	ld	c, a
+    00000206 9F               [ 4]  417 	sbc	a, a
+    00000207 DD 96 F9         [19]  418 	sub	a, -7 (ix)
+    0000020A 47               [ 4]  419 	ld	b, a
+                         0000020B   420 	C$fload.c$108$2_4$30	= .
+                                    421 	.globl	C$fload.c$108$2_4$30
+                                    422 ;/workspace/idp-udev/src/ulibc/fload.c:108: if (bcount + bytes2copy > (*flen)) bytes2copy=(*flen)-bcount;
+    0000020B DD 7E FC         [19]  423 	ld	a, -4 (ix)
+    0000020E 81               [ 4]  424 	add	a, c
+    0000020F DD 77 F8         [19]  425 	ld	-8 (ix), a
+    00000212 DD 7E FD         [19]  426 	ld	a, -3 (ix)
+    00000215 88               [ 4]  427 	adc	a, b
+    00000216 DD 77 F9         [19]  428 	ld	-7 (ix), a
+                         00000219   429 	C$fload.c$69$1_3$20	= .
+                                    430 	.globl	C$fload.c$69$1_3$20
+                                    431 ;/workspace/idp-udev/src/ulibc/fload.c:69: if ((*flen)==0) {
+    00000219 DD 6E F6         [19]  432 	ld	l, -10 (ix)
+    0000021C DD 66 F7         [19]  433 	ld	h, -9 (ix)
+    0000021F 7E               [ 7]  434 	ld	a, (hl)
+    00000220 23               [ 6]  435 	inc	hl
+    00000221 66               [ 7]  436 	ld	h, (hl)
+                         00000222   437 	C$fload.c$108$2_4$30	= .
+                                    438 	.globl	C$fload.c$108$2_4$30
+                                    439 ;/workspace/idp-udev/src/ulibc/fload.c:108: if (bcount + bytes2copy > (*flen)) bytes2copy=(*flen)-bcount;
+    00000222 6F               [ 4]  440 	ld	l, a
+    00000223 DD 96 F8         [19]  441 	sub	a, -8 (ix)
+    00000226 7C               [ 4]  442 	ld	a, h
+    00000227 DD 9E F9         [19]  443 	sbc	a, -7 (ix)
+    0000022A 30 0A            [12]  444 	jr	NC, 00124$
+    0000022C 7D               [ 4]  445 	ld	a, l
+    0000022D DD 96 FC         [19]  446 	sub	a, -4 (ix)
+    00000230 4F               [ 4]  447 	ld	c, a
+    00000231 7C               [ 4]  448 	ld	a, h
+    00000232 DD 9E FD         [19]  449 	sbc	a, -3 (ix)
+    00000235 47               [ 4]  450 	ld	b, a
+    00000236                        451 00124$:
+                         00000236   452 	C$fload.c$110$2_4$30	= .
+                                    453 	.globl	C$fload.c$110$2_4$30
+                                    454 ;/workspace/idp-udev/src/ulibc/fload.c:110: memcpy(pout, dma + dma_offs, bytes2copy);
+    00000236 DD 6E FE         [19]  455 	ld	l, -2 (ix)
+    00000239 DD 66 FF         [19]  456 	ld	h, -1 (ix)
+    0000023C C5               [11]  457 	push	bc
+    0000023D D5               [11]  458 	push	de
+    0000023E C5               [11]  459 	push	bc
+    0000023F CDr00r00         [17]  460 	call	_memcpy
+    00000242 D1               [10]  461 	pop	de
+    00000243 C1               [10]  462 	pop	bc
+                         00000244   463 	C$fload.c$111$2_4$30	= .
+                                    464 	.globl	C$fload.c$111$2_4$30
+                                    465 ;/workspace/idp-udev/src/ulibc/fload.c:111: dma_offs=0; /* just first DMA may have the offset */
+    00000244 AF               [ 4]  466 	xor	a, a
+    00000245 DD 77 F8         [19]  467 	ld	-8 (ix), a
+    00000248 DD 77 F9         [19]  468 	ld	-7 (ix), a
+                         0000024B   469 	C$fload.c$113$2_4$30	= .
+                                    470 	.globl	C$fload.c$113$2_4$30
+                                    471 ;/workspace/idp-udev/src/ulibc/fload.c:113: pout+=bytes2copy;
+    0000024B 79               [ 4]  472 	ld	a, c
+    0000024C DD 86 FE         [19]  473 	add	a, -2 (ix)
+    0000024F DD 77 FE         [19]  474 	ld	-2 (ix), a
+    00000252 78               [ 4]  475 	ld	a, b
+    00000253 DD 8E FF         [19]  476 	adc	a, -1 (ix)
+    00000256 DD 77 FF         [19]  477 	ld	-1 (ix), a
+                         00000259   478 	C$fload.c$114$2_4$30	= .
+                                    479 	.globl	C$fload.c$114$2_4$30
+                                    480 ;/workspace/idp-udev/src/ulibc/fload.c:114: bcount+=bytes2copy;
+    00000259 79               [ 4]  481 	ld	a, c
+    0000025A DD 86 FC         [19]  482 	add	a, -4 (ix)
+    0000025D DD 77 FC         [19]  483 	ld	-4 (ix), a
+    00000260 78               [ 4]  484 	ld	a, b
+    00000261 DD 8E FD         [19]  485 	adc	a, -3 (ix)
+    00000264 DD 77 FD         [19]  486 	ld	-3 (ix), a
+    00000267 C3rD4r01         [10]  487 	jp	00125$
+    0000026A                        488 00127$:
+                         0000026A   489 	C$fload.c$118$1_3$28	= .
+                                    490 	.globl	C$fload.c$118$1_3$28
+                                    491 ;/workspace/idp-udev/src/ulibc/fload.c:118: retval=out;
+    0000026A DD 7E FA         [19]  492 	ld	a, -6 (ix)
+    0000026D DD 77 EE         [19]  493 	ld	-18 (ix), a
+    00000270 DD 7E FB         [19]  494 	ld	a, -5 (ix)
+    00000273 DD 77 EF         [19]  495 	ld	-17 (ix), a
+                         00000276   496 	C$fload.c$120$1_3$28	= .
+                                    497 	.globl	C$fload.c$120$1_3$28
+                                    498 ;/workspace/idp-udev/src/ulibc/fload.c:120: fload_done:
+    00000276                        499 00128$:
+                         00000276   500 	C$fload.c$123$1_3$28	= .
+                                    501 	.globl	C$fload.c$123$1_3$28
+                                    502 ;/workspace/idp-udev/src/ulibc/fload.c:123: if (file_opened) 
+    00000276 DD 7E F3         [19]  503 	ld	a, -13 (ix)
+    00000279 B7               [ 4]  504 	or	a, a
+    0000027A 28 12            [12]  505 	jr	Z, 00130$
+                         0000027C   506 	C$fload.c$124$1_3$28	= .
+                                    507 	.globl	C$fload.c$124$1_3$28
+                                    508 ;/workspace/idp-udev/src/ulibc/fload.c:124: bdosret(F_CLOSE,(unsigned int)fcb,&result);
+    0000027C D5               [11]  509 	push	de
+    0000027D 21 03 00         [10]  510 	ld	hl, #3
+    00000280 39               [11]  511 	add	hl, sp
+    00000281 E5               [11]  512 	push	hl
+    00000282 DD 5E F4         [19]  513 	ld	e, -12 (ix)
+    00000285 DD 56 F5         [19]  514 	ld	d, -11 (ix)
+    00000288 3E 10            [ 7]  515 	ld	a, #0x10
+    0000028A CDr00r00         [17]  516 	call	_bdosret
+    0000028D D1               [10]  517 	pop	de
+    0000028E                        518 00130$:
+                         0000028E   519 	C$fload.c$127$1_3$28	= .
+                                    520 	.globl	C$fload.c$127$1_3$28
+                                    521 ;/workspace/idp-udev/src/ulibc/fload.c:127: if (area!=prev_area) bdos(F_USERNUM,prev_area);
+    0000028E DD 7E E9         [19]  522 	ld	a, -23 (ix)
+    00000291 DD 96 F2         [19]  523 	sub	a, -14 (ix)
+    00000294 28 0D            [12]  524 	jr	Z, 00132$
+    00000296 DD 6E F2         [19]  525 	ld	l, -14 (ix)
+    00000299 26 00            [ 7]  526 	ld	h, #0x00
+    0000029B EB               [ 4]  527 	ex	de, hl
+    0000029C E5               [11]  528 	push	hl
+    0000029D 3E 20            [ 7]  529 	ld	a, #0x20
+    0000029F CDr00r00         [17]  530 	call	_bdos
+    000002A2 D1               [10]  531 	pop	de
+    000002A3                        532 00132$:
+                         000002A3   533 	C$fload.c$130$1_3$28	= .
+                                    534 	.globl	C$fload.c$130$1_3$28
+                                    535 ;/workspace/idp-udev/src/ulibc/fload.c:130: free(fcb);
+    000002A3 D5               [11]  536 	push	de
+    000002A4 DD 6E F0         [19]  537 	ld	l, -16 (ix)
+    000002A7 DD 66 F1         [19]  538 	ld	h, -15 (ix)
+    000002AA CDr00r00         [17]  539 	call	_free
+    000002AD D1               [10]  540 	pop	de
+                         000002AE   541 	C$fload.c$133$1_3$28	= .
+                                    542 	.globl	C$fload.c$133$1_3$28
+                                    543 ;/workspace/idp-udev/src/ulibc/fload.c:133: free(dma);
+    000002AE EB               [ 4]  544 	ex	de, hl
+    000002AF CDr00r00         [17]  545 	call	_free
+                         000002B2   546 	C$fload.c$136$1_3$28	= .
+                                    547 	.globl	C$fload.c$136$1_3$28
+                                    548 ;/workspace/idp-udev/src/ulibc/fload.c:136: return  retval;
+    000002B2 DD 5E EE         [19]  549 	ld	e, -18 (ix)
+    000002B5 DD 56 EF         [19]  550 	ld	d, -17 (ix)
+    000002B8                        551 00133$:
+                         000002B8   552 	C$fload.c$137$1_3$20	= .
+                                    553 	.globl	C$fload.c$137$1_3$20
+                                    554 ;/workspace/idp-udev/src/ulibc/fload.c:137: }
+    000002B8 DD F9            [10]  555 	ld	sp, ix
+    000002BA DD E1            [14]  556 	pop	ix
+    000002BC E1               [10]  557 	pop	hl
+    000002BD F1               [10]  558 	pop	af
+    000002BE F1               [10]  559 	pop	af
+    000002BF E9               [ 4]  560 	jp	(hl)
+                                    561 	.area _CODE
+                                    562 	.area _INITIALIZER
+                                    563 	.area _CABS (ABS)

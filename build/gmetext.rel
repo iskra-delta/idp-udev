@@ -1,0 +1,171 @@
+;!FILE /workspace/idp-udev/build/gmetext.asm
+XL4
+H 9 areas 75 global symbols
+M gmetext
+O -mz80 sdcccall(1)
+S .__.ABS. Def00000000
+A _CODE size BA flags 0 addr 0
+S G$gmetext$0$0 Def00000000
+S A$gmetext$110 Def0000004F
+S A$gmetext$111 Def00000050
+S A$gmetext$102 Def0000003B
+S A$gmetext$103 Def0000003E
+S A$gmetext$140 Def00000077
+S A$gmetext$131 Def00000065
+S A$gmetext$104 Def00000041
+S A$gmetext$141 Def00000078
+S A$gmetext$132 Def00000066
+S A$gmetext$123 Def0000005B
+S A$gmetext$105 Def00000044
+S _gmetext Def00000000
+S A$gmetext$160 Def00000094
+S A$gmetext$151 Def00000083
+S A$gmetext$142 Def00000079
+S A$gmetext$133 Def00000068
+S A$gmetext$124 Def0000005E
+S A$gmetext$115 Def00000051
+S A$gmetext$106 Def00000047
+S A$gmetext$170 Def000000A6
+S A$gmetext$161 Def00000096
+S A$gmetext$152 Def00000086
+S A$gmetext$143 Def0000007A
+S A$gmetext$134 Def0000006B
+S A$gmetext$125 Def00000061
+S A$gmetext$116 Def00000054
+S A$gmetext$107 Def0000004A
+S A$gmetext$171 Def000000A7
+S A$gmetext$162 Def00000097
+S A$gmetext$153 Def00000089
+S A$gmetext$144 Def0000007B
+S A$gmetext$135 Def0000006D
+S A$gmetext$126 Def00000062
+S A$gmetext$117 Def00000055
+S A$gmetext$108 Def0000004D
+S A$gmetext$172 Def000000A8
+S A$gmetext$163 Def00000098
+S A$gmetext$154 Def0000008A
+S A$gmetext$145 Def0000007C
+S A$gmetext$136 Def0000006E
+S A$gmetext$127 Def00000063
+S A$gmetext$118 Def00000058
+S A$gmetext$109 Def0000004E
+S A$gmetext$164 Def0000009B
+S A$gmetext$155 Def0000008B
+S A$gmetext$146 Def0000007D
+S A$gmetext$137 Def00000070
+S A$gmetext$165 Def0000009D
+S A$gmetext$156 Def0000008C
+S A$gmetext$147 Def00000080
+S A$gmetext$138 Def00000071
+S A$gmetext$184 Def000000B3
+S A$gmetext$166 Def0000009E
+S A$gmetext$157 Def0000008F
+S A$gmetext$139 Def00000074
+S A$gmetext$185 Def000000B5
+S A$gmetext$176 Def000000A9
+S A$gmetext$167 Def0000009F
+S A$gmetext$158 Def00000092
+S A$gmetext$186 Def000000B7
+S A$gmetext$177 Def000000AC
+S A$gmetext$168 Def000000A0
+S A$gmetext$159 Def00000093
+S A$gmetext$187 Def000000B8
+S A$gmetext$178 Def000000AE
+S A$gmetext$169 Def000000A3
+S A$gmetext$188 Def000000B9
+S A$gmetext$179 Def000000B1
+S C$gmetext.c$31$2_1$20 Def00000065
+S C$gmetext.c$32$2_1$20 Def00000083
+S C$gmetext.c$33$2_1$20 Def000000A9
+S A$gmetext$52 Def00000000
+S C$gmetext.c$22$0_0$18 Def00000000
+S A$gmetext$53 Def00000002
+S A$gmetext$90 Def00000031
+S A$gmetext$63 Def00000016
+S A$gmetext$54 Def00000006
+S C$gmetext.c$30$1_1$19 Def0000005B
+S C$gmetext.c$23$1_0$18 Def00000016
+S A$gmetext$91 Def00000032
+S A$gmetext$73 Def0000001D
+S A$gmetext$55 Def00000008
+S C$gmetext.c$24$1_0$18 Def00000017
+S A$gmetext$92 Def00000033
+S A$gmetext$83 Def00000026
+S A$gmetext$74 Def0000001E
+S A$gmetext$56 Def0000000C
+S C$gmetext.c$25$1_0$18 Def0000001D
+S A$gmetext$93 Def00000035
+S A$gmetext$84 Def00000029
+S A$gmetext$75 Def0000001F
+S A$gmetext$57 Def0000000E
+S C$gmetext.c$26$1_0$18 Def00000026
+S A$gmetext$94 Def00000036
+S A$gmetext$85 Def0000002C
+S A$gmetext$76 Def00000020
+S A$gmetext$67 Def00000017
+S A$gmetext$58 Def00000010
+S C$gmetext.c$35$1_1$18 Def000000B3
+S C$gmetext.c$27$1_0$18 Def0000003B
+S A$gmetext$95 Def00000037
+S A$gmetext$86 Def0000002D
+S A$gmetext$77 Def00000021
+S A$gmetext$68 Def00000018
+S A$gmetext$59 Def00000013
+S A$gmetext$96 Def00000038
+S A$gmetext$87 Def0000002E
+S A$gmetext$78 Def00000022
+S A$gmetext$69 Def0000001A
+S A$gmetext$97 Def00000039
+S A$gmetext$88 Def0000002F
+S A$gmetext$79 Def00000023
+S A$gmetext$98 Def0000003A
+S A$gmetext$89 Def00000030
+S C$gmetext.c$29$1_1$19 Def00000051
+A _DATA size 0 flags 0 addr 0
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 DD E5 DD 21 00 00 DD 39 FD 21 F6 FF
+R 00 00 00 00
+T 0C 00 00 00 FD 39 FD F9 DD 73 FE DD 72 FF EB 1A
+R 00 00 00 00
+T 18 00 00 00 E6 0F DD 77 F6 6B 62 23 23 23 7E DD
+R 00 00 00 00
+T 24 00 00 00 77 F7 DD 4E 04 DD 46 05 03 03 6B 62
+R 00 00 00 00
+T 30 00 00 00 23 23 6E 26 00 23 7D 02 03 7C 02 DD
+R 00 00 00 00
+T 3C 00 00 00 7E 04 DD 77 F8 DD 7E 05 DD 77 F9 DD
+R 00 00 00 00
+T 48 00 00 00 6E F8 DD 66 F9 AF 77 23 77 21 05 00
+R 00 00 00 00
+T 54 00 00 00 19 DD 75 FA DD 74 FB
+R 00 00 00 00
+T 5B 00 00 00
+R 00 00 00 00
+T 5B 00 00 00 DD 6E FE DD 66 FF 7E B7 28 4E 6F 26
+R 00 00 00 00
+T 67 00 00 00 00 DD 4E F7 06 00 BF ED 42 29 DD 4E
+R 00 00 00 00
+T 73 00 00 00 FA DD 46 FB 09 7E 23 66 6F 19 DD 75
+R 00 00 00 00
+T 7F 00 00 00 FC DD 74 FD DD 6E F8 DD 66 F9 4E 23
+R 00 00 00 00
+T 8B 00 00 00 46 DD 6E FC DD 66 FD 23 6E 26 00 23
+R 00 00 00 00
+T 97 00 00 00 09 DD 4E F6 06 00 09 4D 44 DD 6E F8
+R 00 00 00 00
+T A3 00 00 00 DD 66 F9 71 23 70 DD 34 FE 20 AD DD
+R 00 00 00 00
+T AF 00 00 00 34 FF 18 A8
+R 00 00 00 00
+T B3 00 00 00
+R 00 00 00 00
+T B3 00 00 00 DD F9 DD E1 E1 F1 E9
+R 00 00 00 00

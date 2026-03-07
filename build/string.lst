@@ -1,0 +1,57 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; string.s
+                                      2         ;; 
+                                      3         ;; minimal set of standard string functions
+                                      4         ;; 
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 02.04.2022    tstih
+                                      9         .module string
+                                     10 
+                                     11 
+                                     12         .globl  _memcpy
+                                     13         .globl  _memset
+                                     14         
+                                     15         .area    _CODE
+                                     16         ;; void *memcpy(void *dest, const void * src, size_t n)
+    00000000                         17 _memcpy::
+    00000000 E5               [11]   18         push    hl                      ; save dest for return value
+    00000001 DD 21 04 00      [14]   19         ld      ix,#4
+    00000005 DD 39            [15]   20         add     ix,sp
+    00000007 DD 4E 00         [19]   21         ld      c,(ix)                  ; bc=n from stack
+    0000000A DD 46 01         [19]   22         ld      b,1(ix)
+                                     23         ;; For ldir: HL=src, DE=dest, BC=count
+    0000000D EB               [ 4]   24         ex      de,hl                   ; swap: HL=src, DE=dest
+    0000000E ED B0            [21]   25         ldir                            ; do the copy
+    00000010 E1               [10]   26         pop     hl                      ; ret value = destination
+    00000011 C9               [10]   27         ret
+                                     28 
+                                     29         ;; void *memset(void *str, int c, size_t n)
+    00000012                         30 _memset::
+    00000012 E5               [11]   31         push    hl                      ; save str for return value
+    00000013 DD 21 04 00      [14]   32         ld      ix,#4
+    00000017 DD 39            [15]   33         add     ix,sp
+    00000019 DD 4E 00         [19]   34         ld      c,(ix)                  ; bc=n from stack
+    0000001C DD 46 01         [19]   35         ld      b,1(ix)
+                                     36         ;; zero len?
+    0000001F 78               [ 4]   37         ld      a,b
+    00000020 B1               [ 4]   38         or      c
+    00000021 28 0B            [12]   39         jr      z,ms_done               ; if zero, just return
+                                     40         ;; E contains the fill character
+    00000023 73               [ 7]   41         ld      (hl),e                  ; set first char
+    00000024 E5               [11]   42         push    hl
+    00000025 D1               [10]   43         pop     de
+    00000026 13               [ 6]   44         inc     de                      ; de=hl+1
+    00000027 0B               [ 6]   45         dec     bc                      ; one less to copy (already set first)
+    00000028 78               [ 4]   46         ld      a,b
+    00000029 B1               [ 4]   47         or      c
+    0000002A 28 02            [12]   48         jr      z,ms_done               ; if only 1 byte, done
+    0000002C ED B0            [21]   49         ldir                            ; set remaining bytes
+    0000002E                         50 ms_done:
+    0000002E E1               [10]   51         pop     hl                      ; return value = str
+    0000002F C9               [10]   52         ret

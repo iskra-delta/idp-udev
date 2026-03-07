@@ -23,25 +23,43 @@
         ;;     unsigned int  x1,
         ;;     unsigned int  y1)
         ;; ---------------------
+        ;; draws an absolute line segment
+        ;; NOTES:
+        ;;  computes signed deltas between endpoints and
+        ;;  recursively splits long lines until both axes
+        ;;  fit the EF9367 8-bit delta command
+        ;; inputs: hl=x0, de=y0, stack=x1,y1
+        ;; outputs: none
+        ;; affects: af, bc, de, hl, iy
 _gdrawline:
         ;; Need to set up stack so IY can access all parameters
         ;; Stack layout needed by gdrawlineraw:
         ;;   IY+0,1 = x0
         ;;   IY+2,3 = y0
-        ;;   IY+4,5 = x1 (already at SP+0)
-        ;;   IY+6,7 = y1 (already at SP+2)
+        ;;   IY+4,5 = return address
+        ;;   IY+6,7 = x1
+        ;;   IY+8,9 = y1
         ;; Push y0 and x0 to complete the layout
         push    de                      ; push y0
         push    hl                      ; push x0
-        ;; Now stack has: [x0][y0][x1][y1]
+        ;; Now stack has: [x0][y0][ret][x1][y1]
         ld      iy,#0
         add     iy,sp                   ; IY points to x0
         ;; to support HW patterns we'll draw line
         ;; from back to front!
 gdrawlineraw:
+        ;; gdrawlineraw
+        ;; draws a line from an IY-based parameter block
+        ;; NOTES:
+        ;;  expects x0,y0,ret,x1,y1 laid out at iy+0..9 and
+        ;;  shares the same recursive subdivision logic
+        ;;  used by the public entry point
+        ;; inputs: iy=&stack_frame
+        ;; outputs: none
+        ;; affects: af, bc, de, hl, iy
         ;; first calculate dx
-        ld      l,4(iy)                 ; hl=x1
-        ld      h,5(iy)         
+        ld      l,6(iy)                 ; hl=x1
+        ld      h,7(iy)         
         ld      e,(iy)                  ; de=x0
         ld      d,1(iy)
         or      a                       ; clear carry
@@ -53,8 +71,8 @@ gdrawlineraw:
         ld      d,3(iy)     
         call    gdp_set_xy
         ;; and calc dy
-        ld      l,6(iy)                 ; hl=y1
-        ld      h,7(iy)
+        ld      l,8(iy)                 ; hl=y1
+        ld      h,9(iy)
         or      a
         sbc     hl,de                   ; hl=dy
         ex      de,hl                   ; de=dy
@@ -86,9 +104,13 @@ gdl_recurse:
         ld      a,c                     ; command
         call    gdp_exec_cmd            ; draw!
         djnz    gdl_recurse
-        ;; cleanup stack (pop x0 and y0 that we pushed)
+        ;; cleanup stack and remove caller-pushed x1/y1
         pop     hl
         pop     hl
+        pop     bc                      ; preserve return address
+        pop     hl                      ; discard x1
+        pop     hl                      ; discard y1
+        push    bc
         ret
 gld_divide:
         ;; divide hl and de to half
@@ -119,7 +141,11 @@ gld_div_yr:
         push    de
         inc     b
         djnz    gdl_recurse
-        ;; cleanup stack (pop x0 and y0 that we pushed)
+        ;; cleanup stack and remove caller-pushed x1/y1
         pop     hl
         pop     hl
+        pop     bc                      ; preserve return address
+        pop     hl                      ; discard x1
+        pop     hl                      ; discard y1
+        push    bc
         ret

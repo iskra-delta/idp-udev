@@ -1,0 +1,42 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; banked call helper for sdcc z80
+                                      2         ;;
+                                      3         ;; gpl-2.0-or-later (see: LICENSE)
+                                      4         ;; copyright (c) 2026 tomaz stih
+                                      5 
+                                      6         .module banked_call
+                                      7         .optsdcc -mz80 sdcccall(1)
+                                      8 
+                                      9         .globl  ___sdcc_bcall
+                                     10         .globl  __sdcc_bcall
+                                     11         .globl  __sdcc_banked_call
+                                     12         .area   _CODE
+                                     13 
+    00000000                         14 ___sdcc_bcall:
+    00000000                         15 __sdcc_bcall:
+    00000000                         16 __sdcc_banked_call:
+    00000000 E1               [10]   17         pop     hl
+                                     18 
+    00000001 5E               [ 7]   19         ld      e, (hl)
+    00000002 23               [ 6]   20         inc     hl
+    00000003 56               [ 7]   21         ld      d, (hl)
+    00000004 23               [ 6]   22         inc     hl
+                                     23 
+    00000005 4E               [ 7]   24         ld      c, (hl)
+    00000006 23               [ 6]   25         inc     hl
+    00000007 46               [ 7]   26         ld      b, (hl)
+    00000008 23               [ 6]   27         inc     hl
+                                     28 
+    00000009 E5               [11]   29         push    hl
+                                     30 
+                                     31         ;; platform-specific bank switch hook.
+    0000000A 00               [ 4]   32         nop
+    0000000B 00               [ 4]   33         nop
+                                     34 
+    0000000C D5               [11]   35         push    de
+    0000000D E1               [10]   36         pop     hl
+    0000000E E9               [ 4]   37         jp      (hl)

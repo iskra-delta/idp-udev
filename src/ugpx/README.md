@@ -23,12 +23,14 @@ scaling, etc.
   - [Glyphs](#glyphs)
   - [Fonts](#fonts)
 - [Glyph and font format(s)](#glyph-and-font-formats)
+- [Typical Bugs](#typical-bugs)
 - [To-do](#to-do)
 
 # Using Micro Graphics
 
 Use this library in conjunction with the *μsdcc* and the
-*μlibc* libraries. The library consists of only two files - the `ugpx.lib`and the `ugpx.h` files.
+*μlibc* libraries. The library consists of only two files: `ugpx.lib`
+and `ugpx.h`.
 
 ## Initialize the library
 
@@ -42,6 +44,11 @@ extern void ginit(uint8_t resolution);
 ~~~
 This function will initialize the ef9367 chip and set the resolution. 
 
+Example:
+~~~cpp
+ginit(RES_1024x256);
+~~~
+
  > Unfortunately, you can't effectively use the highest resolution because the Iskra Delta Partner refresh frequency is too low. As a result, the screen will blink like a Christmas tree if you draw something complex on it. And the 1024x256 mode has rectangular pixels and a 4:1 ratio. 
  Thus, many games implement the *emulated* 512x256 pixel resolution. The latter is not a native resolution of the ef9367 chip. It is produced by double painting each horizontal pixel in the 1024x256 mode.
 
@@ -50,9 +57,14 @@ This function will initialize the ef9367 chip and set the resolution.
 To leave the graphics mode, call the [gexit()](gexit.s) function. 
 ~~~cpp
 /* leave graphics mode */
-extern void gexit();
+extern void gexit(void);
 ~~~
 At present, this function doesn't do anything, but sometimes in the future, it might.
+
+Example:
+~~~cpp
+gexit();
+~~~
 
 ## Set graphics page
 
@@ -72,9 +84,21 @@ gsetpage(PG_DISPLAY|PG_WRITE,0);
 ~~~
 By quickly switching between two pages, you can implement the *double buffering* technique in games.
 
+Example:
+~~~cpp
+gsetpage(PG_DISPLAY | PG_WRITE, 0);
+gcls();
+gsetpage(PG_DISPLAY | PG_WRITE, 1);
+gcls();
+gsetpage(PG_DISPLAY, 0);
+gsetpage(PG_WRITE, 0);
+~~~
+
 ## Clearing the screen
 
-Use the [gcls()](gcls.s) function to clear the display page. When initializing graphics, the pages are in an inconsistent state. We recommend clearing both pages:
+Use the [gcls()](gcls.s) function to clear the currently selected graphics
+page. When initializing graphics, the pages are in an inconsistent state.
+We recommend clearing both pages:
 
 ~~~cpp
 gsetpage(PG_WRITE|PG_DISPLAY,1);
@@ -82,6 +106,8 @@ gcls();
 gsetpage(PG_WRITE|PG_DISPLAY,0);
 gcls();
 ~~~
+
+During animation, clear only the hidden page area you need to redraw.
 
 ## Setting the ink color
 
@@ -98,6 +124,14 @@ You can set the color to foreground, background, and none by calling the [gsetco
 #define CO_BACK         0x02
 typedef uint8_t color;
 extern void gsetcolor(color c);
+~~~
+
+Example:
+~~~cpp
+gsetcolor(CO_FORE);
+gdrawrect(&frame);
+gsetcolor(CO_BACK);
+gfillrect(&erase_area);
 ~~~
 
 ## The coordinates
@@ -118,6 +152,12 @@ location using the [gxy()](gxy.s) function.
 extern void gxy(coord x, coord y);
 ~~~
 The ef9367 chip implements a reversed y-axis. To mitigate it - the library subtracts the y coordinate from the y-axis for every operation. This hack guarantees that the (0,0) location is in the top-left corner of the screen and the coordinates behave as expected.
+
+Example:
+~~~cpp
+gxy(x, y + row);
+gdrawd(BALL_W - 1, 0);
+~~~
 
 ## Drawing a pixel
 
@@ -140,13 +180,21 @@ You can draw a relative line with x and y coordinates ranging from -255 to 255 b
 extern void gdrawd(coord dx, coord dy);
 ~~~
 
+Example:
+~~~cpp
+for (coord row = 0; row < BALL_H; ++row) {
+    gxy(x, y + row);
+    gdrawd(BALL_W - 1, 0);
+}
+~~~
+
 ### Draw an absolute line
 
 You can also draw a line with absolute coordinates of any length by using the [gdrawline()](gdrawline.s) function.
 ~~~cpp
 extern void gdrawline(coord x0, coord y0, coord x1, coord y1);
 ~~~
- > This function recursively chops lines of length > 256 to half until they are shorter than 256 pixels, and then uses the `gdrawdelta()` function to draw them.
+ > This function recursively chops lines of length > 256 to half until they are shorter than 256 pixels, and then uses the `gdrawd()` function to draw them.
 
 ## Drawing shapes
 
@@ -167,7 +215,10 @@ typedef struct rect_s {                 /* the rectangle */
 
 #### Normalized rectangle
 
-A normalized rectangle is a rectangle with x0 < x1 and y0 < y1. You can normalize a rectangle by passing it to the [gnormrect()](gnormrect.s) function.
+A normalized rectangle is a rectangle with x0 < x1 and y0 < y1. Because
+coordinates are signed, normalization also respects negative coordinates.
+You can normalize a rectangle by passing it to the [gnormrect()](gnormrect.s)
+function.
 ~~~cpp
 extern rect_t *gnormrect(rect_t *r);
 ~~~
@@ -177,6 +228,13 @@ extern rect_t *gnormrect(rect_t *r);
 Use the [gdrawrect()](gdrawrect.c) function to draw a rectangle.
 ~~~cpp
 extern void gdrawrect(rect_t *r);
+~~~
+
+Example:
+~~~cpp
+rect_t frame = { 0, 16, 1023, 255 };
+gsetcolor(CO_FORE);
+gdrawrect(&frame);
 ~~~
 
 #### Fill rectangle
@@ -222,12 +280,74 @@ typedef struct dim_s {                  /* the dimensions */
     coord w;
     coord h;
 } dim_t;
-extern dim_t *gmetext(void *font, char *text, dim_t *d);
+extern void gmetext(void *font, char *text, dim_t *dim);
+~~~
+
+Example:
+~~~cpp
+extern void idp8x16_font;
+
+gputtext(&idp8x16_font, "UGPX DOUBLE BUFFER TEST", 8, 0);
+~~~
+
+To center a title:
+~~~cpp
+dim_t dim;
+coord x;
+
+gmetext(&idp8x16_font, "UGPX DOUBLE BUFFER TEST", &dim);
+x = (1024 - dim.w) / 2;
+if (x < 0)
+    x = 0;
+gputtext(&idp8x16_font, "UGPX DOUBLE BUFFER TEST", x, 0);
 ~~~
 
 # Glyph and font format(s)
 
 See: [libgpx](https://github.com/tstih/libgpx)
+
+# Typical Bugs
+
+## Not clearing both pages
+
+When using double buffering, clearing only one page leaves old data on the
+other page. That stale frame becomes visible as soon as you flip pages.
+
+Use:
+~~~cpp
+gsetpage(PG_DISPLAY | PG_WRITE, 0);
+gcls();
+gsetpage(PG_DISPLAY | PG_WRITE, 1);
+gcls();
+~~~
+
+## Stack too big
+
+On this target the stack is small. A practical upper bound is about 1 KB, so
+do not place large arrays or frame buffers in local variables inside functions.
+
+Prefer:
+~~~cpp
+static coord page_x[2][BALL_COUNT];
+static coord page_y[2][BALL_COUNT];
+~~~
+
+instead of large automatic arrays inside `main()` or helper functions.
+
+## Off-by-one screen coordinates
+
+Screen edges are inclusive. That means the last valid pixel is
+`width - 1` and `height - 1`, not `width` and `height`.
+
+Correct:
+~~~cpp
+rect_t frame = { 0, 0, 1023, 255 };
+~~~
+
+Incorrect:
+~~~cpp
+rect_t frame = { 0, 0, 1024, 256 };
+~~~
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C
 [language.badge]: https://img.shields.io/badge/language-C-blue.svg

@@ -1,0 +1,59 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; shared 16-bit unsigned division core
+                                      2         ;;
+                                      3         ;; loosely based on sdcc project implementation
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7 
+                                      8         .module divu16
+                                      9         .optsdcc -mz80 sdcccall(1)
+                                     10 
+                                     11         .globl  __divu16
+                                     12         .area   _CODE
+                                     13 
+    00000000                         14 __divu16::
+    00000000 7B               [ 4]   15         ld      a, e
+    00000001 E6 80            [ 7]   16         and     a, #0x80
+    00000003 B2               [ 4]   17         or      a, d
+    00000004 20 11            [12]   18         jr      nz, .morethan7bits
+                                     19 
+    00000006                         20 .atmost7bits:
+    00000006 06 10            [ 7]   21         ld      b, #16
+    00000008 ED 6A            [15]   22         adc     hl, hl
+    0000000A                         23 .dvloop7:
+    0000000A 17               [ 4]   24         rla
+    0000000B 93               [ 4]   25         sub     a, e
+    0000000C 30 01            [12]   26         jr      nc, .nodrop7
+    0000000E 83               [ 4]   27         add     a, e
+    0000000F                         28 .nodrop7:
+    0000000F 3F               [ 4]   29         ccf
+    00000010 ED 6A            [15]   30         adc     hl, hl
+    00000012 10 F6            [13]   31         djnz    .dvloop7
+    00000014 5F               [ 4]   32         ld      e, a
+    00000015 EB               [ 4]   33         ex      de, hl
+    00000016 C9               [10]   34         ret
+                                     35 
+    00000017                         36 .morethan7bits:
+    00000017 06 09            [ 7]   37         ld      b, #9
+    00000019 7D               [ 4]   38         ld      a, l
+    0000001A 6C               [ 4]   39         ld      l, h
+    0000001B 26 00            [ 7]   40         ld      h, #0
+    0000001D CB 1D            [ 8]   41         rr      l
+    0000001F                         42 .dvloop:
+    0000001F ED 6A            [15]   43         adc     hl, hl
+    00000021 ED 52            [15]   44         sbc     hl, de
+    00000023 30 01            [12]   45         jr      nc, .nodrop
+    00000025 19               [11]   46         add     hl, de
+    00000026                         47 .nodrop:
+    00000026 3F               [ 4]   48         ccf
+    00000027 17               [ 4]   49         rla
+    00000028 10 F5            [13]   50         djnz    .dvloop
+    0000002A CB 10            [ 8]   51         rl      b
+    0000002C 50               [ 4]   52         ld      d, b
+    0000002D 5F               [ 4]   53         ld      e, a
+    0000002E C9               [10]   54         ret

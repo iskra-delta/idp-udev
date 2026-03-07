@@ -1,0 +1,13 @@
+XL4
+H 1 areas 4 global symbols
+M modschar
+O -mz80 sdcccall(1)
+S __get_remainder Ref00000000
+S .__.ABS. Def00000000
+S __div8 Ref00000000
+A _CODE size 6 flags 0 addr 0
+S __modschar Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 CD 00 00 C3 00 00
+R 00 00 00 00 02 05 02 00 02 08 00 00

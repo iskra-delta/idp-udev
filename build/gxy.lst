@@ -1,0 +1,24 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1            ;; gxy.s
+                                      2         ;; 
+                                      3         ;; move cursor to x,y!
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 18.06.2022    tstih
+                                      9         .module gxy
+                                     10 
+                                     11         .globl  _gxy
+                                     12 
+                                     13         .area    _CODE
+                                     14         ;; --------------------------
+                                     15         ;; void gxy(coord x, coord y)
+                                     16         ;; --------------------------
+    00000000                         17 _gxy:
+    00000000 CD 00 00         [17]   18         call    gdp_set_xy
+    00000003 C9               [10]   19         ret

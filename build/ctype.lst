@@ -1,0 +1,195 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; ctype.s
+                                      2         ;; 
+                                      3         ;; minimal ctype.h implementation
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 18.04.2022    tstih
+                                      9         .module ctype
+                                     10 
+                                     11         ;; standard C library
+                                     12         .globl  _isdigit
+                                     13         .globl  _isalpha
+                                     14         .globl  _isalnum
+                                     15         .globl  _islower
+                                     16         .globl  _isupper
+                                     17         .globl  _tolower
+                                     18         .globl  _toupper
+                                     19 
+                                     20         ;; internal functions
+                                     21         .globl  test_is_alpha
+                                     22         .globl  test_is_digit
+                                     23         .globl  test_is_alphanumeric
+                                     24         .globl  test_is_lower
+                                     25         .globl  test_is_upper
+                                     26         .globl  test_inside_interval
+                                     27         .globl  char_to_upper
+                                     28         .globl  char_to_lower
+                                     29 
+                                     30         .area _CODE
+                                     31 
+                                     32 
+                                     33 
+                                     34         ;; ----- standard library functions -----------------------------------
+                                     35 
+                                     36         ;; ----- int isdigit(int c) -------------------------------------------
+    00000000                         37 _isdigit::
+    00000000 CD 36 00         [17]   38         call    ctype_args
+    00000003 CD 66 00         [17]   39         call    test_is_digit
+    00000006 18 33            [12]   40         jr      ctype_is_end
+                                     41 
+                                     42         ;; ----- int isalpha(int c) -------------------------------------------
+    00000008                         43 _isalpha::
+    00000008 CD 36 00         [17]   44         call    ctype_args
+    0000000B CD 50 00         [17]   45         call    test_is_alpha
+    0000000E 18 2B            [12]   46         jr      ctype_is_end
+                                     47 
+                                     48         ;; ----- int isalnum(int c) -------------------------------------------
+    00000010                         49 _isalnum::
+    00000010 CD 36 00         [17]   50         call    ctype_args
+    00000013 CD 60 00         [17]   51         call    test_is_alphanumeric
+    00000016 18 23            [12]   52         jr      ctype_is_end
+                                     53 
+                                     54         ;; ----- int islower(int c) -------------------------------------------
+    00000018                         55 _islower::
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+    00000018 CD 36 00         [17]   56         call    ctype_args
+    0000001B CD 5B 00         [17]   57         call    test_is_lower
+    0000001E 18 1B            [12]   58         jr      ctype_is_end
+                                     59 
+                                     60         ;; ----- int isupper(int c) -------------------------------------------
+    00000020                         61 _isupper::
+    00000020 CD 36 00         [17]   62         call    ctype_args
+    00000023 CD 56 00         [17]   63         call    test_is_upper
+    00000026 18 13            [12]   64         jr      ctype_is_end
+                                     65 
+                                     66         ;; ----- int toupper(int c) -------------------------------------------
+    00000028                         67 _toupper::
+    00000028 CD 36 00         [17]   68         call    ctype_args
+    0000002B CD 3E 00         [17]   69         call    char_to_upper
+    0000002E C9               [10]   70         ret
+                                     71 
+                                     72         ;; ----- int tolower(int c) -------------------------------------------
+    0000002F                         73 _tolower::
+    0000002F CD 36 00         [17]   74         call    ctype_args
+    00000032 CD 47 00         [17]   75         call    char_to_lower
+    00000035 C9               [10]   76         ret
+                                     77 
+                                     78 
+                                     79         ;; ----- utility functions --------------------------------------------
+                                     80         ;; get low byte of int argument to a
+                                     81         ;; and reset hl
+                                     82         ;; input(s):
+                                     83         ;; output(s):
+                                     84         ;;  a           lo byte of argument
+                                     85         ;;  hl          reset to 0
+                                     86         ;; affects:
+                                     87         ;;  a, hl
+    00000036                         88 ctype_args:
+    00000036 7D               [ 4]   89         ld      a,l                     ; get low byte from L
+    00000037 21 00 00         [10]   90         ld      hl,#0                   ; init hl
+    0000003A C9               [10]   91         ret
+                                     92 
+                                     93         ;; adjust return code in hl based on the z flag
+                                     94         ;; input(s):
+                                     95         ;;  hl = 0 
+                                     96         ;;  z flag
+                                     97         ;; output(s):
+                                     98         ;;  if z then hl = 1 else hl = 0
+    0000003B                         99 ctype_is_end:
+    0000003B C0               [11]  100         ret     nz                      ; hl=0
+    0000003C 2C               [ 4]  101         inc     l                       ; hl=1
+    0000003D C9               [10]  102         ret
+                                    103 
+                                    104 
+                                    105         ;; ----- char functions  ----------------------------------------------
+    0000003E                        106 char_to_upper:
+    0000003E CD 5B 00         [17]  107         call    test_is_lower           ; only convert if lower
+    00000041 20 02            [12]  108         jr      nz,ctu_done
+    00000043 D6 20            [ 7]  109         sub     #32
+    00000045                        110 ctu_done:
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+
+
+    00000045 6F               [ 4]  111         ld      l,a
+    00000046 C9               [10]  112         ret
+                                    113 
+    00000047                        114 char_to_lower:
+    00000047 CD 56 00         [17]  115         call    test_is_upper           ; only convert if upper
+    0000004A 20 02            [12]  116         jr      nz,ctl_done
+    0000004C C6 20            [ 7]  117         add     #32
+    0000004E                        118 ctl_done:
+    0000004E 6F               [ 4]  119         ld      l,a
+    0000004F C9               [10]  120         ret
+                                    121 
+                                    122 
+                                    123         ;; ----- test functions -----------------------------------------------
+    00000050                        124 test_is_alpha:
+    00000050 CD 56 00         [17]  125         call    test_is_upper
+    00000053 C8               [11]  126         ret     z
+    00000054 18 05            [12]  127         jr      test_is_lower
+                                    128 
+    00000056                        129 test_is_upper:
+    00000056 11 41 5A         [10]  130         ld      de,#0x5a41              ; d='Z'. e='A'
+    00000059 18 0E            [12]  131         jr      test_inside_interval
+                                    132 
+    0000005B                        133 test_is_lower:
+    0000005B 11 61 7A         [10]  134         ld      de,#0x7a61              ; d='z', e='a'
+    0000005E 18 09            [12]  135         jr      test_inside_interval    ; last tests' result is the end result
+                                    136 
+    00000060                        137 test_is_alphanumeric:
+    00000060 CD 66 00         [17]  138         call    test_is_digit
+    00000063 C8               [11]  139         ret     z
+    00000064 18 EA            [12]  140         jr      test_is_alpha
+                                    141 
+    00000066                        142 test_is_digit:
+    00000066 11 30 39         [10]  143         ld      de,#0x3930                ; d='9', e='0'
+                                    144         ;; test if a is within DE: D >= A >= E
+                                    145         ;; input(s):
+                                    146         ;;  A   value to test
+                                    147         ;;  DE   interval
+                                    148         ;; output(s):
+                                    149         ;;  Z    zero flag is 1 if inside, 0 if outside
+                                    150         ;; affects:
+                                    151         ;;  D, E, flags
+    00000069                        152 test_inside_interval:
+    00000069 C5               [11]  153         push    bc                      ; store original bc
+    0000006A 4F               [ 4]  154         ld      c,a                     ; store a
+    0000006B BB               [ 4]  155         cp      e                        ; a=a-e
+    0000006C 30 02            [12]  156         jr      nc, tidg_possible        ; a>=e       
+    0000006E 18 0B            [12]  157         jr      tidg_false              ; false
+    00000070                        158 tidg_possible:
+    00000070 BA               [ 4]  159         cp      d                       ; a=a-d
+    00000071 38 04            [12]  160         jr      c,tidg_true                ; a<d
+    00000073 28 02            [12]  161         jr      z,tidg_true             ; a=d
+    00000075 18 04            [12]  162         jr      tidg_false
+    00000077                        163 tidg_true:
+                                    164         ;; set zero flag
+    00000077 AF               [ 4]  165         xor     a                       ; a=0, set zero flag
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 4
+Hexadecimal [32-Bits]
+
+
+
+    00000078 79               [ 4]  166         ld      a,c                     ; restore a
+    00000079 C1               [10]  167         pop     bc                      ; restore bc
+    0000007A C9               [10]  168         ret
+    0000007B                        169 tidg_false:
+                                    170         ;; reset zero flag
+    0000007B AF               [ 4]  171         xor     a
+    0000007C FE FF            [ 7]  172         cp      #0xff                   ; reset zero flag
+    0000007E 79               [ 4]  173         ld      a,c                     ; restore a
+    0000007F C1               [10]  174         pop     bc                      ; restore original bc
+    00000080 C9               [10]  175         ret

@@ -1,0 +1,12 @@
+XL4
+H 1 areas 3 global symbols
+M divu8
+O -mz80 sdcccall(1)
+S __divu16 Ref00000000
+S .__.ABS. Def00000000
+A _CODE size 6 flags 0 addr 0
+S __divu8 Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 26 00 54 C3 00 00
+R 00 00 00 00 02 08 00 00

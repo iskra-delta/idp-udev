@@ -1,0 +1,21 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; 16-bit signed modulo wrapper
+                                      2         ;;
+                                      3         ;; MIT License (see: LICENSE)
+                                      4         ;; copyright (c) 2022 tomaz stih
+                                      5 
+                                      6         .module modsint
+                                      7         .optsdcc -mz80 sdcccall(1)
+                                      8 
+                                      9         .globl  __modsint
+                                     10         .globl  __div16
+                                     11         .globl  __get_remainder
+                                     12         .area   _CODE
+                                     13 
+    00000000                         14 __modsint::
+    00000000 CD 00 00         [17]   15         call    __div16
+    00000003 C3 00 00         [10]   16         jp      __get_remainder

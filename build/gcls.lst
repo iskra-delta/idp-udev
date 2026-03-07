@@ -1,0 +1,113 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; gcls.s
+                                      2         ;; 
+                                      3         ;; clear current (graphics) page
+                                      4         ;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8         ;; 06.06.2022    tstih
+                                      9         .module gcls
+                                     10 
+                                     11         .globl  _gcls
+                                     12 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+
+
+                                     13         .include "gdp.inc"
+                                      1 		;; gdp.s
+                                      2         ;; 
+                                      3         ;; thompson ef9367 graphics display processor consts. 
+                                      4 		;;
+                                      5         ;; MIT License (see: LICENSE)
+                                      6         ;; copyright (c) 2022 tomaz stih
+                                      7         ;;
+                                      8 		;; 22.03.2022    tstih
+                                      9 
+                                     10         ;; --- limits ---------------------------------------------------------
+                         00000400    11         .equ    GDP_WIDTH,          1024
+                         000000FF    12         .equ    GDP_MAX_DELTA,      255
+                                     13 
+                                     14         ;; --- 0x20 - W: command, R:the status register -----------------------     
+                         00000020    15         .equ	EF9367_CMD,             0x20    ; command register (W)
+                         00000000    16         .equ    EF9367_CMD_DMOD_SET,    0x00    ; select pen (set bit 1 of CR1)
+                         00000001    17         .equ    EF9367_CMD_DMOD_CLR,    0x01    ; select eraser (clr bit 1 of CR1)
+                         00000002    18         .equ    EF9367_CMD_PEN_DOWN,    0x02    ; pen/eraser down
+                         00000003    19         .equ    EF9367_CMD_PEN_UP,      0x03    ; pen/eraser up
+                         00000004    20         .equ    EF9367_CMD_CLS,         0x04    ; clear screen
+                         00000005    21         .equ    EF9367_CMD_00,          0x05    ; x=y=0
+                         00000006    22         .equ    EF9367_CMD_CLS00,       0x06    ; clear screen, x=y=0
+                         00000007    23         .equ    EF9367_CMD_CLEAR,       0x07    ; cls, CSIZE to min., all regs to 0
+                         0000000C    24         .equ    EF9367_CMD_SCAN,        0x0c    ; screen scan
+                         0000000D    25         .equ    EF9367_CMD_X0,          0x0d    ; x=0
+                         0000000E    26         .equ    EF9367_CMD_Y0,          0x0e    ; y=0
+                         0000000F    27         .equ    EF9367_CMD_DMEM,        0x0f    ; direct memory access 4 next cyc.
+                                     28 
+                                     29 
+                                     30         ;; --- 0x21 - RW: control register, bit 7 is reserved (always 0) ------
+                         00000021    31         .equ    EF9367_CR1,             0x21
+                         00000001    32         .equ    EF9367_CR1_PEN_DOWN,    0x01    ; 1 pen down, 0 pen up
+                         00000002    33         .equ    EF9367_CR1_SET_PEN,     0x02    ; 1 pen, 0 eraser
+                                     34 
+                                     35 
+                                     36         ;; --- 0x22 - RW: control register 2, bit 7-4 are not used ------------
+                         00000022    37         .equ    EF9367_CR2,             0x22
+                                     38         ;; bits 1 and 2 are vector type
+                         00000000    39         .equ    EF9367_CR2_SOLID,       0b00    ; solid vector type
+                                     40 
+                                     41 
+                                     42         ;; --- 0x23 - RW: character size --------------------------------------
+                                     43         ;; low nibble is scaling on x, high nibble is scaling on y)
+                         00000023    44         .equ    EF9367_CH_SIZE,         0x23
+                                     45 
+                                     46 
+                                     47         ;; --- 0x25 - RW: delta x ---------------------------------------------
+                         00000025    48         .equ    EF9367_DX,              0x25
+                                     49         ;; --- 0x27 - RW: delta y ---------------------------------------------
+                         00000027    50         .equ    EF9367_DY,              0x27
+                                     51 
+                                     52 
+                                     53         ;; --- 0x28 - RW: x pos hi --------------------------------------------
+                         00000028    54         .equ    EF9367_XPOS_HI,         0x28
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+
+
+                                     55         ;; --- 0x29 - RW: x pos low -------------------------------------------
+                         00000029    56         .equ    EF9367_XPOS_LO,         0x29
+                                     57         ;; --- 0x2a - RW: y pos hi --------------------------------------------
+                         0000002A    58         .equ    EF9367_YPOS_HI,         0x2a
+                                     59         ;; --- 0x2b - RW: y pos low -------------------------------------------
+                         0000002B    60         .equ    EF9367_YPOS_LO,         0x2b
+                                     61 
+                                     62 
+                                     63         ;; --- 0x2f - R:the status (NI) register and its bitmask --------------
+                         0000002F    64         .equ    EF9367_STS_NI,          0x2f    ; status reg. (no interrupt reset)
+                         00000002    65         .equ    EF9367_STS_NI_VBLANK,   0x02    ; high during vertical blanking.
+                         00000004    66         .equ    EF9367_STS_NI_READY,    0x04    ; low when executing command
+                                     67 
+                                     68         ;; --- 0x30 - R/W:PIO gr. common register -----------------------------
+                         00000030    69         .equ    PIO_GR_CMN,             0x30
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 4
+Hexadecimal [32-Bits]
+
+
+
+                                     14 
+                                     15         .area    _CODE
+                                     16         ;; -----------
+                                     17         ;; void gcls()
+                                     18         ;; -----------
+                                     19         ;; clear graphic screen
+                                     20         ;; affect:  af
+    00000000                         21 _gcls:
+    00000000 3E 04            [ 7]   22         ld      a,#EF9367_CMD_CLS
+    00000002 CD 00 00         [17]   23         call    gdp_exec_cmd
+    00000005 C9               [10]   24         ret

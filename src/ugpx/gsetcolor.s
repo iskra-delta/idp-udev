@@ -17,14 +17,24 @@
         ;; ------------------------------
         ;; extern void gsetcolor(color c)
         ;; ------------------------------
-        ;; sets color (pen)
-        ;; affects: a, hl
+        ;; sets current drawing color
+        ;; NOTES:
+        ;;  updates the EF9367 drawing mode and caches
+        ;;  the logical color in gdata
+        ;; inputs: a=color
+        ;; outputs: none
+        ;; affects: af, hl
 _gsetcolor:
-        ;; (no stack access needed)
-        ;; input parameters
-        ;; l=color
-        ;; affects:a,hl
+        ld      l,a                     ; public byte arg arrives in a
 gsc_raw:
+        ;; gsc_raw
+        ;; sets current drawing color from l
+        ;; NOTES:
+        ;;  shared raw entry used by glyph code; skips
+        ;;  hardware writes when the cached color matches
+        ;; inputs: l=color
+        ;; outputs: none
+        ;; affects: af, hl
         ld      a,(gdata+3)             ; previous color to a
         cp      l                       ; compare to current color
         jr      z,gsc_unroll            ; if same...nothing to do
@@ -55,7 +65,14 @@ gsc_done:
         ld      (gdata+3),a             ; and write to cachec buffer
 gsc_unroll:
         ret
-        ;; toggle pen
+        ;; gsc_prev_pen
+        ;; restores pen-down state if needed
+        ;; NOTES:
+        ;;  only issues PEN_DOWN when the previous cached
+        ;;  color was CO_NONE, otherwise returns directly
+        ;; inputs: none
+        ;; outputs: none
+        ;; affects: af
 gsc_prev_pen:
         ld      a,(gdata+3)             ; cached color
         or      a                       ; was pen up?

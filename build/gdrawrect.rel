@@ -1,0 +1,163 @@
+;!FILE /workspace/idp-udev/build/gdrawrect.asm
+XL4
+H 9 areas 75 global symbols
+M gdrawrect
+O -mz80 sdcccall(1)
+S _gdrawline Ref00000000
+S .__.ABS. Def00000000
+A _CODE size B3 flags 0 addr 0
+S G$gdrawrect$0$0 Def00000000
+S A$gdrawrect$100 Def0000004A
+S A$gdrawrect$110 Def0000005C
+S A$gdrawrect$101 Def0000004B
+S A$gdrawrect$120 Def00000067
+S A$gdrawrect$111 Def0000005D
+S A$gdrawrect$102 Def0000004E
+S A$gdrawrect$130 Def00000075
+S A$gdrawrect$121 Def00000068
+S A$gdrawrect$112 Def0000005E
+S A$gdrawrect$103 Def00000051
+S A$gdrawrect$140 Def00000083
+S A$gdrawrect$131 Def00000076
+S A$gdrawrect$122 Def00000069
+S A$gdrawrect$113 Def0000005F
+S A$gdrawrect$104 Def00000052
+S A$gdrawrect$141 Def00000084
+S A$gdrawrect$132 Def00000077
+S A$gdrawrect$123 Def0000006A
+S A$gdrawrect$114 Def00000060
+S A$gdrawrect$105 Def00000053
+S _gdrawrect Def00000000
+S A$gdrawrect$160 Def000000A2
+S A$gdrawrect$142 Def00000086
+S A$gdrawrect$133 Def00000078
+S A$gdrawrect$124 Def0000006D
+S A$gdrawrect$115 Def00000061
+S A$gdrawrect$106 Def00000054
+S A$gdrawrect$161 Def000000A5
+S A$gdrawrect$152 Def00000090
+S A$gdrawrect$143 Def00000087
+S A$gdrawrect$134 Def0000007B
+S A$gdrawrect$116 Def00000062
+S A$gdrawrect$107 Def00000057
+S A$gdrawrect$171 Def000000AE
+S A$gdrawrect$162 Def000000A6
+S A$gdrawrect$153 Def00000093
+S A$gdrawrect$144 Def00000088
+S A$gdrawrect$135 Def0000007E
+S A$gdrawrect$117 Def00000063
+S A$gdrawrect$108 Def0000005A
+S A$gdrawrect$172 Def000000B0
+S A$gdrawrect$163 Def000000A7
+S A$gdrawrect$154 Def00000096
+S A$gdrawrect$145 Def00000089
+S A$gdrawrect$136 Def0000007F
+S A$gdrawrect$118 Def00000065
+S A$gdrawrect$109 Def0000005B
+S A$gdrawrect$164 Def000000A8
+S A$gdrawrect$155 Def00000097
+S A$gdrawrect$146 Def0000008A
+S A$gdrawrect$137 Def00000080
+S A$gdrawrect$128 Def0000006F
+S A$gdrawrect$119 Def00000066
+S A$gdrawrect$165 Def000000A9
+S A$gdrawrect$156 Def00000098
+S A$gdrawrect$147 Def0000008B
+S A$gdrawrect$138 Def00000081
+S A$gdrawrect$129 Def00000072
+S A$gdrawrect$166 Def000000AA
+S A$gdrawrect$157 Def00000099
+S A$gdrawrect$148 Def0000008E
+S A$gdrawrect$139 Def00000082
+S A$gdrawrect$167 Def000000AB
+S A$gdrawrect$158 Def0000009C
+S A$gdrawrect$177 Def000000B2
+S A$gdrawrect$159 Def0000009F
+S XG$gdrawrect$0$0 Def000000B2
+S A$gdrawrect$60 Def0000000C
+S A$gdrawrect$70 Def00000015
+S A$gdrawrect$80 Def0000002F
+S A$gdrawrect$71 Def00000016
+S A$gdrawrect$53 Def00000000
+S C$gdrawrect.c$14$0_0$18 Def00000000
+S A$gdrawrect$90 Def0000003A
+S A$gdrawrect$81 Def00000030
+S A$gdrawrect$72 Def00000017
+S A$gdrawrect$54 Def00000002
+S A$gdrawrect$91 Def0000003D
+S A$gdrawrect$82 Def00000031
+S A$gdrawrect$73 Def0000001B
+S A$gdrawrect$64 Def0000000D
+S A$gdrawrect$55 Def00000006
+S C$gdrawrect.c$15$1_0$18 Def0000000D
+S A$gdrawrect$92 Def00000040
+S A$gdrawrect$83 Def00000032
+S A$gdrawrect$74 Def0000001D
+S A$gdrawrect$65 Def00000010
+S A$gdrawrect$56 Def00000008
+S C$gdrawrect.c$16$1_0$18 Def00000047
+S A$gdrawrect$93 Def00000041
+S A$gdrawrect$84 Def00000033
+S A$gdrawrect$75 Def00000020
+S A$gdrawrect$66 Def00000011
+S A$gdrawrect$57 Def00000009
+S C$gdrawrect.c$17$1_0$18 Def0000006F
+S A$gdrawrect$94 Def00000044
+S A$gdrawrect$85 Def00000034
+S A$gdrawrect$76 Def00000023
+S A$gdrawrect$67 Def00000012
+S A$gdrawrect$58 Def0000000A
+S C$gdrawrect.c$18$1_0$18 Def00000090
+S A$gdrawrect$95 Def00000046
+S A$gdrawrect$86 Def00000035
+S A$gdrawrect$77 Def00000026
+S A$gdrawrect$68 Def00000013
+S A$gdrawrect$59 Def0000000B
+S C$gdrawrect.c$19$1_0$18 Def000000B2
+S A$gdrawrect$87 Def00000036
+S A$gdrawrect$78 Def00000029
+S A$gdrawrect$69 Def00000014
+S A$gdrawrect$88 Def00000038
+S A$gdrawrect$79 Def0000002C
+S A$gdrawrect$89 Def00000039
+S A$gdrawrect$99 Def00000047
+A _DATA size 0 flags 0 addr 0
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 DD E5 DD 21 00 00 DD 39 F5 F5 F5 4D
+R 00 00 00 00
+T 0C 00 00 00 44 21 02 00 09 E3 E1 E5 5E 23 56 FD
+R 00 00 00 00
+T 18 00 00 00 21 04 00 FD 09 FD 7E 00 DD 77 FE FD
+R 00 00 00 00
+T 24 00 00 00 7E 01 DD 77 FF DD 71 FC DD 70 FD 69
+R 00 00 00 00
+T 30 00 00 00 60 7E 23 66 6F C5 FD E5 D5 E5 DD 6E
+R 00 00 00 00
+T 3C 00 00 00 FE DD 66 FF E3 CD 00 00 FD E1 C1 21
+R 00 00 00 00 02 0A 00 00
+T 48 00 00 00 06 00 09 DD 75 FE DD 74 FF 5E 23 56
+R 00 00 00 00
+T 54 00 00 00 DD 6E FC DD 66 FD 4E 23 46 E1 E5 7E
+R 00 00 00 00
+T 60 00 00 00 23 66 6F FD E5 D5 C5 EB 69 60 CD
+R 00 00 00 00
+T 6B 00 00 00 00 00 FD E1 DD 6E FE DD 66 FF 5E 23
+R 00 00 00 00 02 04 00 00
+T 77 00 00 00 56 FD 4E 00 FD 46 01 E1 E5 7E 23 66
+R 00 00 00 00
+T 83 00 00 00 6F FD E5 D5 C5 EB 69 60 CD 00 00 FD
+R 00 00 00 00 02 0D 00 00
+T 8F 00 00 00 E1 DD 6E FE DD 66 FF 5E 23 56 FD 4E
+R 00 00 00 00
+T 9B 00 00 00 00 FD 46 01 DD 6E FC DD 66 FD 7E 23
+R 00 00 00 00
+T A7 00 00 00 66 6F D5 C5 CD 00 00 DD F9 DD E1 C9
+R 00 00 00 00 02 09 00 00

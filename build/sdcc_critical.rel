@@ -1,0 +1,14 @@
+XL4
+H 1 areas 3 global symbols
+M critical
+O -mz80 sdcccall(1)
+S .__.ABS. Def00000000
+A _CODE size 4 flags 0 addr 0
+S __sdcc_critical Def00000000
+S ___sdcc_critical Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 ED 57 F3 C9
+R 00 00 00 00

@@ -16,18 +16,26 @@
         ;; ---------------------------------------------------------------
         ;; void gputtext(void *font, char *text, coord x, coord y)
         ;; ---------------------------------------------------------------
-        ;; write string to display at x,y
-        ;; affect:  a,
+        ;; draws a text string
+        ;; NOTES:
+        ;;  resolves glyph offsets from the font table,
+        ;;  draws each glyph through gpg_raw, and advances
+        ;;  the x position by glyph width plus spacing
+        ;; inputs: hl=font, de=text, stack=x,y
+        ;; outputs: none
+        ;; affects: af, bc, de, hl, iy, ix
 _gputtext:
+        push    iy                      ; preserve caller's iy
+        push    ix                      ; preserve caller's ix
         push    de                      ; save text pointer
         pop     iy                      ; iy=text (from DE)
         ld      ix,#0
         add     ix,sp
         exx
-        ld      l,(ix)                  ; hl'=x from stack
-        ld      h,1(ix)
-        ld      e,2(ix)                 ; de'=y from stack
-        ld      d,3(ix)
+        ld      l,6(ix)                 ; hl'=x from stack
+        ld      h,7(ix)
+        ld      e,8(ix)                 ; de'=y from stack
+        ld      d,9(ix)
         ld      b,#0                    ; prepare bc
         exx
         ;; HL contains font, IY contains text, alt regs contain x,y
@@ -56,6 +64,15 @@ gpt_loop:
         inc     iy                      ; next char 
         jr      gpt_loop                ; loop
 gpt_draw:
+        ;; gpt_draw
+        ;; resolves and draws one glyph from the font
+        ;; NOTES:
+        ;;  uses the character index in a, looks up the
+        ;;  glyph offset table, and returns the glyph
+        ;;  advance width in a after drawing
+        ;; inputs: a=char index, c=spacing, hl=offset table
+        ;; outputs: a=advance width
+        ;; affects: af, de, hl
         push    hl                      ; store table of offsets
         ex      de,hl
         ld      h,#0                    ; hl=char
@@ -80,6 +97,14 @@ gpt_draw:
         pop     hl                      ; restore table of offsets
         ret 
 gpt_gdraw:
+        ;; gpt_gdraw
+        ;; draws a glyph while preserving caller state
+        ;; NOTES:
+        ;;  saves width and cursor state around the gpg_raw
+        ;;  call so the caller can continue iterating text
+        ;; inputs: hl=glyph, af=width
+        ;; outputs: a=width
+        ;; affects: af, bc, de, hl
         push    af
         push    bc
         exx
@@ -93,5 +118,12 @@ gpt_gdraw:
         exx
         pop     bc
         pop     af                      ; return width in a
+        ret
 gpt_end:
+        pop     ix                      ; restore caller's ix
+        pop     iy                      ; restore caller's iy
+        pop     bc                      ; preserve return address
+        pop     hl                      ; discard stacked x argument
+        pop     hl                      ; discard stacked y argument
+        push    bc
         ret

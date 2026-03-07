@@ -16,7 +16,13 @@
         ;; --------------------------------
         ;; void gputpixel(coord x, coord y)
         ;; --------------------------------
-        ;; places pixel at x,y
+        ;; draws a single pixel
+        ;; NOTES:
+        ;;  positions the GDP cursor and issues the fast
+        ;;  pixel command using the current pen mode
+        ;; inputs: hl=x, de=y
+        ;; outputs: none
+        ;; affects: af, hl
 _gputpixel:
         call    gdp_set_xy
         ;; and draw pixel

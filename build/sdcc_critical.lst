@@ -1,0 +1,22 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+
+
+                                      1         ;; critical-section entry helper for sdcc z80
+                                      2         ;;
+                                      3         ;; gpl-2.0-or-later (see: LICENSE)
+                                      4         ;; copyright (c) 2026 tomaz stih
+                                      5 
+                                      6         .module critical
+                                      7         .optsdcc -mz80 sdcccall(1)
+                                      8 
+                                      9         .globl  ___sdcc_critical
+                                     10         .globl  __sdcc_critical
+                                     11         .area   _CODE
+                                     12 
+    00000000                         13 ___sdcc_critical:
+    00000000                         14 __sdcc_critical:
+    00000000 ED 57            [ 9]   15         ld      a, i
+    00000002 F3               [ 4]   16         di
+    00000003 C9               [10]   17         ret
