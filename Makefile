@@ -74,7 +74,11 @@ mkdirs:
 .PHONY: __inner_install
 __inner_install:
 	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
+	cp $(BUILD_DIR)/ugpx/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/$(CRT0).rel $(BIN_DIR)
+	mkdir -p $(BIN_DIR)/include/gpx
+	cp $(ROOT)/include/*.h $(BIN_DIR)/include
+	cp $(ROOT)/include/gpx/*.h $(BIN_DIR)/include/gpx
 
 .PHONY: __inner_clean
 __inner_clean:

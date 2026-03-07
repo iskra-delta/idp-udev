@@ -33,12 +33,16 @@ jobs:
           VERSION="${TAG#v}"
           ARCHIVE_NAME="libidpudev-${VERSION}.tar.gz"
           STAGE_DIR="release/libidpudev-${VERSION}"
+          INCLUDE_DIR="${STAGE_DIR}/include"
+          LIB_DIR="${STAGE_DIR}/lib"
 
           rm -rf release
-          mkdir -p "${STAGE_DIR}"
+          mkdir -p "${INCLUDE_DIR}/gpx" "${LIB_DIR}"
 
-          cp -r include "${STAGE_DIR}/include"
-          cp -r bin "${STAGE_DIR}/lib"
+          cp bin/*.lib "${LIB_DIR}"
+          cp bin/*.rel "${LIB_DIR}"
+          cp bin/include/*.h "${INCLUDE_DIR}"
+          cp bin/include/gpx/*.h "${INCLUDE_DIR}/gpx"
           cp LICENSE "${STAGE_DIR}/LICENSE"
 
           {

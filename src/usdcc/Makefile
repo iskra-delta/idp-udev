@@ -1,37 +1,39 @@
-# Virtual paths are all subfolders!
-DIRS	=	$(wildcard */)
-vpath %.c $(DIRS)
-vpath %.s $(DIRS)
-vpath %.h $(DIRS)
+TARGET := usdcc
 
-# Source files.
-C_SRCS	=	$(wildcard *.c) $(wildcard */*.c)
-S_SRCS	=	$(wildcard *.s) $(wildcard */*.s)
-OBJS	=	$(addprefix $(BUILD_DIR)/, \
-				$(notdir \
-					$(patsubst %.c,%.rel,$(C_SRCS)) \
-					$(patsubst %.s,%.rel,$(S_SRCS)) \
-				) \
-			)
-TARGET = usdcc
+ROOT_DIR := ../..
+BUILD_DIR := $(ROOT_DIR)/build
 
-# Add our include folder to fags
-CFLAGS	+= 	-I $(ROOT)/lib/libtiles
+CC ?= sdcc
+AS ?= sdasz80
+AR ?= sdar
 
-# Rules.
-.PHONY: all
-all:	$(BUILD_DIR)/$(TARGET).lib
+CFLAGS += -I$(ROOT_DIR)/lib/libtiles
 
-$(BUILD_DIR)/$(TARGET).lib: $(OBJS)
-	$(AR) $(ARFLAGS) $@ $^
+C_SRCS := $(wildcard *.c)
+S_SRCS := $(wildcard *.s)
+OBJS := $(patsubst %.c,$(BUILD_DIR)/%.rel,$(C_SRCS)) \
+	$(patsubst %.s,$(BUILD_DIR)/%.rel,$(S_SRCS))
 
-$(BUILD_DIR)/%.rel:	%.s
-	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(@F) $(CURDIR)/$<
+LIB := $(BUILD_DIR)/$(TARGET).lib
+
+all: $(LIB)
+
+$(LIB): $(OBJS)
+	@mkdir -p "$(BUILD_DIR)"
+	@echo "[ar] $@"
+	@$(AR) $(ARFLAGS) "$@" $(OBJS)
 
 $(BUILD_DIR)/%.rel: %.c
-	$(CC) -c -o $(BUILD_DIR)/$(@F) $(CURDIR)/$< $(CFLAGS)
+	@mkdir -p "$(BUILD_DIR)"
+	@echo "[cc] $< -> $@"
+	@$(CC) -c -o "$@" "$<" $(CFLAGS)
 
-$(BUILD_DIR)/%.rel: %.h
+$(BUILD_DIR)/%.rel: %.s
+	@mkdir -p "$(BUILD_DIR)"
+	@echo "[as] $< -> $@"
+	@$(AS) $(ASFLAGS) "$@" "$<"
 
-.PHONY: clean
 clean:
+	@rm -f "$(LIB)" $(OBJS)
+
+.PHONY: all clean
