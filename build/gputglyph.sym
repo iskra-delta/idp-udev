@@ -1,24 +1,0 @@
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
-Hexadecimal [32-Bits]
-
-Symbol Table
-
-    .__.$$$.=   00002710 L   |     .__.ABS.=   00000000 G   |     .__.CPU.=   00000000 L
-    .__.H$L.=   00000000 L   |     ESCAPE  =   FFFFFF80     |   0 _gputgly    00000000 GR
-    gdata       ******** GX  |     gdp_exec    ******** GX  |     gdp_set_    ******** GX
-    gdp_set_    ******** GX  |   0 gpg_line    0000001E R   |   0 gpg_raw     0000000F GR
-  0 gpg_tiny    0000009B R   |   0 gpgl_dra    00000092 R   |   0 gpgl_dra    00000074 R
-  0 gpgl_dx     00000084 R   |   0 gpgl_esc    0000003E R   |   0 gpgl_loo    00000029 R
-  0 gpgl_neg    0000008D R   |   0 gpgl_neg    00000081 R   |   0 gpgt_bac    00000109 R
-  0 gpgt_for    00000108 R   |   0 gpgt_han    000000ED R   |   0 gpgt_loo    000000BA R
-  0 gpgt_mov    0000009E R   |   0 gpgt_non    00000107 R   |   0 gpgt_pal    000000E5 R
-  0 gpgt_set    000000C9 GR  |   0 gpgt_sto    00000106 R   |   0 gpgtp_en    00000104 R
-    gsc_raw     ******** GX  |   0 pgl_chk_    0000004E R   |   0 pgl_eos     00000057 R
-
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
-Hexadecimal [32-Bits]
-
-Area Table
-
-   0 _CODE      size      10A   flags    0
-
