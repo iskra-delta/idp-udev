@@ -1,11 +1,7 @@
-        ;; gputglyph.s
-        ;; 
         ;; draw a glyph
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 06.06.2022    tstih
         .module gputglyph
 
         .globl  _gputglyph

@@ -1,11 +1,7 @@
-        ;; rnd.s
-        ;; 
-        ;; iumplementation of rand and srand
+        ;; implementation of rand() and srand()
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 13.06.2022    tstih
         .module rnd
 
         .globl  _rand
@@ -18,6 +14,15 @@
         .equ    RTC_MINUTE,     0xa3
 
         .area _CODE
+        ;; ------------------------
+        ;; void __rand_init(void)
+        ;; ------------------------
+        ;; seeds the PRNG from the realtime clock during startup
+        ;; NOTES:
+        ;;  combines seconds and minutes into a 16-bit seed and forwards it to srand
+        ;; inputs: RTC ports 0xa2 and 0xa3 readable
+        ;; outputs: rnd_seedA and rnd_seedB initialized
+        ;; affects: af, hl, flags
 __rand_init:
         in      a,(RTC_SECOND)
         ld      l,a
@@ -28,6 +33,15 @@ __rand_init:
         pop     hl
         ret
 
+        ;; --------------------------
+        ;; void srand(unsigned int seed)
+        ;; --------------------------
+        ;; seeds the PRNG state from the RTC and the caller-provided seed
+        ;; NOTES:
+        ;;  seed A is refreshed from the clock each call; seed B comes from HL
+        ;; inputs: hl=seed
+        ;; outputs: rnd_seedA and rnd_seedB updated
+        ;; affects: af, hl
 _srand:
         ;; first seed is from system clock.
         in      a,(RTC_THOUS_S)
@@ -38,8 +52,15 @@ _srand:
         ld      (rnd_seedB),hl
         ret
 
-        ;; return random between 0 and 32767
-        ;; source: https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
+        ;; -----------------
+        ;; int rand(void)
+        ;; -----------------
+        ;; advances the PRNG state and returns a 15-bit pseudo-random value
+        ;; NOTES:
+        ;;  based on BrandonW's published Z80 routine
+        ;; inputs: rnd_seedA and rnd_seedB hold prior state
+        ;; outputs: hl=random value in 0..32767, seeds updated
+        ;; affects: af, bc, hl, flags
 _rand:
         ld      hl,(rnd_seedA)
         ld      b,h

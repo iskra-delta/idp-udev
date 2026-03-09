@@ -1,11 +1,7 @@
-        ;; abs.s
-        ;; 
-        ;; iumplementation of abs(0 function)
+        ;; implementation of abs() for 16-bit integers
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 16.06.2022    tstih
         .module abs
 
         .globl  _abs
@@ -15,6 +11,12 @@
         ;; --------------
         ;; int abs(int x)
         ;; --------------
+        ;; returns the absolute value of a signed 16-bit integer
+        ;; NOTES:
+        ;;  _abs and absraw share the same entry point
+        ;; inputs: hl=x
+        ;; outputs: hl=abs(x)
+        ;; affects: af, flags
 _abs:
 absraw:
         ;; abs hl

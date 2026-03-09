@@ -1,11 +1,7 @@
-        ;; ginit.s
-        ;; 
         ;; initialize gpx
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 06.06.2022    tstih
         .module ginit
 
         .globl  _ginit
@@ -27,9 +23,6 @@
         ;; affects: af, de, hl
 _ginit::
         push    af                      ; preserve resolution
-        call    avdc_hide_cursor
-        call    avdc_cls
-
         ;; pen down, set default drawing mode to pen
         ld      a,#(EF9367_CR1_PEN_DOWN|EF9367_CR1_SET_PEN)
         out     (EF9367_CR1),a          ; control reg 1 to default

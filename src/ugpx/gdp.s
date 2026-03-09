@@ -1,14 +1,7 @@
-        ;; gdp.s
-        ;; 
         ;; a library of primitives for the thompson ef9367 card (GDP)
-        ;; 
-        ;; TODO: 
-        ;;  - 
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 22.03.2022    tstih
         .module gdp       
 
         .globl  gdp_set_xy

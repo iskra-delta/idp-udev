@@ -1,11 +1,10 @@
-        ;; gexit.s
-        ;; 
         ;; exit gpx.
+        ;;
+        ;; NOTES:
+        ;;  currently a stub; CP/M warm reset restores the visible text cursor
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 06.06.2022    tstih
         .module gexit
 
         .globl  _gexit

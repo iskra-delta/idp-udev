@@ -1,7 +1,5 @@
-        ;; args.s
-        ;; 
         ;; the pargs routine handles cp/m plus 3 program arguments.
-        ;; 
+        ;;
         ;; NOTES:
         ;;  program arguments start at address 0x80. all arguments 
         ;;  are uppercase. the layout is as follows.
@@ -20,10 +18,9 @@
         ;;  to create multiple zero terminated strings and then points
         ;;  the argv[] to addresses following 0x80.
         ;;
+        ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 22.03.2022    tstih
         .module args
 
 
@@ -33,91 +30,77 @@
 
 
         .area   _CODE
+        ;; ----------------
+        ;; void pargs(void)
+        ;; ----------------
+        ;; parses the CP/M command tail at 0x80 into argc/argv storage
+        ;; NOTES:
+        ;;  argv[0] remains NULL because CP/M does not provide the program name
+        ;;  spaces in the command tail are replaced with 0x00 terminators
+        ;; inputs: none
+        ;; outputs: argc and argv globals updated in place
+        ;; affects: af, bc, de, hl, alternate bc/de/hl, flags
         ;; parse command line in CP/M
 pargs::
-        ld      hl,#0x80                ; args start
+        ld      hl,#0x81                ; first command-tail character
+        ld      a,(#0x80)               ; command-tail length
+        ld      b,a                     ; remaining character count
         ;; argv[0] is NULL
         ld      de,#argv                ; argv pointers
         xor     a
         ld      (de),a
         inc     de
         ld      (de),a
-        inc     de                      ; dl points to first "real" argv
+        inc     de                      ; de points to first real argv slot
         ;; argc=1 (default)
+        ld      a,#1
+        ld      (argc),a
         xor     a
         ld      (argc+1),a
-        inc     a
-        ld      (argc),a
-        ;; let de point to first char which is length
-        ld      a,(hl)                  ; get number of bytes to b
-        ld      b,a                     ; b is counter
-        inc     hl                      ; hl points to first char
-        ld      a,(hl)                  ; check it
-        cp      #' '                    ; skip initial space...
-        jr      nz,pargs_go 
-        inc     hl                      ; next char...
-pargs_go:
-        push    hl                      ; "remember" start of current arg
-pargs_loop:
-        ;; now iterate
-        ld      a,(hl)
-        ;; is it end of arguments?
-        cp      #0                      
-        jr      z,pargs_end
-        ;; is it end of current argument?
-        cp      #' '                    
-        jr      z,pargs_next
-        ;; if we're here it's a simple char...
-        inc     hl
-        djnz    pargs_loop
-        ;; if no more looping we're done
-pargs_end:
-        ;; get a at start of arg
-        exx
-        pop     hl
-        ld      a,(hl)
-        push    hl
-        exx
-        ;; is it 0?
+
+pargs_skip_spaces:
+        ld      a,b
         or      a
-        jr      z,pargs_noarg
-        ;; else store argument
-        pop     hl                      ; get arg
-        ex      de,hl
-        ld      (hl),e
+        jr      z,pargs_done
+        ld      a,(hl)
+        cp      #' '
+        jr      nz,pargs_store_arg
         inc     hl
-        ld      (hl),d
-        ex      de,hl
-        ;; inc. argc
+        djnz    pargs_skip_spaces
+        jr      pargs_done
+
+pargs_store_arg:
+        ld      a,l
+        ld      (de),a
+        inc     de
+        ld      a,h
+        ld      (de),a
+        inc     de
         ld      a,(argc)
         inc     a
         ld      (argc),a
-        ;; and return
-        jr      pargs_done   
-pargs_next:
-        xor     a                       ; zero terminate
-        ld      (hl),a                  ; the argument
-        inc     hl                      ; next arg
-        push    de                      ; current arg to stack
-        exx
-        pop     de                      ; get current arg from stack
-        pop     hl                      ; get start of arg from stack
-        ex      de,hl
-        ld      (hl),e                  ; write arg to arg list
+
+pargs_scan_arg:
+        ld      a,b
+        or      a
+        jr      z,pargs_terminate
+        ld      a,(hl)
+        cp      #' '
+        jr      z,pargs_end_arg
         inc     hl
-        ld      (hl),d
+        djnz    pargs_scan_arg
+        jr      pargs_terminate
+
+pargs_end_arg:
+        xor     a
+        ld      (hl),a
         inc     hl
-        ex      de,hl
-        push    de                      ; store arg list new end
-        exx
-        pop     de                      ; get arg list 
-        push    hl                      ; next arg to stack
-        ld      a,(argc)                ; increase argc
-        inc     a
-        ld      (argc),a
-        djnz    pargs_loop
-pargs_noarg:
-        pop     hl                      ; clean stack
+        djnz    pargs_skip_spaces
+        jr      pargs_done
+
+pargs_terminate:
+        xor     a
+        ld      (hl),a
 pargs_done:
         ret
 

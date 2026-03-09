@@ -1,11 +1,10 @@
-        ;; bdos.s
-        ;; 
         ;; minimal bdos wrapper
+        ;;
+        ;; NOTES:
+        ;;  preserves IX so the wrappers remain C-call-safe
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 22.03.2022    tstih
         .module bdos
 
         .globl _bdos
@@ -20,10 +19,14 @@
         ;; unsigned char bdos(unsigned char fn, unsigned int param);
         ;; ---------------------------------------------------------
         ;; calls cp/m bdos
-        ;; affect:  af, bc, de, hl
+        ;; NOTES:
+        ;;  preserves ix across the BDOS jump so it remains C-call-safe
+        ;; inputs: a=fn, de=param
+        ;; outputs: l=BDOS return value from a
+        ;; affects: af, bc, de, hl, flags
 _bdos::
         push    ix                      ; store ix
-        ld      c,l                     ; fn to C for BDOS call
+        ld      c,a                     ; fn to C for BDOS call
         ;; DE already contains param
         call    BDOS                    ; make BDOS call
         pop     ix                      ; restore ix
@@ -34,41 +37,37 @@ _bdos::
         ;; -------------------------------------------------------------------------
         ;; bdos_ret_t *bdosret(unsigned char fn, unsigned int param, bdos_ret_t *p);
         ;; -------------------------------------------------------------------------
-        ;; calls cp/m bdos and store result to variables
-        ;; output: a, b, hl populated with ret. values
-        ;; affect:  af, bc, de, hl
+        ;; calls CP/M BDOS and stores the returned A, B, and HL values into *p
+        ;; NOTES:
+        ;;  the return value is p so the function matches the C declaration
+        ;; inputs: a=fn, de=param, stack[0]=p
+        ;; outputs: hl=p, *p={a,b,hl} from BDOS
+        ;; affects: af, bc, de, hl, ix, flags
 _bdosret::
-        push    ix                      ; save ix
-        ld      c,l                     ; fn to C for BDOS
-        ;; DE already contains param
-        ;; Save DE before BDOS call (we need it later)
-        push    de
-        call    BDOS                    ; make BDOS call
-        ;; BDOS returns: A, B, DE (sometimes HL)
-        pop     de                      ; restore original param to DE
-        ;; Now get p pointer from stack
-        ;; Stack: [IX][ret_addr][p_lo][p_hi]
-        ld      ix,#4                   ; skip over saved IX (2) and return addr (2)
+        push    ix
+        ld      c,a                     ; fn to C for BDOS
+        call    BDOS
+        push    af                      ; preserve returned A/F
+        push    bc                      ; preserve returned B/C
+        push    hl                      ; preserve returned HL
+        ld      ix,#10                  ; saved regs + saved ix + return address
         add     ix,sp
-        ld      l,(ix)                  ; p pointer from stack
-        ld      h,1(ix)
-        push    hl                      ; store pointer as return value
-        ;; Store BDOS results to structure pointed by HL
-        ld      (hl),a                  ; store a
-        inc     hl
-        ld      (hl),b                  ; store b
-        inc     hl
-        ;; DE from BDOS is in DE, but we need the original DE which we popped
-        ;; Actually, looking at the old code, it uses ex de,hl to store the result
-        ;; The BDOS result HL goes to DE, then stored. Let me check the old code again.
-        ;; Old code: ex de,hl means BDOS's HL result goes to DE for storage
-        ;; Since BDOS can return in HL, save that
-        ex      de,hl                   ; BDOS result HL to DE
-        ld      (hl),e                  ; store hl result
-        inc     hl
-        ld      (hl),d
-        ;; restore return value
-        pop     hl
-        ;; clean stack and exit
-        pop     ix                      ; restore ix
+        ld      e,(ix)                  ; p
+        ld      d,1(ix)
+        pop     hl                      ; hl=BDOS HL
+        pop     bc                      ; b=BDOS B
+        pop     af                      ; a=BDOS A
+        push    de                      ; preserve p for return value
+        ld      (de),a
+        inc     de
+        ld      a,b
+        ld      (de),a
+        inc     de
+        ld      a,l
+        ld      (de),a
+        inc     de
+        ld      a,h
+        ld      (de),a
+        pop     hl                      ; return p
+        pop     ix
         ret

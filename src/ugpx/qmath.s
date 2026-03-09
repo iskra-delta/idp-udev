@@ -1,11 +1,7 @@
-        ;; qmath.s
-        ;; 
         ;; quick math
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 30.06.2022    tstih
         .module qmath
 
         .globl  abs_hl

@@ -1,11 +1,10 @@
-        ;; fparse.s
-        ;; 
-        ;; minimal io ops
+        ;; CP/M path parser for FCB-based file operations
+        ;;
+        ;; NOTES:
+        ;;  parses an optional user area, drive, filename, and extension into an FCB
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 14.04.2022    tstih
         .module fparse
 
         .globl  _fparse
@@ -51,14 +50,25 @@
         .equ    NO_SYM,         0x00
 
         .area _CODE
-        ;; ----- int fparse(char *path, fcb_t *fcb, uint8_t *area) ------------
+        ;; ------------------------------------------
+        ;; int fparse(char *path, fcb_t *fcb, uint8_t *area)
+        ;; ------------------------------------------
+        ;; parses a CP/M path string into an FCB and user area
+        ;; NOTES:
+        ;;  accepts an optional numeric area, optional drive, up to 8 name chars,
+        ;;  and up to 3 extension chars using the local Mealy automaton
+        ;; inputs: hl=path, de=fcb, stack[0]=area
+        ;; outputs: hl=status code, *fcb populated, *area populated
+        ;; affects: af, bc, de, hl, alternate bc/de/hl, flags
 _fparse::
+        push    ix
+        push    iy
         ;; Need: HL=path, DE'=fcb, BC'=area
         ;; Strategy: Push fcb, read area, push area, exx, pop to BC' and DE'
         push    de                      ; save fcb
         ;; Stack now: [fcb][ret_addr][area]
         ;; Read area from SP+4 and SP+5 into BC temporarily
-        ld      ix,#4
+        ld      ix,#8
         add     ix,sp
         ld      c,(ix)                  ; area_lo from stack
         ld      b,1(ix)                 ; area_hi from stack
@@ -117,6 +127,15 @@ fpa_nextsym:
         inc     hl                      ; next symbol
         jr      fpa_nextsym             ; and loop
         ;; find transition
+        ;; --------------------------------
+        ;; void fpa_find_transition(void)
+        ;; --------------------------------
+        ;; finds the automaton transition for the current state and input symbol
+        ;; NOTES:
+        ;;  uses C as the current symbol and 2(iy) as the active state slot
+        ;; inputs: a=current symbol, c=current symbol, 2(iy)=state
+        ;; outputs: z set on success, l=function code, 2(iy)=next state
+        ;; affects: af, bc, hl, flags
 fpa_find_transition:
         ld      hl,#fpa_automata        ; address of mealy automata
         ;; b=total transitions
@@ -173,11 +192,25 @@ fpa_done:
         ld      (de),a                  ; set drive
 fpa_no_drive:
         exx
+        ld      hl,#8
+        add     hl,sp
+        ld      sp,hl
+        pop     iy
+        pop     ix
         ;; and return
         ret   
 
         ;; ----- tests --------------------------------------------------------
         ;; extract test from a and do it!
+        ;; -------------------------
+        ;; void fpaft_test(void)
+        ;; -------------------------
+        ;; evaluates the transition test encoded in the current automaton entry
+        ;; NOTES:
+        ;;  returns through flags only; zero means the transition matches
+        ;; inputs: (hl)=transition test byte, c=current symbol
+        ;; outputs: z set when the symbol matches the transition test
+        ;; affects: af, de, flags
 fpaft_test:
         ld      a,(hl)                  ; get a (again)
         and     #0b11110000             ; extract test
@@ -228,6 +261,15 @@ ftaft_t07:
         ;; ----- functions ----------------------------------------------------
         
         ;; execute function (fn code is in register l)
+        ;; -------------------------
+        ;; void fpa_execfn(void)
+        ;; -------------------------
+        ;; dispatches the transition action selected by fpa_find_transition
+        ;; NOTES:
+        ;;  non-zero status is written to 3(iy) before returning with nz
+        ;; inputs: l=function code, c=current symbol, iy=local frame
+        ;; outputs: z set on success, nz on parser error
+        ;; affects: af, bc, de, hl, alternate de/hl, flags
 fpa_execfn:
         ld      h,a                     ; store a
         ld      a,l
@@ -322,6 +364,15 @@ fnaf_sym2:
         ;; append char, test against stacked symbol
         ;; inputs:
         ;;  a=char
+        ;; -------------------------------
+        ;; void fnaf_append_char(char c)
+        ;; -------------------------------
+        ;; appends one character to the FCB filename field
+        ;; NOTES:
+        ;;  writes into bytes 1..8 of the target FCB and updates 6(iy)
+        ;; inputs: a=character, de'=fcb base, 6(iy)=current filename length
+        ;; outputs: z set on success, nz on overflow
+        ;; affects: af, de, hl, alternate de/hl, flags
 fnaf_append_char:
         ld      d,a                     ; store a
         ld      a,6(iy)                 ; get len
@@ -350,6 +401,15 @@ fpafn_append_ext:
         ld      a,c                     ; get char
         call    fnae_append_char        ; append
         ret    
+        ;; ---------------------------------
+        ;; void fnae_append_char(char c)
+        ;; ---------------------------------
+        ;; appends one character to the FCB extension field
+        ;; NOTES:
+        ;;  writes into bytes 9..11 of the target FCB and updates 7(iy)
+        ;; inputs: a=character, de'=fcb base, 7(iy)=current extension length
+        ;; outputs: z set on success, nz on overflow
+        ;; affects: af, de, hl, alternate de/hl, flags
 fnae_append_char:
         ld      d,a                     ; store a
         ld      a,7(iy)                 ; get len

@@ -1,11 +1,7 @@
-        ;; gsetpage.s
-        ;; 
         ;; set write and/or display page
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 18.06.2022    tstih
         .module gsetpage
 
         .globl  _gsetpage

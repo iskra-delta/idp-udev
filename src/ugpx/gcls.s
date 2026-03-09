@@ -1,11 +1,7 @@
-        ;; gcls.s
-        ;; 
         ;; clear current (graphics) page
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 06.06.2022    tstih
         .module gcls
 
         .globl  _gcls

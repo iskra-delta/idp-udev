@@ -1,11 +1,7 @@
-        ;; gputpixel.s
-        ;; 
         ;; draw single pixel
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 13.06.2022    tstih
         .module gputpixel
 
         .globl  _gputpixel

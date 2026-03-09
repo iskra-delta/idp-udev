@@ -1,11 +1,7 @@
-        ;; gdrawd.s
-        ;; 
         ;; delta drawing functions!
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 17.06.2022    tstih
         .module gdrawd
 
         .globl  _gdrawd

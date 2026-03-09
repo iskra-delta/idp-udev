@@ -1,16 +1,26 @@
         ;; shared 16-bit unsigned division core
         ;;
-        ;; loosely based on sdcc project implementation
+        ;; NOTES:
+        ;;  returns the quotient in DE and the remainder in HL
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
 
         .module divu16
-        .optsdcc -mz80 sdcccall(1)
+        .optsdcc -mz80
 
         .globl  __divu16
         .area   _CODE
 
+        ;; -----------------------------------------
+        ;; unsigned int __divu16(unsigned int a, unsigned int b)
+        ;; -----------------------------------------
+        ;; performs unsigned 16-bit division for the SDCC runtime
+        ;; NOTES:
+        ;;  returns quotient in DE and remainder in HL for reuse by modulo helpers
+        ;; inputs: hl=dividend, de=divisor
+        ;; outputs: de=quotient, hl=remainder
+        ;; affects: af, bc, de, hl, flags
 __divu16::
         ld      a, e
         and     a, #0x80

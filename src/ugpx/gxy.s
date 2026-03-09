@@ -1,11 +1,7 @@
-           ;; gxy.s
-        ;; 
         ;; move cursor to x,y!
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 18.06.2022    tstih
         .module gxy
 
         .globl  _gxy

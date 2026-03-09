@@ -1,11 +1,7 @@
-        ;; gsetcolor.s
-        ;; 
         ;; set current color
         ;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2022 tomaz stih
-        ;;
-        ;; 11.06.2022    tstih
         .module gsetcolor
 
         .globl  _gsetcolor
